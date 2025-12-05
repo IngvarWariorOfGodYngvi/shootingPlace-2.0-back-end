@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/shootingplace"
+    username: root
+    password: TezgLGg9UW4LJt0
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  jooq:
+    sql-dialect: org.hibernate.dialect.MySQL8Dialect
+licenseDate: "2031-01-31"
+dateTime: ""
+snedMail: false
+shootingPlaceName: "MECHANIKTOMASZÓW"
+server:
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024

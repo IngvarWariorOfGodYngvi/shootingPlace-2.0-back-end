@@ -1,0 +1,8 @@
+package com.shootingplace.shootingplace.adapters;
+
+import com.shootingplace.shootingplace.bookOfRegistrationOfStayAtTheShootingPlace.RegistrationRecordEntity;
+import com.shootingplace.shootingplace.bookOfRegistrationOfStayAtTheShootingPlace.RegistrationRecordRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RegistrationRecordSQlRepository extends RegistrationRecordRepository, JpaRepository<RegistrationRecordEntity, String> {
+}

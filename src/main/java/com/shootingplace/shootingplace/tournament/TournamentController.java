@@ -1,0 +1,205 @@
+package com.shootingplace.shootingplace.tournament;
+
+import com.shootingplace.shootingplace.enums.UserSubType;
+import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
+import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@RestController
+@RequestMapping("/tournament")
+@CrossOrigin
+public class TournamentController {
+
+    private final TournamentService tournamentService;
+    private final ChangeHistoryService changeHistoryService;
+
+    public TournamentController(TournamentService tournamentService, ChangeHistoryService changeHistoryService) {
+        this.tournamentService = tournamentService;
+        this.changeHistoryService = changeHistoryService;
+    }
+
+    @GetMapping("/openTournament")
+    public ResponseEntity<?> getOpenTournament() {
+        return tournamentService.getOpenTournament();
+    }
+
+    @GetMapping("/gunList")
+    public ResponseEntity<?> getListOfGunsOnTournament(@RequestParam String tournamentUUID) {
+        return ResponseEntity.ok(tournamentService.getListOfGunsOnTournament(tournamentUUID));
+    }
+    @GetMapping("/getShootersNamesList")
+    public ResponseEntity<?> getShootersNamesList(@RequestParam String tournamentUUID) {
+        return ResponseEntity.ok(tournamentService.getShootersNamesList(tournamentUUID));
+    }
+
+    @GetMapping("/closedList")
+    public ResponseEntity<?> getListOfClosedTournaments(Pageable page) {
+        return ResponseEntity.ok().body(tournamentService.getClosedTournaments(page));
+    }
+
+    @GetMapping("/competitions")
+    public ResponseEntity<?> getCompetitionsListInTournament(@RequestParam String tournamentUUID) {
+        return ResponseEntity.ok().body(tournamentService.getCompetitionsListInTournament(tournamentUUID));
+    }
+
+    @GetMapping("/stat")
+    public ResponseEntity<?> getStatistics(@RequestParam String tournamentUUID) {
+        return ResponseEntity.ok().body(tournamentService.getStatistics(tournamentUUID));
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<?> checkAnyOpenTournament() {
+        return ResponseEntity.ok().body(tournamentService.checkAnyOpenTournament());
+    }
+
+    @GetMapping("/getJudgingList")
+    public ResponseEntity<?> getJudgingList(@RequestParam String firstDate, @RequestParam String secondDate) {
+        return tournamentService.getJudgingList(firstDate,secondDate);
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<String> addNewTournament(@RequestBody Tournament tournament) {
+        return tournamentService.createNewTournament(tournament);
+    }
+
+    @Transactional
+    @PostMapping("/removeArbiter/{tournamentUUID}")
+    public ResponseEntity<?> removeArbiterFromTournament(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+            return tournamentService.removeArbiterFromTournament(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.removeOtherArbiterFromTournament(tournamentUUID, id);
+        } else {
+            return ResponseEntity.status(418).body("I'm a teapot");
+        }
+    }
+
+    @Transactional
+    @PostMapping("/removeRTSArbiter/{tournamentUUID}")
+    public ResponseEntity<?> removeRTSArbiterFromTournament(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+            return tournamentService.removeRTSArbiterFromTournament(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.removeRTSOtherArbiterFromTournament(tournamentUUID, id);
+        } else {
+            return ResponseEntity.status(418).body("I'm a teapot");
+        }
+    }
+
+    @Transactional
+    @PatchMapping("/{tournamentUUID}")
+    public ResponseEntity<?> closeTournament(@PathVariable String tournamentUUID) {
+        return tournamentService.closeTournament(tournamentUUID);
+    }
+
+    @Transactional
+    @PatchMapping("/open/{tournamentUUID}")
+    public ResponseEntity<?> openTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) throws NoUserPermissionException {
+        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
+        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
+        if (code.getStatusCode().equals(HttpStatus.OK)) {
+            return tournamentService.openTournament(tournamentUUID, pinCode);
+        } else {
+            return code;
+        }
+    }
+
+    @Transactional
+    @PutMapping("/{tournamentUUID}")
+    public ResponseEntity<?> updateTournament(@PathVariable String tournamentUUID, @RequestBody Tournament tournament) {
+        return tournamentService.updateTournament(tournamentUUID, tournament);
+    }
+
+    @Transactional
+    @PutMapping("/addMainArbiter/{tournamentUUID}")
+    public ResponseEntity<?> addMainArbiter(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+            return tournamentService.addMainArbiter(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.addOtherMainArbiter(tournamentUUID, id);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Transactional
+    @PutMapping("/addRTSArbiter/{tournamentUUID}")
+    public ResponseEntity<?> addRTSArbiter(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+            return tournamentService.addRTSArbiter(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.addOtherRTSArbiter(tournamentUUID, id);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @Transactional
+    @PutMapping("/addOthersArbiters/{tournamentUUID}")
+    public ResponseEntity<?> addOthersArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+            return tournamentService.addOthersArbiters(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.addPersonOthersArbiters(tournamentUUID, id);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @Transactional
+    @PutMapping("/addOthersRTSArbiters/{tournamentUUID}")
+    public ResponseEntity<?> addOthersRTSArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+            return tournamentService.addOthersRTSArbiters(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.addPersonOthersRTSArbiters(tournamentUUID, id);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @Transactional
+    @PutMapping("/addCompetition/{tournamentUUID}")
+    public ResponseEntity<?> addCompetitionListToTournament(@PathVariable String tournamentUUID, @RequestParam List<String> competitionsUUID) {
+
+        List<String> list = new ArrayList<>();
+
+        competitionsUUID.forEach(e -> list.add(tournamentService.addNewCompetitionListToTournament(tournamentUUID, e)));
+
+        if (!list.isEmpty()) {
+            return ResponseEntity.ok(list);
+        } else {
+            return ResponseEntity.badRequest().body("pusta lista");
+        }
+
+    }
+
+    @Transactional
+    @DeleteMapping("/delete/{tournamentUUID}")
+    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) throws NoUserPermissionException {
+        return tournamentService.deleteTournament(tournamentUUID, pinCode);
+    }
+}

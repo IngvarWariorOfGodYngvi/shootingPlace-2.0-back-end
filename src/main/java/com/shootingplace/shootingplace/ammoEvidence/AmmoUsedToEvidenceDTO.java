@@ -1,0 +1,28 @@
+package com.shootingplace.shootingplace.ammoEvidence;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class AmmoUsedToEvidenceDTO {
+
+    private String caliberName;
+
+    private Integer counter;
+
+    private String name;
+
+    private LocalDate date;
+
+    private Integer legitimationNumber;
+
+    private Integer IDNumber;
+
+
+}
