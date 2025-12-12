@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -102,8 +103,7 @@ public class WorkingTimeEvidenceService {
         List<WorkingTimeEvidenceEntity> allByCloseFalse = workRepo.findAllByIsCloseFalse();
         allByCloseFalse
                 .stream()
-                .filter(f -> !f.isClose())
-                .collect(Collectors.toList())
+                .filter(f -> !f.isClose()).toList()
                 .forEach(e ->
                 {
                     String s = countTime(e.getStart(), LocalDateTime.now());
@@ -298,50 +298,69 @@ public class WorkingTimeEvidenceService {
         return ResponseEntity.badRequest().body("Pin jest niezgodny - tylko Prezes");
     }
 
-    public ResponseEntity<?> inputChangesToWorkTime(List<WorkingTimeEvidenceDTO> list, String pinCode) {
-
-        if (list.isEmpty()) {
-            return ResponseEntity.badRequest().body("Lista jest pusta - wybierz elementy do zmiany");
+    public ResponseEntity<String> inputChangesToWorkTime(List<WorkingTimeEvidenceDTO> list, String pinCode) {
+        if (list == null || list.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body("Lista jest pusta - wybierz elementy do zmiany");
         }
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin);
+        String pin = Hashing.sha256()
+                .hashString(pinCode, StandardCharsets.UTF_8)
+                .toString();
+        UserEntity user = userRepository.findByPinCode(pin).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest()
+                    .body("Nieprawidłowy PIN");
+        }
+        if (user.getUserPermissionsList() == null ||
+                !user.getUserPermissionsList().contains(UserSubType.CEO.getName())) {
+            return ResponseEntity.badRequest()
+                    .body("Pin jest niezgodny - tylko Prezes");
+        }
+        WorkingTimeEvidenceDTO first = list.get(0);
+        String month = first.getStart()
+                .format(DateTimeFormatter.ofPattern("LLLL", Locale.forLanguageTag("pl")))
+                .toLowerCase(Locale.ROOT);
 
-        if (userEntity != null && userEntity.getUserPermissionsList().contains(UserSubType.CEO.getName())) {
-            String month = list.get(0)
-                    .getStart()
-                    .format(java.time.format.DateTimeFormatter.ofPattern("LLLL", Locale.forLanguageTag("pl")))
-                    .toLowerCase(Locale.ROOT);
-            String workType = workRepo.getOne(list.get(0).getUuid()).getWorkType();
-            int yearValue = list.get(0).getStart().getYear();
-            String finalMonth = month.toLowerCase();
-            List<IFile> collect = filesRepo.findAllByNameContains("%" + month.toLowerCase() + "%", "%" + yearValue + "%");
-            if (!collect.isEmpty()) {
-                collect.forEach(e -> {
-                    FilesEntity one = filesRepo.getOne(e.getUuid());
-                    one.setName("raport_pracy_" + finalMonth + "_" + (e.getVersion()) + "_" + yearValue + "_" + workType + ".pdf");
-                    filesRepo.save(one);
-                });
+        int year = first.getStart().getYear();
+        String workType = workRepo.findById(first.getUuid())
+                .orElseThrow(EntityNotFoundException::new)
+                .getWorkType();
+        List<IFile> reports = filesRepo.findAllByNameContains(
+                "%" + month + "%",
+                "%" + year + "%"
+        );
+        if (!reports.isEmpty()) {
+            for (IFile file : reports) {
+                FilesEntity entity = filesRepo.findById(file.getUuid())
+                        .orElseThrow(EntityNotFoundException::new);
+                entity.setName(
+                        "raport_pracy_" +
+                                month + "_" +
+                                file.getVersion() + "_" +
+                                year + "_" +
+                                workType + ".pdf"
+                );
+                filesRepo.save(entity);
             }
-
-            list.forEach(e -> {
-                String s = countTime(e.getStart(), e.getStop());
-                int i = Integer.parseInt(s.substring(0, 2));
-
-                WorkingTimeEvidenceEntity entity = workRepo.findById(e.getUuid()).orElseThrow(EntityNotFoundException::new);
-                if (i > 8) {
-                    entity.setToClarify(true);
-                }
-
-                entity.setStart(e.getStart());
-                entity.setStop(e.getStop());
-                entity.setWorkTime(countTime(getTime(e.getStart(), true), getTime(e.getStop(), false)));
-                workRepo.save(entity);
-            });
-            log.info("Zatwierdzono zmiany w czasie pracy");
-            return ResponseEntity.ok("Zatwierdzono zmiany w czasie pracy");
         }
-        return ResponseEntity.badRequest().body("Pin jest niezgodny - tylko Prezes");
+
+        for (WorkingTimeEvidenceDTO dto : list) {
+            WorkingTimeEvidenceEntity entity = workRepo.findById(dto.getUuid())
+                    .orElseThrow(EntityNotFoundException::new);
+            String time = countTime(dto.getStart(), dto.getStop());
+            int hours = Integer.parseInt(time.substring(0, 2));
+            if (hours > 8) {
+                entity.setToClarify(true);
+            }
+            entity.setStart(dto.getStart());
+            entity.setStop(dto.getStop());
+            entity.setWorkTime(countTime(getTime(dto.getStart(), true), getTime(dto.getStop(), false)));
+            workRepo.save(entity);
+        }
+        log.info("Zatwierdzono zmiany w czasie pracy");
+        return ResponseEntity.ok("Zatwierdzono zmiany w czasie pracy");
     }
+
 
     public ResponseEntity<?> getAllWorkingType() {
 
@@ -433,7 +452,7 @@ public class WorkingTimeEvidenceService {
     public ResponseEntity<?> createNewWTEByPin(String pinCode) {
         String msg;
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity user = userRepository.findByPinCode(pin);
+        UserEntity user = userRepository.findByPinCode(pin).orElse(null);
         if (user == null) {
             msg = "Brak użytkownika";
             log.info(msg);
@@ -448,7 +467,7 @@ public class WorkingTimeEvidenceService {
                 .findFirst().orElse(null);
 
         if (entity1 != null) {
-            return ResponseEntity.ok("użutkownik znajduje się już na liście");
+            return ResponseEntity.ok("użytkownik znajduje się już na liście");
         } else {
             msg = openWTEByUser(user);
             return ResponseEntity.ok(msg);
@@ -487,18 +506,15 @@ public class WorkingTimeEvidenceService {
         } else {
             if (workRepo.findAllByIsCloseFalse().stream().noneMatch(f -> f.getUser().equals(user))) {
                 LocalDateTime start = LocalDateTime.now();
-                BarCodeCardEntity barCodeCardEntity = barCodeCardRepo.findAllByBelongsTo(user.getUuid()).get(0);
                 WorkingTimeEvidenceEntity entity = WorkingTimeEvidenceEntity.builder()
                         .start(start)
                         .stop(null)
-                        .cardNumber(barCodeCardEntity.getBarCode())
+                        .cardNumber(user.getPinCode())
                         .isClose(false)
                         .user(user).build();
 
                 workRepo.save(entity);
                 msg = user.getFirstName() + " " + user.getSecondName() + " Witaj w Pracy";
-                barCodeCardEntity.addCountUse();
-                barCodeCardRepo.save(barCodeCardEntity);
             } else {
                 msg = "Użytkownik jest już w pracy";
             }
@@ -520,11 +536,6 @@ public class WorkingTimeEvidenceService {
             }
             entity.setAutomatedClosed(true);
         }
-        if (!barCode.isMaster()) {
-            barCode.setActive(false);
-            barCodeCardRepo.save(barCode);
-        }
-
         LocalDateTime temp = getTime(entity.getStart(), true);
         LocalDateTime temp1 = getTime(stop, false);
 

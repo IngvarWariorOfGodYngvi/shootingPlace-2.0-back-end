@@ -66,7 +66,7 @@ public class LicensePaymentService {
                     .memberUUID(memberUUID)
                     .isPayInPZSSPortal(false)
                     .isNew(licenseEntity.getNumber() == null)
-                    .acceptedBy(userRepository.findByPinCode(pin).getFullName())
+                    .acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName())
                     .build();
             licensePaymentHistoryRepository.save(build);
             licensePaymentHistory.add(build);

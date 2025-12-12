@@ -140,7 +140,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.vaadin.external.google:android-json:0.0.20131108.vaadin1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.springframework:spring-test:6.2.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.xmlunit:xmlunit-core:2.10.1" level="project" />
-    <orderEntry type="library" name="Maven: com.itextpdf:itextpdf:5.5.13.4" level="project" />
+    <orderEntry type="library" name="Maven: com.github.librepdf:openpdf:1.3.32" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi:5.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.17" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:2.0.17" level="project" />

@@ -110,11 +110,6 @@ public class MemberController {
         return memberService.getArbiters();
     }
 
-    @GetMapping("/getMemberEmail" )
-    public ResponseEntity<?> getSingleMemberEmail(@RequestParam Integer number) {
-        return memberService.getSingleMemberEmail(number);
-    }
-
     @GetMapping("/pesel" )
     public ResponseEntity<?> getMemberPeselIsPresent(@RequestParam String pesel) {
         return ResponseEntity.ok(memberService.getMemberPeselIsPresent(pesel));
@@ -138,7 +133,6 @@ public class MemberController {
     @Transactional
     @PostMapping("/" )
     public ResponseEntity<?> addMember(@RequestBody @Valid MemberWithAddressWrapper memberWithAddressWrapper, @RequestParam boolean returningToClub, @RequestParam String pinCode) throws NoUserPermissionException {
-        System.out.println("wchodzę");
         List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
         ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
         if (code.getStatusCode().equals(HttpStatus.OK)) {
@@ -161,7 +155,7 @@ public class MemberController {
     }
     @PostMapping("/note")
     @Transactional
-    public ResponseEntity<?> addNote(@RequestParam String uuid, @RequestBody String note) {
+    public ResponseEntity<?> addNote(@RequestParam String uuid, @RequestParam String note) {
         return memberService.addNote(uuid, note);
     }
     @PutMapping("/{uuid}" )
@@ -173,7 +167,16 @@ public class MemberController {
         } else {
             return code;
         }
-
+    }
+    @PutMapping("/group/{uuid}" )
+    public ResponseEntity<?> assignMemberToGroup(@PathVariable String uuid,@RequestParam Long groupId, @RequestParam String pinCode) throws NoUserPermissionException {
+        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
+        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
+        if (code.getStatusCode().equals(HttpStatus.OK)) {
+            return memberService.assignMemberToGroup(uuid, groupId, pinCode);
+        } else {
+            return code;
+        }
     }
 
     @GetMapping("/getMembersToReportToThePolice" )
@@ -244,12 +247,6 @@ public class MemberController {
     @PatchMapping("/toggleDeclaration/{uuid}" )
     public ResponseEntity<?> toggleDeclaration(@PathVariable String uuid, @RequestParam boolean isSigned) {
         return memberService.toggleDeclaration(uuid, isSigned);
-    }
-
-    @Transactional
-    @DeleteMapping("/delete/{uuid}" )
-    public ResponseEntity<?> deleteMember(@PathVariable String uuid) {
-        return memberService.deleteMember(uuid);
     }
 
 }

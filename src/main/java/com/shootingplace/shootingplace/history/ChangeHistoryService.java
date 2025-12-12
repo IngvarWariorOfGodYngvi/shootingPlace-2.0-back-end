@@ -40,47 +40,61 @@ public class ChangeHistoryService {
                 .build());
     }
 
-    public ResponseEntity<?> comparePinCode(String pinCode, List<String> acceptedPermissions) throws NoUserPermissionException {
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin);
-        if (userEntity != null && userEntity.getUserPermissionsList().stream().noneMatch(acceptedPermissions::contains)) {
+    public ResponseEntity<?> comparePinCode(String pinCode, List<String> acceptedPermissions)
+            throws NoUserPermissionException {
+        String pin = Hashing.sha256()
+                .hashString(pinCode, StandardCharsets.UTF_8)
+                .toString();
+        UserEntity user = userRepository.findByPinCode(pin).orElse(null);
+        if (user == null) {
             throw new NoUserPermissionException();
         }
-        if (userEntity != null && acceptedPermissions.contains(UserSubType.ADMIN.getName()) && userEntity.getUserPermissionsList().contains(UserSubType.ADMIN.getName())) {
+        List<String> userPermissions = user.getUserPermissionsList();
+        if (userPermissions == null) {
+            throw new NoUserPermissionException();
+        }
+        boolean hasAnyRequiredPermission = userPermissions.stream()
+                .anyMatch(acceptedPermissions::contains);
+        if (!hasAnyRequiredPermission) {
+            throw new NoUserPermissionException();
+        }
+        if (acceptedPermissions.contains(UserSubType.ADMIN.getName())
+                && userPermissions.contains(UserSubType.ADMIN.getName())) {
             return ResponseEntity.ok().build();
         }
-        boolean inWork;
-        if (userEntity != null) {
-            inWork = workServ.isInWork(userEntity);
-        } else {
-            inWork = false;
-        }
-        return inWork ? ResponseEntity.ok().build() : ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt w Klubie");
-
+        boolean inWork = workServ.isInWork(user);
+        return inWork
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt w Klubie");
     }
+
 
     public ResponseEntity<String> addRecordToChangeHistory(String pinCode, String classNamePlusMethod, String uuid) throws NoUserPermissionException {
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin);
-        // user found
-        if (userEntity != null) {
-            // user isn't in work
-            if (!workServ.isInWork(userEntity)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Najpierw zarejestruj pobyt w Klubie");
-            }
-            if (userEntity.getUserPermissionsList().contains(UserSubType.MANAGEMENT.getName()) || userEntity.getUserPermissionsList().contains(UserSubType.WORKER.getName())) {
-                userEntity.getList().add(addRecord(userEntity, classNamePlusMethod, uuid));
-                userRepository.save(userEntity);
-                return null;
-            } else {
-                throw new NoUserPermissionException();
-            }
+        String pin = Hashing.sha256()
+                .hashString(pinCode, StandardCharsets.UTF_8)
+                .toString();
+        UserEntity user = userRepository.findByPinCode(pin).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Brak użytkownika");
         }
-        //user not found
-        else {
-            return ResponseEntity.status(403).body("Brak Użytkownika");
+        if (!workServ.isInWork(user)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Najpierw zarejestruj pobyt w Klubie");
         }
+        List<String> permissions = user.getUserPermissionsList();
+        boolean hasPermission = permissions != null && (
+                permissions.contains(UserSubType.MANAGEMENT.getName()) ||
+                        permissions.contains(UserSubType.WORKER.getName())
+        );
+        if (!hasPermission) {
+            throw new NoUserPermissionException();
+        }
+        user.getList().add(addRecord(user, classNamePlusMethod, uuid));
+        userRepository.save(user);
+        return ResponseEntity.ok("Zapisano historię zmian");
     }
+
 
 }
 

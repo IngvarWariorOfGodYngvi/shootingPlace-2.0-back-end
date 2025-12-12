@@ -27,6 +27,7 @@ public class OtherPersonEntity {
     private String email;
     private String weaponPermissionNumber;
     private boolean active;
+    private String licenseNumber;
     @OneToOne(orphanRemoval = true)
     private AddressEntity address;
     @ManyToOne
@@ -121,6 +122,14 @@ public class OtherPersonEntity {
 
     public void setAddress(AddressEntity address) {
         this.address = address;
+    }
+
+    public String getLicenseNumber() {
+        return licenseNumber;
+    }
+
+    public void setLicenseNumber(String licenseNumber) {
+        this.licenseNumber = licenseNumber;
     }
 
     /**

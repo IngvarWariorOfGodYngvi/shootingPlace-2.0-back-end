@@ -2,14 +2,12 @@ package com.shootingplace.shootingplace.email;
 
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 public class EmailConfig {
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
     private String connectionName;

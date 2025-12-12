@@ -8,6 +8,7 @@ import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceService;
 import com.shootingplace.shootingplace.wrappers.ImageOtherPersonWrapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -42,14 +43,14 @@ public class RegistrationRecordsService {
     public ResponseEntity<?> createRecordInBook(String pesel, String imageUUID) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();
         MemberEntity member = memberRepo.findAllByErasedFalse().stream().filter(f->f.getPesel().equals(pesel)).findFirst().orElse(null);
-        if (member != null && !member.getErased()) {
+        if (member != null && !member.isErased()) {
             if (registrationRepo.findAll().stream().anyMatch(f ->
                     LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(member.getPesel()))) {
                 LOG.info("Osoba znajduje się już na liście");
                 return ResponseEntity.badRequest().body("Osoba znajduje się już na liście");
             } else {
                 // jeśli klubowicz jest również użytokwnikiem to włączam mu czas pracy
-                UserEntity userEntity = userRepository.findByMemberUuid(member.getUuid());
+                UserEntity userEntity = userRepository.findByMemberUuid(member.getUuid()).orElseThrow(EntityNotFoundException::new);
                 if (userEntity != null) {
                     workingTimeEvidenceService.openWTEByUser(userEntity);
                 }

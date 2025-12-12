@@ -12,7 +12,7 @@ public class TestStrategy implements ContributionStrategy, EmailStrategy, System
     }
 
     @Override
-    public String getAhrefSite() {
+    public String getAHrefSite() {
         return "<a href=\"https://www.smartstrzelnica.pl\">www.smartstrzelnica.pl</a>";
 
     }

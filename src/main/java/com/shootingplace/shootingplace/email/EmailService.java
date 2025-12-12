@@ -311,7 +311,7 @@ public class EmailService {
         email.setRecipient(memberEntity.getEmail());
         EmailStrategy strategy = profileContext.getEmailStrategy();
         String dates = strategy.getDatesString();
-        String ahrefSite = strategy.getAhrefSite();
+        String ahrefSite = strategy.getAHrefSite();
         String name = getClubName();
         email.setSubject("Witamy w Gronie Klubowiczów " + name);
         String s = memberEntity.getSex() ? "Zapisałeś" : "Zapisałaś";

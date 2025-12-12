@@ -64,7 +64,7 @@ public class ContributionService {
             ContributionEntity contributionEntity = ContributionEntity.builder()
                     .paymentDay(null)
                     .validThru(null)
-                    .acceptedBy(userRepository.findByPinCode(pin).getFullName())
+                    .acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName())
                     .build();
             contributionEntity.setPaymentDay(contributionPaymentDay);
             contributionEntity.setValidThru(strategy.calculateValidThru(contributionPaymentDay,contributionEntityList));
@@ -89,12 +89,12 @@ public class ContributionService {
     private ContributionEntity getContributionEntity(LocalDate contributionPaymentDay, String pinCode) {
 
         ContributionStrategy strategy = profileContext.getContributionStrategy();
-        LocalDate validThru = strategy.calculateFirstValidTrhu(contributionPaymentDay);
+        LocalDate validThru = strategy.calculateFirstValidThru(contributionPaymentDay);
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
         return ContributionEntity.builder()
                 .paymentDay(contributionPaymentDay)
                 .validThru(validThru)
-                .acceptedBy(userRepository.findByPinCode(pin).getFullName())
+                .acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName())
                 .build();
     }
 
@@ -138,7 +138,7 @@ public class ContributionService {
         if (validThru != null) {
             contributionEntity.setValidThru(validThru);
         }
-        contributionEntity.setAcceptedBy(userRepository.findByPinCode(pin).getFullName());
+        contributionEntity.setAcceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName());
         contributionEntity.setEdited(true);
         ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, contributionEntity, HttpStatus.OK, "Edytuj składkę", "Edytowano składkę " + memberEntity.getFullName());
         if (response.getStatusCode().equals(HttpStatus.OK)) {

@@ -1,23 +1,26 @@
 package com.shootingplace.shootingplace.utils;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.lowagie.text.*;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.*;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
 import org.springframework.core.env.Environment;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 
 public class PageStamper extends PdfPageEventHelper {
     private final Environment environment;
     private final Boolean isPageNumberStamp;
-    private final Boolean isPageStampEvent;
+    private final Boolean isFooterImage;
     int pages;
 
-    public PageStamper(Environment environment, Boolean isPageNumberStamp, Boolean isPageStampEvent) {
+    public PageStamper(Environment environment, Boolean isPageNumberStamp, Boolean isFooterImage) {
         this.environment = environment;
         this.isPageNumberStamp = isPageNumberStamp;
-        this.isPageStampEvent = isPageStampEvent;
+        this.isFooterImage = isFooterImage;
     }
 
     @Override
@@ -39,28 +42,22 @@ public class PageStamper extends PdfPageEventHelper {
             Rectangle pageSize = document.getPageSize();
             PdfContentByte directContent = writer.getDirectContent();
             document.addAuthor("Igor Żebrowski");
-            if (isPageStampEvent) {
-//                String source = "";
+            if (isFooterImage) {
                 URL resource = null;
                 if (environment.getActiveProfiles()[0].equals(ProfilesEnum.DZIESIATKA.getName()) || environment.getActiveProfiles()[0].equals(ProfilesEnum.TEST.getName())) {
                     resource = getClass().getClassLoader().getResource("pełna-nazwa(małe).bmp");
-//                    source = "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/shootingplace-1.0/WEB-INF/classes/pełna-nazwa(małe).bmp";
                 }
                 if (environment.getActiveProfiles()[0].equals(ProfilesEnum.PANASZEW.getName())) {
                     resource = getClass().getClassLoader().getResource("logo-panaszew.jpg");
-//                    source = "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/shootingplace-1.0/WEB-INF/classes/logo-panaszew.jpg";
                 }
                 if (environment.getActiveProfiles()[0].equals(ProfilesEnum.MECHANIK.getName())) {
                     resource = getClass().getClassLoader().getResource("logo-uks.jpg");
-//                    source = "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/shootingplace-1.0/WEB-INF/classes/logo-uks.jpg";
                 }
                 if (environment.getActiveProfiles()[0].equals(ProfilesEnum.GUARDIANS.getName())) {
                     resource = getClass().getClassLoader().getResource("logo-guardians.jpg");
-//                    source = "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/shootingplace-1.0/WEB-INF/classes/logo-uks.jpg";
                 }
                 Image image = Image.getInstance(resource);
-                int multiplicity = 7;
-                image.scaleAbsolute(new Rectangle(16 * multiplicity, 9 * multiplicity));
+                image.scaleToFit(1000, 75);
                 float pw = pageSize.getWidth() / 2;
                 float iw = image.getScaledWidth() / 2;
                 float[] position = {pw - iw, 0};
@@ -71,7 +68,7 @@ public class PageStamper extends PdfPageEventHelper {
                 final int currentPageNumber = writer.getCurrentPageNumber();
                 pageSize = document.getPageSize();
                 directContent = writer.getDirectContent();
-                directContent.setColorFill(BaseColor.BLACK);
+                directContent.setColorFill(Color.BLACK);
                 directContent.setFontAndSize(BaseFont.createFont(), 10);
                 PdfTextArray pdfTextArray = new PdfTextArray(String.valueOf(currentPageNumber));
                 directContent.setTextMatrix(pageSize.getRight(40), pageSize.getBottom(25));

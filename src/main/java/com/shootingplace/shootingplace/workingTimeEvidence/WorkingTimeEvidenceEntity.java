@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class WorkingTimeEvidenceEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -28,7 +27,8 @@ public class WorkingTimeEvidenceEntity {
     private boolean isClose;
     private boolean isAutomatedClosed;
     private boolean toClarify;
-    @OneToOne(orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_uuid", nullable = false)
     private UserEntity user;
     private String workType;
 

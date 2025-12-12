@@ -40,7 +40,7 @@ public class BarCodeCardService {
 
     public ResponseEntity<?> createNewCard(String barCode, String uuid, String pinCode) throws NoUserPermissionException {
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin);
+        UserEntity userEntity = userRepository.findByPinCode(pin).orElse(null);
         List<String> acceptedPermissions = Arrays.asList(UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName(), UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
         if (userEntity == null) {
             return ResponseEntity.badRequest().body("brak Użytkownika");

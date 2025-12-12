@@ -113,7 +113,7 @@ public class OtherPersonService {
         boolean match = clubRepository.findAll().stream().anyMatch(a -> a.getShortName().equals(club));
         ClubEntity clubEntity;
         if (club.isEmpty()) {
-            clubEntity = clubRepository.getOne(2);
+            clubEntity = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
         } else {
             if (match) {
                 clubEntity = clubRepository

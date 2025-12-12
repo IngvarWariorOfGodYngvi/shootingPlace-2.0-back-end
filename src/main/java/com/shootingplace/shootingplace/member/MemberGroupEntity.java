@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
-@Table(name = "member_group")
+@Table(name = "member_group_entity")
 @Getter
 @Setter
 @NoArgsConstructor

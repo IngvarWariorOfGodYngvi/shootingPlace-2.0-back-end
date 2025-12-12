@@ -44,48 +44,44 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     MemberEntity findByLicenseUuid(String licenseUUID);
 
-    // =========================
-    // ✅ POPRAWIONE NATIVE QUERY
-    // =========================
-
     @Query(
             value = """
-            SELECT m.*
-            FROM shootingplace.member_entity m
-            JOIN shootingplace.license_entity l 
-              ON m.license_uuid = l.uuid
-            WHERE m.club_id = 1
-              AND m.erased = false
-              AND m.pzss = true
-              AND l.number > 0
-              AND l.valid = true
-        """,
+                        SELECT m.*
+                        FROM shootingplace.member_entity m
+                        JOIN shootingplace.license_entity l 
+                          ON m.license_uuid = l.uuid
+                        WHERE m.club_id = 1
+                          AND m.erased = false
+                          AND m.pzss = true
+                          AND l.number > 0
+                          AND l.valid = true
+                    """,
             nativeQuery = true
     )
     List<MemberEntity> findAllWhereCLubEquals1ErasedFalsePzssTrueLicenseValidTrue();
 
     @Query(
             value = """
-            SELECT m.*
-            FROM shootingplace.member_entity m
-            JOIN shootingplace.license_entity l 
-              ON m.license_uuid = l.uuid
-            WHERE m.club_id = 1
-              AND m.erased = false
-              AND m.pzss = true
-              AND l.number > 0
-              AND l.valid = false
-        """,
+                        SELECT m.*
+                        FROM shootingplace.member_entity m
+                        JOIN shootingplace.license_entity l 
+                          ON m.license_uuid = l.uuid
+                        WHERE m.club_id = 1
+                          AND m.erased = false
+                          AND m.pzss = true
+                          AND l.number > 0
+                          AND l.valid = false
+                    """,
             nativeQuery = true
     )
     List<MemberEntity> findAllWhereCLubEquals1ErasedFalsePzssTrueLicenseValidFalse();
 
     @Query(
             value = """
-            SELECT COUNT(*)
-            FROM shootingplace.member_entity
-            WHERE join_date BETWEEN :start AND :stop
-        """,
+                        SELECT COUNT(*)
+                        FROM shootingplace.member_entity
+                        WHERE join_date BETWEEN :start AND :stop
+                    """,
             nativeQuery = true
     )
     int countActualYearMemberCounts(
@@ -95,14 +91,14 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     @Query(
             value = """
-            SELECT 
-              uuid, first_name, second_name, imageuuid,
-              active, adult, erased, pzss,
-              legitimation_number, join_date, note, email
-            FROM shootingplace.member_entity
-            WHERE join_date BETWEEN :firstDate AND :secondDate
-            ORDER BY join_date
-        """,
+                        SELECT 
+                          uuid, first_name, second_name, imageuuid,
+                          active, adult, erased, pzss,
+                          legitimation_number, join_date, note, email
+                        FROM shootingplace.member_entity
+                        WHERE join_date BETWEEN :firstDate AND :secondDate
+                        ORDER BY join_date
+                    """,
             nativeQuery = true
     )
     List<IMemberDTO> getMemberBetweenJoinDate(
@@ -112,13 +108,13 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     @Query(
             value = """
-            SELECT 
-              uuid, first_name, second_name, imageuuid,
-              active, adult, erased, pzss,
-              legitimation_number, join_date, note, email
-            FROM shootingplace.member_entity
-            WHERE history_uuid = :historyUUID
-        """,
+                        SELECT 
+                          uuid, first_name, second_name, imageuuid,
+                          active, adult, erased, pzss,
+                          legitimation_number, join_date, note, email
+                        FROM shootingplace.member_entity
+                        WHERE history_uuid = :historyUUID
+                    """,
             nativeQuery = true
     )
     IMemberDTO getByHistoryUUID(@Param("historyUUID") String historyUUID);
@@ -131,24 +127,15 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     @Query(
             value = """
-            SELECT m.*
-            FROM shootingplace.member_entity m
-            WHERE m.adult = false
-              AND m.erased = false
-        """,
+                        SELECT m.*
+                        FROM shootingplace.member_entity m
+                        WHERE m.adult = false
+                          AND m.erased = false
+                    """,
             nativeQuery = true
     )
     List<MemberEntity> findAllByAdultFalseAndErasedFalse();
 
-    @Query(
-            value = """
-            SELECT m.*
-            FROM shootingplace.member_entity m
-            WHERE m.club_id = 1
-              AND m.erased = false
-              AND m.pzss = true
-        """,
-            nativeQuery = true
-    )
+    @Query(value = "SELECT m.* FROM shootingplace.member_entity m WHERE m.club_id = 1 AND m.erased = false AND m.pzss = true", nativeQuery = true)
     List<MemberEntity> findAllWhereClubEquals1ErasedFalsePzssTrue();
 }

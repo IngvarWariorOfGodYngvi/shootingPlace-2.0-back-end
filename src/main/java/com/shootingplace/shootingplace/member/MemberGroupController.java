@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/member-groups")
+@RequestMapping("/memberGroups")
+@CrossOrigin
 public class MemberGroupController {
 
     private final MemberGroupRepository memberGroupRepository;
@@ -16,17 +17,17 @@ public class MemberGroupController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createGroup(@RequestBody MemberGroupEntity request) {
-        if (memberGroupRepository.existsByName(request.getName())) {
+    public ResponseEntity<?> createGroup(@RequestBody MemberGroupEntity group) {
+        if (memberGroupRepository.existsByName(group.getName())) {
             return ResponseEntity.badRequest().body("Grupa o takiej nazwie już istnieje");
         }
-        MemberGroupEntity group = MemberGroupEntity.builder()
-                .name(request.getName())
-                .description(request.getDescription())
+        MemberGroupEntity memberGroup = MemberGroupEntity.builder()
+                .name(group.getName())
+                .description(group.getDescription())
                 .active(true)
                 .build();
-
-        return ResponseEntity.ok(memberGroupRepository.save(group));
+        memberGroupRepository.save(memberGroup);
+        return ResponseEntity.ok("Utworzono nową grupę");
     }
 
     @GetMapping

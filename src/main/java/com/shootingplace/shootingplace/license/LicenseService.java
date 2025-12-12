@@ -60,7 +60,7 @@ public class LicenseService {
     public ResponseEntity<?> updateLicense(String memberUUID, License license) {
         MemberEntity memberEntity = memberRepository.getOne(memberUUID);
         LicenseEntity licenseEntity = memberEntity.getLicense();
-        if (memberEntity.getShootingPatent().getPatentNumber() == null && memberEntity.getAdult()) {
+        if (memberEntity.getShootingPatent().getPatentNumber() == null && memberEntity.isAdult()) {
             LOG.info("Brak Patentu");
             return ResponseEntity.badRequest().body("Brak Patentu");
         }
@@ -178,7 +178,7 @@ public class LicenseService {
                 licenseEntity.setValidThru(LocalDate.of((licenseEntity.getValidThru().getYear() + 1), 12, 31));
                 licenseEntity.setValid(licenseEntity.getValidThru().getYear() >= LocalDate.now().getYear());
                 if (license.getPistolPermission() != null) {
-                    if (!memberEntity.getShootingPatent().getPistolPermission() && memberEntity.getAdult()) {
+                    if (!memberEntity.getShootingPatent().getPistolPermission() && memberEntity.isAdult()) {
                         LOG.error("Brak Patentu - Pistolet");
                     }
                     if (license.getPistolPermission() != null && memberEntity.getShootingPatent().getPistolPermission()) {
@@ -190,7 +190,7 @@ public class LicenseService {
                     }
                 }
                 if (license.getRiflePermission() != null) {
-                    if (!memberEntity.getShootingPatent().getRiflePermission() && memberEntity.getAdult()) {
+                    if (!memberEntity.getShootingPatent().getRiflePermission() && memberEntity.isAdult()) {
                         LOG.error("Brak Patentu - Karabin");
                     }
                     if (license.getRiflePermission() != null && memberEntity.getShootingPatent().getRiflePermission()) {
@@ -202,7 +202,7 @@ public class LicenseService {
                     }
                 }
                 if (license.getShotgunPermission() != null) {
-                    if (!memberEntity.getShootingPatent().getShotgunPermission() && memberEntity.getAdult()) {
+                    if (!memberEntity.getShootingPatent().getShotgunPermission() && memberEntity.isAdult()) {
                         LOG.error("Brak Patentu - Strzelba");
                     }
                     if (license.getShotgunPermission() != null && memberEntity.getShootingPatent().getShotgunPermission()) {
@@ -284,8 +284,8 @@ public class LicenseService {
                     .firstName(member.getFirstName())
                     .secondName(member.getSecondName())
                     .email(member.getEmail())
-                    .active(member.getActive())
-                    .adult(member.getAdult())
+                    .active(member.isActive())
+                    .adult(member.isAdult())
                     .legitimationNumber(member.getLegitimationNumber())
                     .memberUUID(member.getUuid())
                     .isPayInPZSSPortal(e.isPayInPZSSPortal())

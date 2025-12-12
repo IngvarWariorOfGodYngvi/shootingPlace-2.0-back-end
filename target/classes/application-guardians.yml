@@ -11,7 +11,7 @@ spring:
     sql-dialect: org.hibernate.dialect.MySQL8Dialect
 licenseDate: "2026-08-31"
 dateTime: ""
-sendMail: true
+sendMail: false
 shootingPlaceName: "GUARDIANSNOWOLIPSK"
 server:
   compression:

@@ -4,7 +4,165 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="" />
+    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="last commit on old pc">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/csv/generator/MemberCsvGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/csv/generator/MemberEmailCsvGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/csv/model/CsvGenerationResults.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/PdfUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/AmmunitionListPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ApplicationForFirearmsLicensePdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipDziesiatkaPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipPanaszewPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CompetitorLicenseExtensionPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ContributionConfirmPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GuardiansMembershipPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/LokMembershipPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/PdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/PersonalCardPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/StartsMetricPdfGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/model/PdfGenerationResults.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/MembersStatsDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/shootingplace_war_exploded.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/shootingplace_war_exploded.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b00d6c6d-665f-43c2-96fc-0ac7314ebd1b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b00d6c6d-665f-43c2-96fc-0ac7314ebd1b.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_itextpdf_itextpdf_5_5_13_4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shootingplace.iml" beforeDir="false" afterPath="$PROJECT_DIR$/shootingplace.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/adapters/AddressSQLRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/adapters/ClubSQLRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/adapters/FilesSQLRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/adapters/GunRepresentationSQLRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/adapters/GunSQLRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/adapters/OtherPersonSQLRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/address/AddressEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/address/AddressEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/address/AddressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/address/AddressRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/GunRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/GunRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/GunUsedRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/GunUsedRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/contributions/ContributionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/contributions/ContributionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/enums/ErasedType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/enums/ErasedType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/XLSXFilesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/XLSXFilesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/ChangeHistoryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/ChangeHistoryEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/ChangeHistoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/ChangeHistoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicensePaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicensePaymentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicenseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicenseService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/Member.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/Member.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberGroupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberGroupController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberGroupEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberGroupEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPerson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPerson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/settings/SettingsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/settings/SettingsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/StatisticsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/StatisticsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/StatisticsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/StatisticsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/ContributionStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/ContributionStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/DziesiatkaStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/DziesiatkaStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/EmailStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/EmailStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/GuardiansStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/GuardiansStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/MechanikStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/MechanikStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/PanaszewStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/PanaszewStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/TestStrategy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/strategies/TestStrategy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/PageStamper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/PageStamper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/weaponPermission/WeaponPermissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/weaponPermission/WeaponPermissionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application-guardians.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application-guardians.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/ContributionStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/ContributionStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/DziesiatkaStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/DziesiatkaStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/EmailStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/EmailStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/GuardiansStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/GuardiansStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/MechanikStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/MechanikStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/PanaszewStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/PanaszewStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/TestStrategy.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/Strategies/TestStrategy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/adapters/AddressSQLRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/adapters/ClubSQLRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/adapters/FilesSQLRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/adapters/GunRepresentationSQLRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/adapters/GunSQLRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/adapters/OtherPersonSQLRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/address/AddressEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/address/AddressEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/address/AddressRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/address/AddressRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/address/AddressService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/address/AddressService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/AmmoInEvidenceService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/AmmoInEvidenceService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/AmmoUsedService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/AmmoUsedService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/ArmoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/ArmoryService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/GunRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/GunRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/GunUsedRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/GunUsedRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/club/ClubRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/club/ClubRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/club/ClubService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/club/ClubService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/configurations/StartConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/configurations/StartConfiguration.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/contributions/ContributionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/contributions/ContributionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/email/EmailConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/email/EmailConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/email/EmailService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/email/EmailService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/enums/ErasedType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/enums/ErasedType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/FilesController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/FilesController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/FilesRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/FilesRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/FilesService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/FilesService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/XLSXFilesService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/file/XLSXFilesService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/history/ChangeHistoryEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/history/ChangeHistoryEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/history/ChangeHistoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/history/ChangeHistoryService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/license/LicensePaymentService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/license/LicensePaymentService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/license/LicenseService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/license/LicenseService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/Member$MemberBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/Member$MemberBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/Member.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/Member.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberDTO$MemberDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberDTO$MemberDTOBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberDTO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberEntity$MemberEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberEntity$MemberEntityBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberGroupController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberGroupController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberGroupEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberGroupEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/MemberService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/permissions/MemberPermissionsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/member/permissions/MemberPermissionsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPerson$OtherPersonBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPerson$OtherPersonBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPerson.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPerson.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity$OtherPersonEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity$OtherPersonEntityBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/otherPerson/OtherPersonService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/settings/SettingsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/settings/SettingsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/statistics/StatisticsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/statistics/StatisticsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/statistics/StatisticsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/statistics/StatisticsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/tournament/CompetitionMembersListService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/tournament/CompetitionMembersListService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/users/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/users/UserRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/users/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/users/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/utils/Mapping.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/utils/Mapping.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/utils/PageStamper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/utils/PageStamper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/weaponPermission/WeaponPermissionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/weaponPermission/WeaponPermissionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceEntity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceEntity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,6 +178,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -47,6 +208,7 @@
     <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="34gjlN3BbMC3kYeIuRTb5v8BU8B" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -67,7 +229,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.40114942" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.runner" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.spelling" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -78,6 +240,9 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\izebr\Projects\Szwalnia\src\main\resources\templates\products" />
       <recent name="C:\Users\izebr\Projects\Szwalnia\src\main\resources\templates" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.shootingplace.shootingplace.file.csv.model" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -226,7 +391,23 @@
       <workItem from="1764805730303" duration="6742000" />
       <workItem from="1764859683062" duration="4608000" />
       <workItem from="1764871200265" duration="9975000" />
-      <workItem from="1764895254468" duration="609000" />
+      <workItem from="1764895254468" duration="2078000" />
+      <workItem from="1764936236077" duration="8819000" />
+      <workItem from="1764952759867" duration="13715000" />
+      <workItem from="1765022797287" duration="9792000" />
+      <workItem from="1765036134812" duration="825000" />
+      <workItem from="1765037514418" duration="17729000" />
+      <workItem from="1765097672005" duration="21180000" />
+      <workItem from="1765125201015" duration="15542000" />
+      <workItem from="1765262818484" duration="3014000" />
+      <workItem from="1765267920130" duration="671000" />
+      <workItem from="1765273173933" duration="10494000" />
+      <workItem from="1765294889617" duration="9526000" />
+      <workItem from="1765324357491" duration="1556000" />
+      <workItem from="1765390212972" duration="889000" />
+      <workItem from="1765393840230" duration="2585000" />
+      <workItem from="1765467626862" duration="9646000" />
+      <workItem from="1765572413679" duration="759000" />
     </task>
     <servers />
   </component>
@@ -235,6 +416,21 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="application.properties" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="last commit on old pc" />
+    <option name="LAST_COMMIT_MESSAGE" value="last commit on old pc" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -1,6 +1,6 @@
 package com.shootingplace.shootingplace.file;
 
-import com.itextpdf.text.DocumentException;
+import com.lowagie.text.DocumentException;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberService;
 import org.springframework.core.env.Environment;
@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -143,7 +146,7 @@ public class FilesController {
     public ResponseEntity<byte[]> CertificateOfClubMembership(@PathVariable String memberUUID, @RequestParam String reason, @RequestParam String city, @RequestParam boolean enlargement) throws IOException, DocumentException {
         FilesEntity filesEntity;
         if (environment.getActiveProfiles()[0].equals("rcs")) {
-            filesEntity = filesService.CertificateOfClubMembership(memberUUID, reason, enlargement); // RCS Panaszew
+            filesEntity = filesService.certificateOfClubMembershipPanaszew(memberUUID, reason); // RCS Panaszew
         } else {
             filesEntity = filesService.CertificateOfClubMembership(memberUUID, reason, city, enlargement); // Dziesiątka
         }
@@ -411,6 +414,14 @@ public class FilesController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment:filename=\"" + filesEntity.getName().replaceAll(" ", "") + "\"")
                 .body(filesEntity.getData());
     }
+    @GetMapping("/guardiansMembershipDeclaration")
+    public ResponseEntity<byte[]> getGuardiansMembershipDeclaration(@RequestParam String uuid) throws Exception {
+        FilesEntity filesEntity = filesService.getGuardiansMembershipDeclaration(uuid);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(filesEntity.getType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment:filename=\"" + filesEntity.getName().replaceAll(" ", "") + "\"")
+                .body(filesEntity.getData());
+    }
 
     @GetMapping("/getAllMemberFiles")
     public ResponseEntity<?> getAllMemberFiles(@RequestParam String uuid) {
@@ -457,14 +468,27 @@ public class FilesController {
     }
 
     @GetMapping("/contributions")
-    public ResponseEntity<?> getContributions(@RequestParam String firstDate, @RequestParam String secondDate) throws IOException {
+    public ResponseEntity<?> getContributions(
+            @RequestParam String firstDate,
+            @RequestParam String secondDate
+    ) throws IOException {
+
         LocalDate parseFirstDate = LocalDate.parse(firstDate);
         LocalDate parseSecondDate = LocalDate.parse(secondDate);
+
         FilesEntity filesEntity = xlsxFiles.getContributions(parseFirstDate, parseSecondDate);
+
+        String fileName = filesEntity.getName();
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+
+        // wersja ASCII jako fallback dla starych klientów
+        String asciiFileName = Normalizer.normalize(fileName, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(filesEntity.getType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment:filename=\"" + filesEntity.getName().replaceAll(" ", "") + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + asciiFileName + "\"; filename*=UTF-8''" + encodedFileName)
                 .body(filesEntity.getData());
     }
 

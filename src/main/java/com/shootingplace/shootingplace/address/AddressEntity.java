@@ -78,11 +78,11 @@ public class AddressEntity {
     }
 
     public String fullAddress() {
-        String zipCode = this.zipCode != null ? this.zipCode : "";
-        String postOfficeCity = this.postOfficeCity != null ? this.postOfficeCity : "";
-        String street = this.street != null ? this.street : "";
-        String streetNumber = this.streetNumber != null ? this.streetNumber : "";
-        String flatNumber = this.flatNumber != null ? "m." + this.flatNumber : "";
+        String zipCode = !this.zipCode.isEmpty() ? this.zipCode : "";
+        String postOfficeCity = !this.postOfficeCity.isEmpty() ? this.postOfficeCity : "";
+        String street = !this.street.isEmpty() ? this.street : "";
+        String streetNumber = !this.streetNumber.isEmpty() ? this.streetNumber : "";
+        String flatNumber = !this.flatNumber.isEmpty() ? "m." + this.flatNumber : "";
         return zipCode + " " + postOfficeCity + " " + street + " " + streetNumber + " " + flatNumber;
     }
 }

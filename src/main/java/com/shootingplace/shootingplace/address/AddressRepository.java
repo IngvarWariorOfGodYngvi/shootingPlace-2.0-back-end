@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.address;
 
-public interface AddressRepository {
-    AddressEntity save(AddressEntity entity);
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AddressRepository extends JpaRepository<AddressEntity, String> {
 }

@@ -12,14 +12,14 @@ public class MechanikStrategy implements ContributionStrategy,EmailStrategy,Syst
     @Override
     public LocalDate calculateValidThru(LocalDate paymentDay, List<ContributionEntity> list) {
         LocalDate localDate = list.isEmpty() ? paymentDay.plusMonths(6) : list.get(0).getValidThru().plusYears(1);
-        logTocalCulateValidThru(localDate);
+        logToCalculateValidThru(localDate);
         return localDate;
     }
 
     @Override
-    public LocalDate calculateFirstValidTrhu(LocalDate paymentDay) {
+    public LocalDate calculateFirstValidThru(LocalDate paymentDay) {
         LocalDate localDate = paymentDay.plusMonths(6);
-        logTocalCulateValidThru(localDate);
+        logToCalculateValidThru(localDate);
         return localDate;
     }
 
@@ -31,7 +31,7 @@ public class MechanikStrategy implements ContributionStrategy,EmailStrategy,Syst
     }
 
     @Override
-    public String getAhrefSite() {
+    public String getAHrefSite() {
         return "<a href=\"https://www.uksmechanik.com\">www.uksmechanik.com</a>";
     }
 }

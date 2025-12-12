@@ -32,7 +32,7 @@ public class WeaponPermissionService {
 
             boolean match = memberRepository.findAll()
                     .stream()
-                    .filter(f -> !f.getErased())
+                    .filter(f -> !f.isErased())
                     .filter(f -> f.getWeaponPermission().getNumber() != null)
                     .anyMatch(f -> f.getWeaponPermission().getNumber().equals(weaponPermission.getNumber()));
             if (match) {
@@ -48,7 +48,7 @@ public class WeaponPermissionService {
 
             boolean match = memberRepository.findAll()
                     .stream()
-                    .filter(f -> !f.getErased())
+                    .filter(f -> !f.isErased())
                     .filter(f -> f.getWeaponPermission().getAdmissionToPossessAWeapon() != null)
                     .filter(f -> f.getWeaponPermission().getAdmissionToPossessAWeapon().equals(weaponPermission.getAdmissionToPossessAWeapon()))
                     .anyMatch(f -> f.getWeaponPermission().getAdmissionToPossessAWeapon().equals(weaponPermission.getAdmissionToPossessAWeapon()));

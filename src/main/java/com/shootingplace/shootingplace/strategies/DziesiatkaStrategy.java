@@ -20,7 +20,7 @@ public class DziesiatkaStrategy implements ContributionStrategy, EmailStrategy, 
     }
 
     @Override
-    public String getAhrefSite() {
+    public String getAHrefSite() {
         return "<a href=\"https://www.ksdziesiatka.pl\">www.ksdziesiatka.pl</a>";
     }
 }

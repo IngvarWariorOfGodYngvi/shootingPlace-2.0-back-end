@@ -9,6 +9,7 @@ import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.update.RunPowerShell;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
@@ -50,7 +51,7 @@ public class SettingsController {
     @PostMapping("/changeMode")
     public ResponseEntity<?> changeMode(@RequestParam String pinCode) {
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin);
+        UserEntity userEntity = userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new);
         if (userEntity.getUserPermissionsList().contains(UserSubType.ADMIN.getName()) || userEntity.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()) || userEntity.getUserPermissionsList().contains(UserSubType.CEO.getName())) {
             return ResponseEntity.ok("Zmieniono tryb pracy");
         }

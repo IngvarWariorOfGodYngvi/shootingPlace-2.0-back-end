@@ -31,8 +31,8 @@ com\shootingplace\shootingplace\license\LicenseEntity$LicenseEntityBuilder.class
 com\shootingplace\shootingplace\tournament\CompetitionMembersListEntity$CompetitionMembersListEntityBuilder.class
 com\shootingplace\shootingplace\armory\GunStoreRepository.class
 com\shootingplace\shootingplace\history\ChangeHistoryService.class
+com\shootingplace\shootingplace\file\pdf\generator\AmmunitionListPdfGenerator.class
 com\shootingplace\shootingplace\member\MemberDTO$MemberDTOBuilder.class
-com\shootingplace\shootingplace\adapters\OtherPersonSQLRepository.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoEvidenceService.class
 com\shootingplace\shootingplace\email\SentEmail$SentEmailBuilder.class
 com\shootingplace\shootingplace\Strategies\ContributionStrategy.class
@@ -45,7 +45,6 @@ com\shootingplace\shootingplace\armory\CaliberEntity.class
 com\shootingplace\shootingplace\file\FilesController.class
 com\shootingplace\shootingplace\address\AddressEntity.class
 com\shootingplace\shootingplace\competition\CompetitionService.class
-com\shootingplace\shootingplace\adapters\AddressSQLRepository.class
 com\shootingplace\shootingplace\adapters\AmmoUsedSQLRepository.class
 com\shootingplace\shootingplace\email\EmailConfigRepository.class
 com\shootingplace\shootingplace\email\ScheduledEmail.class
@@ -112,6 +111,7 @@ META-INF\spring-configuration-metadata.json
 com\shootingplace\shootingplace\adapters\ScheduledEmailSQLRepository.class
 com\shootingplace\shootingplace\tournament\CompetitionMembersListEntity.class
 com\shootingplace\shootingplace\tournament\TournamentEntity$TournamentEntityBuilder.class
+com\shootingplace\shootingplace\statistics\MembersStatsDTO.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoInEvidenceDTO$AmmoInEvidenceDTOBuilder.class
 com\shootingplace\shootingplace\bookOfRegistrationOfStayAtTheShootingPlace\RegistrationRecordsService.class
 com\shootingplace\shootingplace\armory\ShootingPacketRepository.class
@@ -119,11 +119,11 @@ com\shootingplace\shootingplace\contributions\ContributionRepository.class
 com\shootingplace\shootingplace\tournament\TournamentDTO$TournamentDTOBuilder.class
 com\shootingplace\shootingplace\email\SentEmailDTO$SentEmailDTOBuilder.class
 com\shootingplace\shootingplace\member\MemberRepository.class
+com\shootingplace\shootingplace\file\pdf\generator\CompetitorLicenseExtensionPdfGenerator.class
 com\shootingplace\shootingplace\shootingPatent\ShootingPatentController.class
 com\shootingplace\shootingplace\tournament\TournamentDTO.class
 com\shootingplace\shootingplace\users\UserController.class
 com\shootingplace\shootingplace\armory\CaliberUsedRepository.class
-com\shootingplace\shootingplace\adapters\ClubSQLRepository.class
 com\shootingplace\shootingplace\address\AddressEntity$AddressEntityBuilder.class
 com\shootingplace\shootingplace\configurations\ScheduledTasks.class
 com\shootingplace\shootingplace\address\Address$AddressBuilder.class
@@ -147,12 +147,12 @@ com\shootingplace\shootingplace\history\LicensePaymentHistoryDTO.class
 com\shootingplace\shootingplace\tournament\TournamentEntity.class
 com\shootingplace\shootingplace\license\LicenseService.class
 com\shootingplace\shootingplace\email\EmailRequest$InlineImage.class
+com\shootingplace\shootingplace\file\pdf\generator\ContributionConfirmPdfGenerator.class
 com\shootingplace\shootingplace\score\ScoreDTO$ScoreDTOBuilder.class
 com\shootingplace\shootingplace\exceptions\NoPersonToAmmunitionException.class
 com\shootingplace\shootingplace\exceptions\NoUserPermissionException.class
 com\shootingplace\shootingplace\history\HistoryRepository.class
 com\shootingplace\shootingplace\member\ErasedEntity.class
-com\shootingplace\shootingplace\adapters\GunRepresentationSQLRepository.class
 com\shootingplace\shootingplace\wrappers\MemberWithContributionWrapper$MemberWithContributionWrapperBuilder.class
 com\shootingplace\shootingplace\armory\GunUsedEntity.class
 com\shootingplace\shootingplace\member\MemberGroupRepository.class
@@ -171,6 +171,7 @@ com\shootingplace\shootingplace\enums\CountingMethod.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoEvidenceEntity$AmmoEvidenceEntityBuilder.class
 com\shootingplace\shootingplace\exceptions\exceptionHandlers\ExceptionsHandler.class
 com\shootingplace\shootingplace\license\License$LicenseBuilder.class
+com\shootingplace\shootingplace\file\pdf\PdfUtils.class
 com\shootingplace\shootingplace\history\JudgingHistoryDTO.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoInEvidenceEntity.class
 com\shootingplace\shootingplace\Strategies\PanaszewContext.class
@@ -183,6 +184,7 @@ com\shootingplace\shootingplace\email\EmailRequest.class
 com\shootingplace\shootingplace\history\ChangeHistoryEntity$ChangeHistoryEntityBuilder.class
 com\shootingplace\shootingplace\club\Club.class
 com\shootingplace\shootingplace\adapters\CompetitionHistorySQLRepository.class
+com\shootingplace\shootingplace\file\pdf\generator\PersonalCardPdfGenerator.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoUsedEntity.class
 com\shootingplace\shootingplace\email\EmailSendList.class
 com\shootingplace\shootingplace\score\ScoreEntity$ScoreEntityBuilder.class
@@ -214,6 +216,7 @@ com\shootingplace\shootingplace\armory\CaliberUsedEntity.class
 com\shootingplace\shootingplace\member\MemberGroupController.class
 com\shootingplace\shootingplace\Strategies\TestStrategy.class
 com\shootingplace\shootingplace\file\IFile.class
+com\shootingplace\shootingplace\file\pdf\generator\GuardiansMembershipPdfGenerator.class
 com\shootingplace\shootingplace\Strategies\EmailStrategy.class
 com\shootingplace\shootingplace\armory\gunRepresentation\GunRepresentationEntity.class
 com\shootingplace\shootingplace\armory\CalibersAddedEntity$CalibersAddedEntityBuilder.class
@@ -231,7 +234,7 @@ com\shootingplace\shootingplace\email\EmailRequest$Attachment.class
 com\shootingplace\shootingplace\adapters\HistorySQLRepository.class
 com\shootingplace\shootingplace\member\IMemberDTO.class
 com\shootingplace\shootingplace\shootingPatent\ShootingPatent.class
-com\shootingplace\shootingplace\adapters\FilesSQLRepository.class
+com\shootingplace\shootingplace\file\pdf\generator\LokMembershipPdfGenerator.class
 com\shootingplace\shootingplace\bookOfRegistrationOfStayAtTheShootingPlace\RegistrationRecordsController.class
 com\shootingplace\shootingplace\users\UserDTO.class
 com\shootingplace\shootingplace\adapters\UserSQLRepository.class
@@ -267,6 +270,7 @@ com\shootingplace\shootingplace\tournament\CompetitionMembersList.class
 com\shootingplace\shootingplace\workingTimeEvidence\UserWithWorkingTimeList.class
 com\shootingplace\shootingplace\score\ScoreRepository.class
 com\shootingplace\shootingplace\utils\database\DatabaseService.class
+com\shootingplace\shootingplace\file\pdf\model\PdfGenerationResults.class
 com\shootingplace\shootingplace\history\JudgingHistoryEntity$JudgingHistoryEntityBuilder.class
 com\shootingplace\shootingplace\license\License.class
 com\shootingplace\shootingplace\workingTimeEvidence\WorkingTimeEvidenceEntity.class
@@ -306,7 +310,6 @@ com\shootingplace\shootingplace\users\UserDTO$UserDTOBuilder.class
 com\shootingplace\shootingplace\member\Member$MemberBuilder.class
 com\shootingplace\shootingplace\otherPerson\OtherPersonEntity.class
 com\shootingplace\shootingplace\enums\Discipline.class
-com\shootingplace\shootingplace\adapters\GunSQLRepository.class
 com\shootingplace\shootingplace\history\ChangeHistoryRepository.class
 com\shootingplace\shootingplace\otherPerson\OtherPersonEntity$OtherPersonEntityBuilder.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoUsedPersonal.class
@@ -333,6 +336,7 @@ com\shootingplace\shootingplace\armory\AmmoUsedService.class
 com\shootingplace\shootingplace\history\JudgingHistoryRepository.class
 com\shootingplace\shootingplace\history\UsedHistoryEntity$UsedHistoryEntityBuilder.class
 com\shootingplace\shootingplace\member\ErasedEntity$ErasedEntityBuilder.class
+com\shootingplace\shootingplace\file\pdf\generator\CertificateOfClubMembershipPanaszewPdfGenerator.class
 com\shootingplace\shootingplace\email\ScheduledEmailRepository.class
 com\shootingplace\shootingplace\domain\Person.class
 com\shootingplace\shootingplace\member\permissions\MemberPermissions.class
@@ -357,6 +361,7 @@ com\shootingplace\shootingplace\club\ClubService.class
 com\shootingplace\shootingplace\ammoEvidence\AmmoEvidenceRepository.class
 com\shootingplace\shootingplace\address\Address.class
 com\shootingplace\shootingplace\adapters\UsedHistorySQLRepository.class
+com\shootingplace\shootingplace\file\pdf\generator\PdfGenerator.class
 com\shootingplace\shootingplace\barCodeCards\BarCodeCardService.class
 com\shootingplace\shootingplace\member\PersonalEvidenceRepository.class
 com\shootingplace\shootingplace\validators\PeselValidator.class
@@ -369,6 +374,7 @@ com\shootingplace\shootingplace\adapters\ShootingPacketSQLRepository.class
 com\shootingplace\shootingplace\member\Erased$ErasedBuilder.class
 com\shootingplace\shootingplace\member\permissions\MemberPermissionsEntity.class
 com\shootingplace\shootingplace\armory\GunStoreEntity$GunStoreEntityBuilder.class
+com\shootingplace\shootingplace\file\pdf\output\PdfOutputService.class
 com\shootingplace\shootingplace\license\LicenseEntity.class
 com\shootingplace\shootingplace\adapters\AmmoInEvidenceSQLRepository.class
 com\shootingplace\shootingplace\history\CompetitionHistoryEntity.class

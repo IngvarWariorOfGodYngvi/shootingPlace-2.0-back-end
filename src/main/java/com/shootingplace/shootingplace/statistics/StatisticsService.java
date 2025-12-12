@@ -63,8 +63,8 @@ public class StatisticsService {
                     .firstName(member.getFirstName())
                     .secondName(member.getSecondName())
                     .email(member.getEmail())
-                    .active(member.getActive())
-                    .adult(member.getAdult())
+                    .active(member.isActive())
+                    .adult(member.isAdult())
                     .legitimationNumber(member.getLegitimationNumber())
                     .memberUUID(member.getUuid())
                     .isPayInPZSSPortal(e.isPayInPZSSPortal())
@@ -337,7 +337,7 @@ public class StatisticsService {
 
         List<MemberEntity> all = memberRepository.findAll()
                 .stream()
-                .filter(f -> !f.getErased())
+                .filter(f -> !f.isErased())
                 .filter(f -> f.getHistory() != null)
                 .filter(f -> f.getHistory().getContributionList().size() > 0)
                 .collect(Collectors.toList());
@@ -370,7 +370,7 @@ public class StatisticsService {
     public ResponseEntity<?> getTop10CompetitionPoints() {
         List<MemberEntity> all = memberRepository.findAll()
                 .stream()
-                .filter(f -> !f.getErased())
+                .filter(f -> !f.isErased())
                 .filter(f -> f.getHistory() != null)
                 .filter(f -> f.getHistory().getCompetitionHistory().size() > 0).toList();
         Map<String, Float> map1 = new HashMap<>();
@@ -402,94 +402,194 @@ public class StatisticsService {
         return ResponseEntity.ok(result);
     }
 
-    public List<Long> getMembersQuantity() {
-        List<Long> list = new ArrayList<>();
-//      whole adult
+    public MembersStatsDTO getMembersQuantity() {
         List<MemberEntity> all = memberRepository.findAll();
-        long count = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(MemberEntity::getAdult)
-                .count();
-//      license valid
-        long count1 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(f -> f.getClub().getId().equals(1))
-                .filter(f -> f.getLicense().getNumber() != null)
-                .filter(MemberEntity::getPzss)
-                .filter(f -> f.getLicense().isValid())
+        LocalDate now = LocalDate.now();
+
+        long adultAll = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(MemberEntity::isAdult)
                 .count();
 
-//      license not valid
-        long count2 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(f -> f.getClub().getId().equals(1))
-                .filter(f -> f.getLicense().getNumber() != null)
-                .filter(MemberEntity::getPzss)
-                .filter(f -> !f.getLicense().isValid())
+        long adultActive = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(MemberEntity::isAdult)
+                .filter(MemberEntity::isActive)
                 .count();
 
-//      whole not adult
-        long count3 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(f -> !f.getAdult())
-                .count();
-//      not adult active
-        long count4 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(f -> !f.getAdult())
-                .filter(MemberEntity::getActive)
-                .count();
-//      not adult not active
-        long count5 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(f -> !f.getAdult())
-                .filter(f -> !f.getActive())
+        long adultInactive = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(MemberEntity::isAdult)
+                .filter(m -> !m.isActive())
                 .count();
 
-//      adult erased
-        long count6 = all.stream()
-                .filter(MemberEntity::getErased)
-                .filter(MemberEntity::getAdult)
+        long childAll = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(m -> !m.isAdult())
                 .count();
-//      not adult erased
-        long count7 = all.stream()
-                .filter(MemberEntity::getErased)
-                .filter(f -> !f.getAdult())
+
+        long childActive = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(m -> !m.isAdult())
+                .filter(MemberEntity::isActive)
                 .count();
-        List<LicensePaymentHistoryEntity> allLicensePayment = licensePaymentHistoryRepository.findAll();
-        long count8 = allLicensePayment.stream()
-                .filter(f -> !f.isPayInPZSSPortal())
+
+        long childInactive = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(m -> !m.isAdult())
+                .filter(m -> !m.isActive())
                 .count();
-        long count9 = allLicensePayment.stream()
-                .filter(f -> f.getDate().getYear() == LocalDate.now().getYear())
+
+        long adultErased = all.stream()
+                .filter(MemberEntity::isErased)
+                .filter(MemberEntity::isAdult)
+                .count();
+
+        long childErased = all.stream()
+                .filter(MemberEntity::isErased)
+                .filter(m -> !m.isAdult())
+                .count();
+
+        long club1PzssActive = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(m -> m.getClub() != null && Objects.equals(m.getClub().getId(), 1))
+                .filter(m -> m.getLicense() != null && m.getLicense().getNumber() != null)
+                .filter(MemberEntity::isPZSS)
+                .filter(m -> m.getLicense().isValid())
+                .count();
+
+        long club1PzssInactive = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(m -> m.getClub() != null && Objects.equals(m.getClub().getId(), 1))
+                .filter(m -> m.getLicense() != null && m.getLicense().getNumber() != null)
+                .filter(MemberEntity::isPZSS)
+                .filter(m -> !m.getLicense().isValid())
+                .count();
+
+        List<LicensePaymentHistoryEntity> payments = licensePaymentHistoryRepository.findAll();
+
+        long unpaidInPzssPortal = payments.stream()
+                .filter(p -> !p.isPayInPZSSPortal())
+                .count();
+
+        long newLicensesThisYear = payments.stream()
+                .filter(p -> p.getDate().getYear() == now.getYear())
                 .filter(LicensePaymentHistoryEntity::isNew)
                 .count();
-        long count10 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(MemberEntity::getAdult)
-                .filter(MemberEntity::getActive)
-                .count();
-        long count11 = all.stream()
-                .filter(f -> !f.getErased())
-                .filter(MemberEntity::getAdult)
-                .filter(f -> !f.getActive())
-                .count();
-        list.add(count);
-        list.add(count1);
-        list.add(count2);
-        list.add(count3);
-        list.add(count4);
-        list.add(count5);
-        list.add(count6);
-        list.add(count7);
-        list.add(count8);
-        list.add(count9);
-        list.add(count10);
-        list.add(count11);
 
+        Map<String, Long> membersByGroup = all.stream()
+                .filter(m -> !m.isErased())
+                .filter(m -> m.getMemberEntityGroup() != null)
+                .collect(Collectors.groupingBy(
+                        m -> m.getMemberEntityGroup().getName(),
+                        Collectors.counting()
+                ));
+        return new MembersStatsDTO(
+                adultAll,
+                adultActive,
+                adultInactive,
+                childAll,
+                childActive,
+                childInactive,
+                adultErased,
+                childErased,
+                club1PzssActive,
+                club1PzssInactive,
+                unpaidInPzssPortal,
+                newLicensesThisYear,
+                membersByGroup
+        );
 
-        return list;
+//        List<Long> list = new ArrayList<>();
+//        List<MemberEntity> all = memberRepository.findAll();
+//
+//        long count = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> Boolean.TRUE.equals(f.isAdult()))
+//                .count();
+//
+//        long count1 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> f.getClub() != null && f.getClub().getId().equals(1))
+//                .filter(f -> f.getLicense() != null && f.getLicense().getNumber() != null)
+//                .filter(f -> Boolean.TRUE.equals(f.isPZSS()))
+//                .filter(f -> f.getLicense().isValid())
+//                .count();
+//
+//        long count2 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> f.getClub() != null && f.getClub().getId().equals(1))
+//                .filter(f -> f.getLicense() != null && f.getLicense().getNumber() != null)
+//                .filter(f -> Boolean.TRUE.equals(f.isPZSS()))
+//                .filter(f -> !f.getLicense().isValid())
+//                .count();
+//
+//        long count3 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> Boolean.FALSE.equals(f.isAdult()))
+//                .count();
+//
+//        long count4 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> Boolean.FALSE.equals(f.isAdult()))
+//                .filter(f -> Boolean.TRUE.equals(f.isActive()))
+//                .count();
+//
+//        long count5 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> Boolean.FALSE.equals(f.isAdult()))
+//                .filter(f -> Boolean.FALSE.equals(f.isActive()))
+//                .count();
+//
+//        long count6 = all.stream()
+//                .filter(f -> Boolean.TRUE.equals(f.getErased()))
+//                .filter(f -> Boolean.TRUE.equals(f.isAdult()))
+//                .count();
+//
+//        long count7 = all.stream()
+//                .filter(f -> Boolean.TRUE.equals(f.getErased()))
+//                .filter(f -> Boolean.FALSE.equals(f.isAdult()))
+//                .count();
+//
+//        List<LicensePaymentHistoryEntity> allLicensePayment = licensePaymentHistoryRepository.findAll();
+//
+//        long count8 = allLicensePayment.stream()
+//                .filter(f -> !f.isPayInPZSSPortal())
+//                .count();
+//
+//        long count9 = allLicensePayment.stream()
+//                .filter(f -> f.getDate().getYear() == LocalDate.now().getYear())
+//                .filter(LicensePaymentHistoryEntity::isNew)
+//                .count();
+//
+//        long count10 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> Boolean.TRUE.equals(f.isAdult()))
+//                .filter(f -> Boolean.TRUE.equals(f.isActive()))
+//                .count();
+//
+//        long count11 = all.stream()
+//                .filter(f -> Boolean.FALSE.equals(f.getErased()))
+//                .filter(f -> Boolean.TRUE.equals(f.isAdult()))
+//                .filter(f -> Boolean.FALSE.equals(f.isActive()))
+//                .count();
+//
+//        list.add(count);
+//        list.add(count1);
+//        list.add(count2);
+//        list.add(count3);
+//        list.add(count4);
+//        list.add(count5);
+//        list.add(count6);
+//        list.add(count7);
+//        list.add(count8);
+//        list.add(count9);
+//        list.add(count10);
+//        list.add(count11);
+//
+//        return list;
     }
+
 
     public List<MemberInfo> getWeekBirthdayList() {
 

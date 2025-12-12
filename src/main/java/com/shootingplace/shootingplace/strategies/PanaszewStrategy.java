@@ -13,7 +13,7 @@ public class PanaszewStrategy implements ContributionStrategy, EmailStrategy, Sy
     @Override
     public LocalDate calculateValidThru(LocalDate paymentDay, List<ContributionEntity> list) {
         LocalDate localDate = list.isEmpty() ? paymentDay.plusYears(1) : list.get(0).getValidThru().plusYears(1);
-        logTocalCulateValidThru(localDate);
+        logToCalculateValidThru(localDate);
         return localDate;
     }
 
@@ -24,9 +24,9 @@ public class PanaszewStrategy implements ContributionStrategy, EmailStrategy, Sy
     }
 
     @Override
-    public LocalDate calculateFirstValidTrhu(LocalDate paymentDay) {
+    public LocalDate calculateFirstValidThru(LocalDate paymentDay) {
         LocalDate localDate = paymentDay.plusYears(1);
-        logTocalCulateValidThru(localDate);
+        logToCalculateValidThru(localDate);
         return localDate;
     }
 
@@ -43,7 +43,7 @@ public class PanaszewStrategy implements ContributionStrategy, EmailStrategy, Sy
     }
 
     @Override
-    public String getAhrefSite() {
+    public String getAHrefSite() {
         return "<a href=\"https://www.rcspanaszew.pl\">www.rcspanaszew.pl</a>";
     }
 }

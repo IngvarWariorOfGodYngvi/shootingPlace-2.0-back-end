@@ -14,6 +14,7 @@ import com.shootingplace.shootingplace.tournament.TournamentService;
 import com.shootingplace.shootingplace.utils.Mapping;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceEntity;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -138,7 +139,7 @@ public class UserService {
                 .pinCode(pin)
                 .active(true)
                 .otherID(otherID)
-                .member(memberRepository.existsById(memberUUID) ? memberRepository.getOne(memberUUID) : null)
+                .member(memberRepository.findById(memberUUID).orElse(null))
                 .build();
         userEntity.setUserPermissionsList(userPermissionsList);
         userRepository.save(userEntity);
@@ -284,7 +285,7 @@ public class UserService {
         ResponseEntity<?> response;
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
         if (userRepository.existsByPinCode(pin)) {
-            UserEntity user = userRepository.findByPinCode(pin);
+            UserEntity user = userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new);
 
             WorkingTimeEvidenceEntity workingTimeEvidenceEntity = workingTimeEvidenceRepository.findAll()
                     .stream()
@@ -308,30 +309,36 @@ public class UserService {
     }
 
     public ResponseEntity<?> checkArbiterByCode(String code) {
-        String pin = Hashing.sha256().hashString(code, StandardCharsets.UTF_8).toString();
-        UserEntity user = userRepository.existsByPinCode(pin) ? userRepository.findByPinCode(pin) : null;
-        if (user != null) {
-            if (tournamentService.checkAnyOpenTournament()) {
-                if (user.getMember() != null) {
-                    if (user.getMember().getMemberPermissions().getArbiterNumber() != null) {
-                        return ResponseEntity.ok(user.getMember().getMemberPermissions().getArbiterNumber());
-                    } else {
-                        return ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej");
-                    }
-                } else {
-                    if (otherPersonRepository.getOne(user.getOtherID()).getPermissionsEntity().getArbiterNumber() != null) {
-
-                        return ResponseEntity.ok(tournamentRepository.findByOpenIsTrue().getUuid());
-                    } else {
-                        return ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej");
-                    }
-                }
-            } else {
-                return ResponseEntity.badRequest().body("Żadne zawody nie są otwarte");
-            }
+        String pin = Hashing.sha256()
+                .hashString(code, StandardCharsets.UTF_8)
+                .toString();
+        Optional<UserEntity> userOpt = userRepository.findByPinCode(pin);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Próba się nie powiodła");
         }
-
-        return ResponseEntity.badRequest().body("Próba się nie powiodła");
+        if (!tournamentService.checkAnyOpenTournament()) {
+            return ResponseEntity.badRequest().body("Żadne zawody nie są otwarte");
+        }
+        UserEntity user = userOpt.get();
+        if (user.getMember() != null
+                && user.getMember().getMemberPermissions() != null
+                && user.getMember().getMemberPermissions().getArbiterNumber() != null) {
+            return ResponseEntity.ok(
+                    user.getMember().getMemberPermissions().getArbiterNumber()
+            );
+        }
+        if (user.getOtherID() != null) {
+            return otherPersonRepository.findById(user.getOtherID())
+                    .filter(op -> op.getPermissionsEntity() != null)
+                    .filter(op -> op.getPermissionsEntity().getArbiterNumber() != null)
+                    .map(op -> tournamentRepository.findByOpenIsTrue().getUuid())
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() ->
+                            ResponseEntity.badRequest()
+                                    .body("użytkownik nie posiada licencji sędziowskiej")
+                    );
+        }
+        return ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej");
     }
 
     // Minimalne wymagania aby zwróciło false:
@@ -341,7 +348,7 @@ public class UserService {
     // nie wolno brać pod uwagę Admina
     public ResponseEntity<?> checkFirstStart() {
 
-        if (clubRepository.getOne(1).getShortName().equals("firstStart"))
+        if (clubRepository.findById(1).orElseThrow(EntityNotFoundException::new).getShortName().equals("firstStart"))
             return ResponseEntity.ok(true);
 
         List<UserEntity> collect = userRepository.findAll()
@@ -364,21 +371,29 @@ public class UserService {
     }
 
     public ResponseEntity<?> deleteUser(String userID, String code) throws NoUserPermissionException {
-        String pin = Hashing.sha256().hashString(code, StandardCharsets.UTF_8).toString();
-        UserEntity one = userRepository.getOne(userID);
-        UserEntity user = userRepository.existsByPinCode(pin) ? userRepository.findByPinCode(pin) : null;
-        if (one == null || user == null || !user.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())) {
+        String pin = Hashing.sha256()
+                .hashString(code, StandardCharsets.UTF_8)
+                .toString();
+        UserEntity targetUser = userRepository.findById(userID)
+                .orElseThrow(NoUserPermissionException::new);
+        UserEntity authUser = userRepository.findByPinCode(pin).orElse(null);
+        if (authUser == null) {
             throw new NoUserPermissionException();
         }
-        one.setActive(false);
-        userRepository.save(one);
-        LOG.info("Zmiana statusu na nieaktywny " + one.getFullName());
-        return ResponseEntity.ok("usunięto użytkownika " + one.getFullName());
+        if (authUser.getUserPermissionsList() == null
+                || !authUser.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())) {
+            throw new NoUserPermissionException();
+        }
+        targetUser.setActive(false);
+        userRepository.save(targetUser);
+        LOG.info("Zmiana statusu na nieaktywny: {}", targetUser.getFullName());
+        return ResponseEntity.ok("usunięto użytkownika " + targetUser.getFullName());
     }
+
 
     public String permissionsByPin(String pinCode) {
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin);
+        UserEntity userEntity = userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new);
 
         Map<String, String> map = new HashMap<>();
 

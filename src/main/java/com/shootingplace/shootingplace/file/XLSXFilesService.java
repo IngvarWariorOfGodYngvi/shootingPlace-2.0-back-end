@@ -77,7 +77,7 @@ public class XLSXFilesService {
     // rezultaty z zawodów
     public FilesEntity createAnnouncementInXLSXType(String tournamentUUID) throws IOException {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
-        ClubEntity c = clubRepository.getOne(1);
+        ClubEntity c = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
 
         int rc = 0;
 
@@ -804,9 +804,8 @@ public class XLSXFilesService {
 
         List<MemberEntity> collect = memberRepository.findAllByErasedFalse()
                 .stream()
-                .filter(f -> f.getAdult().equals(condition))
-                .sorted(Comparator.comparing(MemberEntity::getSecondName, pl()))
-                .collect(Collectors.toList());
+                .filter(f -> f.isAdult() == condition)
+                .sorted(Comparator.comparing(MemberEntity::getSecondName, pl())).toList();
 
 
         int rc = 0;

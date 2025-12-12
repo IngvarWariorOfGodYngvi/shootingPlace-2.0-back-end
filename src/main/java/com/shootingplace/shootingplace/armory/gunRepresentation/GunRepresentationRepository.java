@@ -1,8 +1,7 @@
 package com.shootingplace.shootingplace.armory.gunRepresentation;
 
-public interface GunRepresentationRepository{
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    GunRepresentationEntity getOne(String uuid);
+public interface GunRepresentationRepository extends JpaRepository<GunRepresentationEntity, String> {
 
-    GunRepresentationEntity save(GunRepresentationEntity representation);
 }

@@ -10,6 +10,7 @@ import com.shootingplace.shootingplace.member.permissions.MemberPermissionsEntit
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatentEntity;
 import com.shootingplace.shootingplace.validators.ValidPESEL;
 import com.shootingplace.shootingplace.weaponPermission.WeaponPermissionEntity;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +19,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,7 +31,6 @@ import java.util.List;
 public class MemberEntity extends Person {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -49,7 +48,7 @@ public class MemberEntity extends Person {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ShootingPatentEntity shootingPatent;
     @Email
-    private String email ;
+    private String email = "";
     @NotBlank
     @ValidPESEL
     @Pattern(regexp = "[0-9]*")
@@ -66,18 +65,18 @@ public class MemberEntity extends Person {
     private String phoneNumber;
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private WeaponPermissionEntity weaponPermission;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private MemberGroupEntity memberGroup;
+
     private String note;
 
     private String imageUUID;
 
     private String signBy;
-    private Boolean active;
-    private Boolean adult;
-    private Boolean erased;
-    private Boolean pzss;
-    private boolean declarationLOK;
+    private boolean active = true;
+    private boolean adult = true;
+    private boolean erased = false;
+    private boolean pzss = false;
+    private boolean declarationLOK = false;
+
     @Nullable
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ErasedEntity erasedEntity;
@@ -90,6 +89,8 @@ public class MemberEntity extends Person {
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private PersonalEvidenceEntity personalEvidence;
+    @ManyToOne
+    private MemberGroupEntity memberGroupEntity;
 
     public String getImageUUID() {
         return imageUUID;
@@ -223,7 +224,7 @@ public class MemberEntity extends Person {
         this.barCodeCardList = barCodeCardList;
     }
 
-    public Boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 
@@ -235,11 +236,11 @@ public class MemberEntity extends Person {
         this.active = !this.active;
     }
 
-    public Boolean getAdult() {
+    public boolean isAdult() {
         return adult;
     }
 
-    public Boolean getErased() {
+    public boolean isErased() {
         return erased;
     }
 
@@ -279,21 +280,22 @@ public class MemberEntity extends Person {
         this.club = club;
     }
 
-    public void setAdult(Boolean adult) {
+    public void setAdult(boolean adult) {
         this.adult = adult;
     }
 
-    public Boolean getPzss() {
+    public boolean isPZSS() {
         return pzss;
     }
 
-    public void setPzss(Boolean pzss) {
+    public void setPzss(boolean pzss) {
         this.pzss = pzss;
     }
 
     public String getSignBy() {
         return signBy;
     }
+
 
     public void setSignBy(String signBy) {
         this.signBy = signBy;
@@ -320,13 +322,14 @@ public class MemberEntity extends Person {
     }
 
     public boolean toggleDeclaration(boolean isSigned) {
-       return this.declarationLOK = isSigned;
+        return this.declarationLOK = isSigned;
     }
+
     /**
-    * Return member Sex
+     * Return member Sex
      * if false -> man
      * if true -> woman
-    */
+     */
     public boolean getSex() {
         return Integer.parseInt(String.valueOf(this.pesel.toCharArray()[10])) % 2 == 0;
     }
@@ -335,16 +338,8 @@ public class MemberEntity extends Person {
         return this.pzss = isSignedTo;
     }
 
-    public LocalDate getBirthDate(){
-       return LocalDate.of(getBirthYear(),getBirthMonth(),getBirthDay());
-    }
-
-    public MemberGroupEntity getMemberGroup() {
-        return memberGroup;
-    }
-
-    public void setMemberGroup(MemberGroupEntity memberGroup) {
-        this.memberGroup = memberGroup;
+    public LocalDate getBirthDate() {
+        return LocalDate.of(getBirthYear(), getBirthMonth(), getBirthDay());
     }
 
     private int getBirthYear() {
@@ -390,7 +385,7 @@ public class MemberEntity extends Person {
     private int[] getInts() {
         char[] chars = this.pesel.toCharArray();
         int[] PESEL = new int[11];
-        for (int i =0; i<chars.length;i++){
+        for (int i = 0; i < chars.length; i++) {
             PESEL[i] = Integer.parseInt(String.valueOf(chars[i]));
         }
         return PESEL;
@@ -402,5 +397,13 @@ public class MemberEntity extends Person {
         day = 10 * PESEL[4];
         day += PESEL[5];
         return day;
+    }
+
+    public void setMemberEntityGroup(MemberGroupEntity group) {
+        this.memberGroupEntity = group;
+    }
+
+    public MemberGroupEntity getMemberEntityGroup() {
+        return this.memberGroupEntity;
     }
 }

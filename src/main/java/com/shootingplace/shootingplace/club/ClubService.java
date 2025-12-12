@@ -63,7 +63,7 @@ public class ClubService {
             return ResponseEntity.badRequest().body("Taki Klub już istnieje");
         }
 
-        ClubEntity clubEntity = clubRepository.getOne(id);
+        ClubEntity clubEntity = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
         if (club.getShortName() != null && !club.getShortName().isEmpty()) {
             clubEntity.setShortName(club.getShortName());
         }
@@ -131,7 +131,7 @@ public class ClubService {
 
     public List<ClubEntity> getAllClubsToMember() {
         List<ClubEntity> list = new ArrayList<>();
-        list.add(clubRepository.getOne(1));
+        list.add(clubRepository.findById(1).orElseThrow(EntityNotFoundException::new));
         List<ClubEntity> collect = clubRepository.findAll()
                 .stream()
                 .filter(f -> f.getId() != 1)
@@ -141,11 +141,11 @@ public class ClubService {
     }
 
     public boolean isMotherClubExists() {
-        return clubRepository.getOne(1).getShortName().equals("firstStart");
+        return clubRepository.findById(1).orElseThrow(EntityNotFoundException::new).getShortName().equals("firstStart");
     }
 
     public ResponseEntity<?> importCLub(Club club) {
-        if (clubRepository.getOne(1).getShortName().equals("firstStart")) {
+        if (clubRepository.findById(1).orElseThrow(EntityNotFoundException::new).getShortName().equals("firstStart")) {
             club.setId(1);
             ClubEntity clubEntity = buildCLub(club);
             clubRepository.save(clubEntity);
@@ -191,15 +191,15 @@ public class ClubService {
         if (id == 2 || id == 1) {
             return ResponseEntity.badRequest().body("Nie można usunąć tego Klubu");
         }
-        ClubEntity one = clubRepository.getOne(id);
+        ClubEntity one = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
         List<MemberEntity> collect = memberRepository.findAll().stream().filter(f -> f.getClub().getId().equals(id)).collect(Collectors.toList());
         collect.forEach(e -> {
-            e.setClub(clubRepository.getOne(2));
+            e.setClub(clubRepository.findById(2).orElseThrow(EntityNotFoundException::new));
             memberRepository.save(e);
         });
         List<OtherPersonEntity> collect1 = otherPersonRepository.findAll().stream().filter(f -> f.getClub().getId().equals(id)).collect(Collectors.toList());
         collect1.forEach(e -> {
-            e.setClub(clubRepository.getOne(2));
+            e.setClub(clubRepository.findById(2).orElseThrow(EntityNotFoundException::new));
             otherPersonRepository.save(e);
         });
 

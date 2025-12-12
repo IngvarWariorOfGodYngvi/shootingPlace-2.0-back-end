@@ -1,4 +1,3 @@
-C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\AddressSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\AmmoEvidenceSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\AmmoInEvidenceSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\AmmoUsedSQLRepository.java
@@ -9,7 +8,6 @@ C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\sho
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\CaliberSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\CaliberUsedSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\ChangeHistorySQLRepository.java
-C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\ClubSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\CompetitionHistorySQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\CompetitionMembersListSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\CompetitionSQLRepository.java
@@ -17,9 +15,6 @@ C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\sho
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\EmailConfigSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\EmailSendSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\ErasedSQLRepository.java
-C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\FilesSQLRepository.java
-C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\GunRepresentationSQLRepository.java
-C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\GunSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\GunStoreSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\GunUsedSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\HistorySQLRepository.java
@@ -27,7 +22,6 @@ C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\sho
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\LicensePaymentHistorySQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\LicenseSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\MemberPermissionSQLRepository.java
-C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\OtherPersonSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\PersonalEvidenceSQLRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\RegistrationRecordSQlRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\adapters\ScheduledEmailSQLRepository.java
@@ -159,6 +153,17 @@ C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\sho
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\FilesRepository.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\FilesService.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\IFile.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\AmmunitionListPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\CertificateOfClubMembershipPanaszewPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\CompetitorLicenseExtensionPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\ContributionConfirmPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\GuardiansMembershipPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\LokMembershipPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\PdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\generator\PersonalCardPdfGenerator.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\model\PdfGenerationResults.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\output\PdfOutputService.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\pdf\PdfUtils.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\file\XLSXFilesService.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\history\ChangeHistoryEntity.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\history\ChangeHistoryRepository.java
@@ -228,6 +233,7 @@ C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\sho
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\shootingPatent\ShootingPatentService.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\ShootingplaceApplication.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\statistics\MemberAmmo.java
+C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\statistics\MembersStatsDTO.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\statistics\PersonalStatistics.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\statistics\StatisticsController.java
 C:\Users\izebr\IdeaProjects\shootingplace2.0\src\main\java\com\shootingplace\shootingplace\statistics\StatisticsService.java

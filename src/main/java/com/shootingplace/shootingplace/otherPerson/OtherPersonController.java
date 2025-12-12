@@ -67,9 +67,7 @@ public class OtherPersonController {
         if (club.isEmpty()) {
             club = "BRAK";
         }
-
         return otherPersonService.addPerson(club, person, memberPermissions);
-
     }
 
     @GetMapping("/")
@@ -82,8 +80,8 @@ public class OtherPersonController {
         return otherPersonService.getAllOthersArbiters();
     }
 
-    @GetMapping("/getOhterByPhone/{phone}")
-    public ResponseEntity<?> getOhterByPhone(@PathVariable String phone) {
+    @GetMapping("/getOtherByPhone/{phone}")
+    public ResponseEntity<?> getOtherByPhone(@PathVariable String phone) {
         return otherPersonService.getOtherByPhone(phone);
     }
 
@@ -98,7 +96,6 @@ public class OtherPersonController {
         ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
         if (code.getStatusCode().equals(HttpStatus.OK)) {
             return otherPersonService.deactivatePerson(id, pinCode);
-
         }
         return code;
     }

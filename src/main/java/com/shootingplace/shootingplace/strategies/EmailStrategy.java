@@ -16,7 +16,7 @@ public interface EmailStrategy {
     default String getDatesString() {
         return "";
     }
-    default  String getAhrefSite() {
+    default  String getAHrefSite() {
         return "";
     }
 

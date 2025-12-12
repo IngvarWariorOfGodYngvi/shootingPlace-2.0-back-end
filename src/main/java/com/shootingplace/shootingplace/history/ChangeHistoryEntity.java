@@ -16,10 +16,10 @@ import java.time.LocalDate;
 public class ChangeHistoryEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_uuid", nullable = false)
     private UserEntity userEntity;
     private String classNamePlusMethod;
     private String belongsTo;

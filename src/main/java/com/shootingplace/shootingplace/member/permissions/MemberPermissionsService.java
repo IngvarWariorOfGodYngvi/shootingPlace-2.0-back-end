@@ -35,7 +35,7 @@ public class MemberPermissionsService {
         MemberPermissionsEntity memberPermissionsEntity = memberEntity.getMemberPermissions();
         List<MemberEntity> collect = memberRepository.findAll()
                 .stream()
-                .filter(f -> !f.getErased())
+                .filter(f -> !f.isErased())
                 .filter(f -> f.getMemberPermissions().getInstructorNumber() != null)
                 .filter(f -> f.getMemberPermissions().getShootingLeaderNumber() != null)
                 .filter(f -> f.getMemberPermissions().getArbiterNumber() != null).toList();
