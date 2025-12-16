@@ -6,13 +6,12 @@ import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.member.MemberInfo;
 import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
-import org.springframework.http.HttpStatus;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,13 +90,9 @@ public class OtherPersonController {
     }
 
     @DeleteMapping ("/deactivatePerson")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> deactivatePerson(@RequestParam int id, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
             return otherPersonService.deactivatePerson(id, pinCode);
-        }
-        return code;
     }
 
     @PutMapping("/")

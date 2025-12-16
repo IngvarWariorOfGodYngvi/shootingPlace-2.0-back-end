@@ -1,21 +1,22 @@
 package com.shootingplace.shootingplace.member;
 
-import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.address.Address;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.contributions.ContributionService;
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.enums.ErasedType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
+import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
+import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.license.LicenseRepository;
 import com.shootingplace.shootingplace.license.LicenseService;
 import com.shootingplace.shootingplace.member.permissions.MemberPermissionsService;
+import com.shootingplace.shootingplace.security.UserAuthService;
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatentService;
 import com.shootingplace.shootingplace.users.UserEntity;
-import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import com.shootingplace.shootingplace.weaponPermission.WeaponPermissionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,11 +25,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.text.Collator;
 import java.time.LocalDate;
 import java.util.*;
@@ -51,8 +50,8 @@ public class MemberService {
     private final ErasedRepository erasedRepository;
     private final MemberGroupRepository memberGroupRepository;
     private final EmailService emailService;
-    private final UserRepository userRepository;
-
+    private final ChangeHistoryService changeHistoryService;
+    private final UserAuthService userAuthService;
     private static final Logger LOG = LogManager.getLogger(MemberService.class);
     private static final Collator PL_COLLATOR = Collator.getInstance(Locale.forLanguageTag("pl"));
 
@@ -86,271 +85,218 @@ public class MemberService {
 
 
     @Transactional
-    public ResponseEntity<?> addNewMember(Member member, Address address, boolean returningToClub, String pinCode) throws NoUserPermissionException {
-        // 1. Walidacje unikalności (PESEL, email, legitymacja, dowód)
+    public ResponseEntity<?> addNewMember(Member member, Address address, boolean returningToClub, String pinCode) {
+
+        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
+
         List<MemberEntity> allMembers = memberRepository.findAll();
-        // PESEL
+
         MemberEntity byPesel = allMembers.stream().filter(m -> Objects.equals(m.getPesel(), member.getPesel())).findFirst().orElse(null);
-        if (byPesel != null) {
-            if (returningToClub && Boolean.TRUE.equals(byPesel.isErased())) {
-                LOG.info("Ktoś z usuniętych ma taki numer PESEL");
-            } else {
-                LOG.error("Ktoś już ma taki numer PESEL");
-                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Ktoś już ma taki numer PESEL");
-            }
-        }
-        // email
-        String finalEmail = member.getEmail();
-        boolean emailTaken = allMembers.stream().map(MemberEntity::getEmail).filter(Objects::nonNull).filter(s -> !s.isEmpty()).anyMatch(email -> email.equals(finalEmail));
-        if (emailTaken) {
-            if (returningToClub) {
-                LOG.info("Ktoś z usuniętych już ma taki e-mail");
-            } else {
-                LOG.info("Ktoś już ma taki e-mail");
-                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Ktoś już ma taki e-mail");
-            }
-        }
-        // numer legitymacji
-        if (member.getLegitimationNumber() != null && memberRepository.findByLegitimationNumber(member.getLegitimationNumber()).isPresent()) {
-            if (returningToClub) {
-                LOG.info("Będzie przyznany nowy numer legitymacji");
-            } else {
-                boolean existsAmongErased = allMembers.stream().filter(m -> Boolean.TRUE.equals(m.isErased())).anyMatch(m -> Objects.equals(m.getLegitimationNumber(), member.getLegitimationNumber()));
-                LOG.error("Ktoś już ma taki numer legitymacji");
-                if (existsAmongErased) {
-                    return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Ktoś wśród skreślonych już ma taki numer legitymacji");
-                } else {
-                    return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Ktoś już ma taki numer legitymacji");
-                }
-            }
+
+        if (byPesel != null && !(returningToClub && byPesel.isErased())) {
+            return ResponseEntity.badRequest().body("Uwaga! Ktoś już ma taki numer PESEL");
         }
 
-        // numer dowodu
-        boolean duplicatedIdCard = allMembers.stream().filter(m -> !Boolean.TRUE.equals(m.isErased())).map(MemberEntity::getIDCard).filter(Objects::nonNull).anyMatch(id -> id.trim().toUpperCase().equals(member.getIDCard()));
-        if (duplicatedIdCard) {
-            if (returningToClub) {
-                LOG.info("Ktoś z usuniętych już ma taki numer dowodu osobistego");
-            } else {
-                LOG.error("Ktoś już ma taki numer dowodu osobistego");
-                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Ktoś już ma taki numer dowodu osobistego");
-            }
+        String emailInput = member.getEmail();
+        boolean emailTaken = allMembers.stream().map(MemberEntity::getEmail).filter(Objects::nonNull).filter(s -> !s.isEmpty()).anyMatch(e -> e.equalsIgnoreCase(emailInput));
+
+        if (emailTaken && !returningToClub) {
+            return ResponseEntity.badRequest().body("Uwaga! Ktoś już ma taki e-mail");
         }
-        // 2. Uzupełnienie brakujących danych wejściowych
-        String email = (member.getEmail() == null || member.getEmail().isEmpty()) ? "" : member.getEmail().toLowerCase();
-        LocalDate joinDate = member.getJoinDate() == null ? LocalDate.now() : member.getJoinDate();
-        LOG.info("ustawiono " + (member.getJoinDate() == null ? "domyślną " : "") + "datę zapisu na " + joinDate);
-        int legitimationNumber;
-        if (member.getLegitimationNumber() == null) {
-            int number = 1;
-            if (!allMembers.isEmpty()) {
-                number = allMembers.stream().filter(m -> m.getLegitimationNumber() != null).max(Comparator.comparing(MemberEntity::getLegitimationNumber)).orElseThrow(EntityNotFoundException::new).getLegitimationNumber() + 1;
-            }
-            legitimationNumber = number;
-            LOG.info("ustawiono domyślny numer legitymacji : " + legitimationNumber);
-        } else {
-            legitimationNumber = member.getLegitimationNumber();
+
+        if (member.getLegitimationNumber() != null && memberRepository.findByLegitimationNumber(member.getLegitimationNumber()).isPresent() && !returningToClub) {
+
+            return ResponseEntity.badRequest().body("Uwaga! Ktoś już ma taki numer legitymacji");
         }
-        boolean adult = member.getAdult();
-        LOG.info("Klubowicz należy do " + (adult ? "grupy dorosłej" : "grupy młodzieżowej"));
-        PersonalEvidence peBuild = PersonalEvidence.builder().ammoList(new ArrayList<>()).build();
-        // normalizacja danych osobowych
+
+        boolean duplicatedIdCard = allMembers.stream().filter(m -> !m.isErased()).map(MemberEntity::getIDCard).filter(Objects::nonNull).anyMatch(id -> id.trim().equalsIgnoreCase(member.getIDCard()));
+
+        if (duplicatedIdCard && !returningToClub) {
+            return ResponseEntity.badRequest().body("Uwaga! Ktoś już ma taki numer dowodu osobistego");
+        }
+
+        LocalDate joinDate = member.getJoinDate() != null ? member.getJoinDate() : LocalDate.now();
+
+        int legitimationNumber = member.getLegitimationNumber() != null ? member.getLegitimationNumber() : allMembers.stream().map(MemberEntity::getLegitimationNumber).filter(Objects::nonNull).max(Integer::compareTo).orElse(0) + 1;
+
         member.setFirstName(normalizeFirstName(member.getFirstName()));
         member.setSecondName(member.getSecondName().toUpperCase());
         member.setPhoneNumber(normalizePhone(member.getPhoneNumber()));
-        member.setEmail(email);
+        member.setEmail(member.getEmail() == null ? "" : member.getEmail().toLowerCase());
         member.setJoinDate(joinDate);
         member.setLegitimationNumber(legitimationNumber);
-        member.setAdult(adult);
+        member.setAdult(member.getAdult());
         member.setAddress(address);
         member.setIDCard(member.getIDCard().trim().toUpperCase());
         member.setPesel(member.getPesel());
-        member.setClub(clubRepository.findById(1).orElseThrow(EntityNotFoundException::new));
+
+        member.setClub(clubRepository.findById(1).orElseThrow());
         member.setShootingPatent(shootingPatentService.getShootingPatent());
         member.setLicense(licenseService.getLicense());
         member.setHistory(historyService.getHistory());
         member.setWeaponPermission(weaponPermissionService.getWeaponPermission());
         member.setMemberPermissions(memberPermissionsService.getMemberPermissions());
-        member.setPersonalEvidence(peBuild);
+        member.setPersonalEvidence(PersonalEvidence.builder().ammoList(new ArrayList<>()).build());
+
         member.setPzss(false);
-        member.setErasedEntity(null);
         member.setErased(false);
         member.setActive(true);
 
-        MemberEntity memberEntity = memberRepository.save(Mapping.map(member));
+        MemberEntity saved = memberRepository.save(Mapping.map(member));
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, memberEntity, HttpStatus.CREATED, "Dodanie Nowego Klubowicza " + member.getFullName(), "nowy Klubowicz");
+        MemberGroupEntity group = memberGroupRepository.findByName(member.getGroup()).orElseThrow(() -> new IllegalStateException("Nie znaleziono grupy"));
 
-        if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-            UserEntity user = userRepository.findByPinCode(Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString()).orElseThrow(() -> new EntityNotFoundException("Brak użytkownika"));
-            MemberGroupEntity groupEntity = memberGroupRepository.findByName(member.getGroup()).orElseThrow(() -> new IllegalStateException("Nie znaleziono grupy: " + member.getGroup()));
-            memberEntity.setSignBy(user.getFullName());
-            memberEntity.setMemberEntityGroup(groupEntity);
-            MemberEntity saved = memberRepository.save(memberEntity);
+        saved.setSignBy(user.getFullName());
+        saved.setMemberEntityGroup(group);
+        memberRepository.save(saved);
 
-            emailService.sendRegistrationConfirmation(saved.getUuid());
+        changeHistoryService.record(user, "Member.create", saved.getUuid());
 
-            historyService.addContribution(memberEntity.getUuid(), contributionService.addFirstContribution(LocalDate.now(), pinCode));
+        historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), pinCode));
 
-            return ResponseEntity.status(HttpStatus.CREATED.value()).body(memberEntity.getUuid());
-        }
+        emailService.sendRegistrationConfirmation(saved.getUuid());
 
-        return response;
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved.getUuid());
     }
 
+
     @Transactional
-    public ResponseEntity<?> activateOrDeactivateMember(String uuid, String pinCode) throws NoUserPermissionException {
+    @RecordHistory(action = "Member.toggleActive", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
+    public ResponseEntity<?> activateOrDeactivateMember(String uuid, String pinCode) {
 
         MemberEntity member = memberRepository.findById(uuid).orElse(null);
         if (member == null) {
-            LOG.info("Nie znaleziono Klubowicza");
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
         }
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, member, HttpStatus.OK, "Zmieniono status aktywny/nieaktywny", "Zmieniono status aktywny/nieaktywny");
+        member.toggleActive();
+        memberRepository.save(member);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            member.toggleActive();
-            memberRepository.save(member);
-            LOG.info("Zmieniono status dla " + member.getFullName());
-        }
-
-        return response;
+        return ResponseEntity.ok("Zmieniono status aktywny/nieaktywny");
     }
 
+
     @Transactional
-    public ResponseEntity<?> changeAdult(String memberUUID, String pinCode) throws NoUserPermissionException {
+    @RecordHistory(action = "Member.changeAdult", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
+    public ResponseEntity<?> changeAdult(String memberUUID, String pinCode) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
-            LOG.info("Nie znaleziono Klubowicza");
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
         }
 
-        if (Boolean.TRUE.equals(member.isAdult())) {
-            LOG.info("Klubowicz należy już do grupy powszechnej");
-            return ResponseEntity.badRequest().body("Klubowicz należy już do grupy powszechnej");
+        if (member.isAdult()) {
+            return ResponseEntity.badRequest().body("Klubowicz należy już do grupy dorosłej");
         }
 
-        if (LocalDate.now().minusYears(1).minusDays(1).isBefore(member.getJoinDate())) {
-            LOG.info("Klubowicz ma za krótki staż jako młodzież");
-            return ResponseEntity.badRequest().body("Klubowicz ma za krótki staż jako młodzież");
-        }
+        member.setAdult(true);
+        memberRepository.save(member);
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, member, HttpStatus.OK, "Zmieniono grupę na dorosłą", "Klubowicz należy od teraz do grupy dorosłej");
-
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            member.setAdult(true);
-            memberRepository.save(member);
-            LOG.info("Klubowicz należy od teraz do grupy dorosłej : " + LocalDate.now());
-        }
-
-        return response;
+        return ResponseEntity.ok("Klubowicz należy od teraz do grupy dorosłej");
     }
 
-    //--------------------------------------------------------------------------
-    // SKREŚLANIE KLUBOWICZA
-    //--------------------------------------------------------------------------
 
     @Transactional
-    public ResponseEntity<?> eraseMember(String memberUUID, String erasedType, LocalDate erasedDate, String additionalDescription, String pinCode) throws NoUserPermissionException {
+    @RecordHistory(action = "Member.erase", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
+    public ResponseEntity<?> eraseMember(String memberUUID, String erasedType, LocalDate erasedDate, String additionalDescription, String pinCode) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
-            LOG.info("Nie znaleziono Klubowicza");
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
         }
 
-        if (!Boolean.TRUE.equals(member.isErased())) {
-            ErasedEntity erased = ErasedEntity.builder().erasedType(erasedType).date(erasedDate).additionalDescription(additionalDescription).inputDate(LocalDate.now()).build();
-
-            erasedRepository.save(erased);
-
-            member.setErasedEntity(erased);
-            member.toggleErase();
-            member.setPzss(false);
-            LOG.info("Klubowicz skreślony : " + LocalDate.now());
+        if (member.isErased()) {
+            return ResponseEntity.badRequest().body("Klubowicz jest już skreślony");
         }
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, member, HttpStatus.OK, "Usunięto Klubowicza", "Usunięto Klubowicza");
+        ErasedEntity erased = ErasedEntity.builder().erasedType(erasedType).date(erasedDate).additionalDescription(additionalDescription).inputDate(LocalDate.now()).build();
 
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            memberRepository.save(member);
-        }
+        erasedRepository.save(erased);
 
-        return response;
+        member.setErasedEntity(erased);
+        member.toggleErase();
+        member.setPzss(false);
+
+        memberRepository.save(member);
+
+        return ResponseEntity.ok("Usunięto Klubowicza");
     }
 
-    //--------------------------------------------------------------------------
-    // AKTUALIZACJA DANYCH KLUBOWICZA
-    //--------------------------------------------------------------------------
 
     @Transactional
-    public ResponseEntity<?> updateMember(String memberUUID, Member member, String pinCode) throws NoUserPermissionException {
+    @RecordHistory(action = "Member.update", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
+    public ResponseEntity<?> updateMember(String memberUUID, Member member, String pinCode) {
 
         MemberEntity entity = memberRepository.findById(memberUUID).orElse(null);
         if (entity == null) {
             LOG.info("Nie znaleziono Klubowicza");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
         }
 
         // imię
         if (member.getFirstName() != null && !member.getFirstName().isEmpty()) {
             entity.setFirstName(normalizeFirstName(member.getFirstName()));
-            LOG.info("Zaktualizowano pomyślnie Imię");
+            LOG.info("Zaktualizowano Imię");
         }
 
         // nazwisko
         if (member.getSecondName() != null && !member.getSecondName().isEmpty()) {
             entity.setSecondName(member.getSecondName().toUpperCase());
-            LOG.info("Zaktualizowano pomyślnie Nazwisko");
+            LOG.info("Zaktualizowano Nazwisko");
         }
 
         // data przystąpienia
         if (member.getJoinDate() != null) {
             entity.setJoinDate(member.getJoinDate());
-            LOG.info("Zaktualizowano pomyślnie Data przystąpienia do klubu");
+            LOG.info("Zaktualizowano Datę przystąpienia");
         }
 
         // legitymacja
         if (member.getLegitimationNumber() != null) {
             boolean exists = memberRepository.findByLegitimationNumber(member.getLegitimationNumber()).filter(m -> !m.getUuid().equals(entity.getUuid())).isPresent();
+
             if (exists) {
                 LOG.warn("Już ktoś ma taki numer legitymacji");
-                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Już ktoś ma taki numer legitymacji");
-            } else {
-                entity.setLegitimationNumber(member.getLegitimationNumber());
-                LOG.info("Zaktualizowano pomyślnie Numer Legitymacji");
+                return ResponseEntity.badRequest().body("Uwaga! Już ktoś ma taki numer legitymacji");
             }
+
+            entity.setLegitimationNumber(member.getLegitimationNumber());
+            LOG.info("Zaktualizowano Numer Legitymacji");
         }
 
         // email
         if (member.getEmail() != null && !member.getEmail().isEmpty()) {
-            boolean emailExists = memberRepository.findByEmail(member.getEmail()).filter(m -> !m.getUuid().equals(entity.getUuid())).isPresent();
+            String email = member.getEmail().trim().toLowerCase();
+
+            boolean emailExists = memberRepository.findByEmail(email).filter(m -> !m.getUuid().equals(entity.getUuid())).isPresent();
 
             if (emailExists) {
                 LOG.error("Już ktoś ma taki sam e-mail");
-                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Uwaga! Już ktoś ma taki sam e-mail");
-            } else {
-                entity.setEmail(member.getEmail().trim().toLowerCase());
-                LOG.info("Zaktualizowano pomyślnie Email");
+                return ResponseEntity.badRequest().body("Uwaga! Już ktoś ma taki sam e-mail");
             }
+
+            entity.setEmail(email);
+            LOG.info("Zaktualizowano Email");
         }
 
         // telefon
         if (member.getPhoneNumber() != null && !member.getPhoneNumber().isEmpty()) {
             String normalized = normalizePhone(member.getPhoneNumber());
 
-            if (member.getPhoneNumber().replaceAll("[\\s-]", "").length() != 9) {
-                LOG.error("Żle podany numer");
+            if (normalized.length() != 9) {
+                LOG.error("Źle podany numer telefonu");
+                return ResponseEntity.badRequest().body("Nieprawidłowy numer telefonu");
             }
 
             boolean phoneExists = memberRepository.findByPhoneNumber(normalized).filter(m -> !m.getUuid().equals(entity.getUuid())).isPresent();
+
             if (phoneExists) {
                 LOG.error("Ktoś już ma taki numer telefonu");
-            } else {
-                entity.setPhoneNumber(normalized);
-                LOG.info("Zaktualizowano pomyślnie Numer Telefonu");
+                return ResponseEntity.badRequest().body("Ktoś już ma taki numer telefonu");
             }
+
+            entity.setPhoneNumber(normalized);
+            LOG.info("Zaktualizowano Numer Telefonu");
         }
 
         // dowód
@@ -358,21 +304,21 @@ public class MemberService {
             String id = member.getIDCard().trim().toUpperCase();
 
             boolean idExists = memberRepository.findByIDCard(id).filter(m -> !m.getUuid().equals(entity.getUuid())).isPresent();
+
             if (idExists) {
                 LOG.error("Ktoś już ma taki numer dowodu");
-                return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("Ktoś już ma taki numer dowodu");
-            } else {
-                entity.setIDCard(id);
-                LOG.info("Zaktualizowano pomyślnie Numer Dowodu");
+                return ResponseEntity.badRequest().body("Ktoś już ma taki numer dowodu");
             }
+
+            entity.setIDCard(id);
+            LOG.info("Zaktualizowano Numer Dowodu");
         }
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, entity, HttpStatus.OK, "update member", "Zaktualizowano dane klubowicza " + entity.getFullName());
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            memberRepository.save(entity);
-        }
-        return response;
+        memberRepository.save(entity);
+
+        return ResponseEntity.ok("Zaktualizowano dane klubowicza " + entity.getFullName());
     }
+
 
     public ResponseEntity<?> getMember(int number) {
         if (!memberRepository.existsByLegitimationNumber(number)) {
@@ -380,7 +326,7 @@ public class MemberService {
         }
         MemberEntity member = memberRepository.findByLegitimationNumber(number).orElseThrow(EntityNotFoundException::new);
         historyService.checkStarts(member.getUuid());
-        LOG.info("Wywołano Klubowicza " + member.getFullName());
+        LOG.info("Wywołano Klubowicza {}", member.getFullName());
         return ResponseEntity.ok(member);
     }
 
@@ -523,7 +469,13 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> assignMemberToGroup(String memberUUID, Long groupId, String pinCode) throws NoUserPermissionException {
+    @RecordHistory(
+            action = "Member.assignToGroup",
+            entity = HistoryEntityType.MEMBER,
+            entityArgIndex = 0
+    )
+    public ResponseEntity<?> assignMemberToGroup(String memberUUID, Long groupId, String pinCode) {
+
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
             LOG.info("Nie znaleziono Klubowicza");
@@ -531,20 +483,19 @@ public class MemberService {
         }
 
         MemberGroupEntity group = memberGroupRepository.findById(groupId).orElse(null);
-        if (group == null || (group.getActive() != null && !group.getActive())) {
+        if (group == null || Boolean.FALSE.equals(group.getActive())) {
             LOG.info("Nie znaleziono grupy lub jest nieaktywna");
-            return ResponseEntity.badRequest().body("Nie znaleziono grupy");
+            return ResponseEntity.badRequest().body("Nie znaleziono grupy lub grupa jest nieaktywna");
         }
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, member, HttpStatus.OK, "assignMemberToGroup", "Zaktualizowano dane klubowicza " + member.getFullName());
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            member.setMemberEntityGroup(group);
-            memberRepository.save(member);
-        }
+        member.setMemberEntityGroup(group);
+        memberRepository.save(member);
 
-        LOG.info("Przypisano Klubowicza " + member.getFullName() + " do grupy " + group.getName());
+        LOG.info("Przypisano Klubowicza {} do grupy {}", member.getFullName(), group.getName());
+
         return ResponseEntity.ok("Przypisano Klubowicza do grupy " + group.getName());
     }
+
 
     @Transactional
     public ResponseEntity<?> addNote(String uuid, String note) {

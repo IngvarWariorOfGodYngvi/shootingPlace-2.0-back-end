@@ -2,35 +2,32 @@ package com.shootingplace.shootingplace.users;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
-import org.springframework.http.HttpStatus;
+import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import javax.annotation.Nullable;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final ChangeHistoryService changeHistoryService;
 
-    public UserController(UserService userService, ChangeHistoryService changeHistoryService) {
-        this.userService = userService;
-        this.changeHistoryService = changeHistoryService;
-    }
-
-    @GetMapping("/getAccess")
-    public ResponseEntity<?> getAccess(@RequestParam String pinCode) throws NoUserPermissionException {
-        return userService.getAccess(pinCode);
+    @GetMapping("/access")
+    @RequirePermissions({UserSubType.MANAGEMENT,
+            UserSubType.ADMIN,
+            UserSubType.SUPER_USER})
+    public ResponseEntity<?> getAccess(@RequestParam String pinCode){
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/permissions")
-    public ResponseEntity<?> getPermissions() {
+    public ResponseEntity<List<String>> getPermissions() {
         return ResponseEntity.ok(userService.getPermissions());
     }
 
@@ -40,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/userList")
-    public ResponseEntity<?> getListOfUser() {
+    public ResponseEntity<?> getUsers() {
         return ResponseEntity.ok(userService.getListOfUser());
     }
 
@@ -49,38 +46,22 @@ public class UserController {
         return userService.getUserActions(uuid);
     }
 
-
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@RequestParam String firstName, @RequestParam String secondName, @RequestParam List<String> userPermissionsList, @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable Integer otherID) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(superPinCode, acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return userService.createUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID);
-        }
-        return code;
+
+        return userService.createUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID);
     }
 
     @PostMapping("/editUser")
-    public ResponseEntity<?> editUser(@Nullable @RequestParam String firstName, @Nullable @RequestParam String secondName, @Nullable @RequestParam List<String> userPermissionsList, @Nullable @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable String otherID, @RequestParam String userUUID) throws NoUserPermissionException {
-        if (pinCode == null || pinCode.isEmpty() || pinCode.equals("null")) {
-            pinCode = null;
-        }
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(superPinCode, acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return userService.editUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID, userUUID);
-        }
-        return code;
+    public ResponseEntity<?> editUser(@Nullable @RequestParam String firstName, @Nullable @RequestParam String secondName, @Nullable @RequestParam List<String> userPermissionsList, @Nullable @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable String otherID, @RequestParam String userUUID) {
+
+        return userService.editUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID, userUUID);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteUser(@RequestParam String userID, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode, acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return userService.deleteUser(userID, pinCode);
-        }
-        return code;
-    }
 
+        return userService.deleteUser(userID, pinCode);
+    }
 }
+

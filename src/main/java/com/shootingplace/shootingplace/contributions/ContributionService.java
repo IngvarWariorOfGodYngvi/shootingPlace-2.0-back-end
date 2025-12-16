@@ -2,20 +2,20 @@ package com.shootingplace.shootingplace.contributions;
 
 
 import com.google.common.hash.Hashing;
-import com.shootingplace.shootingplace.strategies.ContributionStrategy;
-import com.shootingplace.shootingplace.strategies.ProfileContext;
 import com.shootingplace.shootingplace.email.EmailService;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
+import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.strategies.ContributionStrategy;
+import com.shootingplace.shootingplace.strategies.ProfileContext;
 import com.shootingplace.shootingplace.users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -44,42 +44,37 @@ public class ContributionService {
         this.userRepository = userRepository;
         this.emailService = emailService;
         String profile = environment.getActiveProfiles()[0];
-        this.profileContext = contexts.stream()
-                .filter(ctx -> ctx.getClass().getAnnotation(Profile.class).value()[0].equals(profile))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Brak profilu"));
+        this.profileContext = contexts.stream().filter(ctx -> ctx.getClass().getAnnotation(Profile.class).value()[0].equals(profile)).findFirst().orElseThrow(() -> new IllegalStateException("Brak profilu"));
     }
 
-    public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, String pinCode, Integer contributionCount) throws NoUserPermissionException {
-        if (!memberRepository.existsById(memberUUID)) {
-            return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
-        }
+    @RecordHistory(action = "Cntribution.add", entity = HistoryEntityType.CONTRIBUTION)
+    public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, String pinCode, Integer contributionCount) {
+
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
+
         ContributionStrategy strategy = profileContext.getContributionStrategy();
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        ResponseEntity<?> response = null;
-        contributionCount = strategy.getContributionCount(contributionCount);
-        for (int i = 0; i < contributionCount; i++) {
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
-            List<ContributionEntity> contributionEntityList = memberEntity.getHistory().getContributionList();
-            ContributionEntity contributionEntity = ContributionEntity.builder()
-                    .paymentDay(null)
-                    .validThru(null)
-                    .acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName())
-                    .build();
-            contributionEntity.setPaymentDay(contributionPaymentDay);
-            contributionEntity.setValidThru(strategy.calculateValidThru(contributionPaymentDay,contributionEntityList));
-            contributionRepository.save(contributionEntity);
-            response = historyService.getStringResponseEntity(pinCode, contributionEntity, HttpStatus.OK, "Dodaj Składkę", "Przedłużono składkę " + memberEntity.getFullName());
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
-                historyService.addContribution(memberUUID, contributionEntity);
-                LOG.info("zmieniono " + memberEntity.getSecondName());
-                memberEntity.setActive(contributionEntity.getValidThru().isAfter(LocalDate.now()));
-                memberRepository.save(memberEntity);
-            }
+        int count = strategy.getContributionCount(contributionCount);
+
+        for (int i = 0; i < count; i++) {
+
+            List<ContributionEntity> existing = member.getHistory().getContributionList();
+
+            ContributionEntity contribution = ContributionEntity.builder().paymentDay(contributionPaymentDay).validThru(strategy.calculateValidThru(contributionPaymentDay, existing)).build();
+
+            contributionRepository.save(contribution);
+            historyService.addContribution(memberUUID, contribution);
+
+            member.setActive(contribution.getValidThru().isAfter(LocalDate.now()));
+            memberRepository.save(member);
+
+            LOG.info("Dodano składkę dla {}", member.getFullName());
         }
+
         emailService.sendContributionConfirmation(memberUUID);
-        return response;
+        return ResponseEntity.ok("Dodano składkę");
     }
+
+
     public ContributionEntity addFirstContribution(LocalDate contributionPaymentDay, String pinCode) {
         ContributionEntity contributionEntity = getContributionEntity(contributionPaymentDay, pinCode);
         LOG.info("utworzono pierwszą składkę");
@@ -91,62 +86,51 @@ public class ContributionService {
         ContributionStrategy strategy = profileContext.getContributionStrategy();
         LocalDate validThru = strategy.calculateFirstValidThru(contributionPaymentDay);
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        return ContributionEntity.builder()
-                .paymentDay(contributionPaymentDay)
-                .validThru(validThru)
-                .acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName())
-                .build();
+        return ContributionEntity.builder().paymentDay(contributionPaymentDay).validThru(validThru).acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName()).build();
     }
 
-    public ResponseEntity<?> removeContribution(String memberUUID, String contributionUUID, String pinCode) throws NoUserPermissionException {
-        if (!memberRepository.existsById(memberUUID)) {
-            return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
-        }
-        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+    @RecordHistory(action = "Contribution.remove", entity = HistoryEntityType.CONTRIBUTION, entityArgIndex = 1)
+    public ResponseEntity<?> removeContribution(String memberUUID, String contributionUUID, String pinCode) {
 
-        ContributionEntity contributionEntity = memberRepository
-                .findById(memberUUID)
-                .orElseThrow(EntityNotFoundException::new)
-                .getHistory()
-                .getContributionList()
-                .stream()
-                .filter(f -> f.getUuid().equals(contributionUUID)).toList().get(0);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
 
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, contributionEntity, HttpStatus.OK, "Usuń ręcznie składkę", "Usunięto składkę " + memberEntity.getSecondName() + " " + memberEntity.getFirstName());
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            historyService.removeContribution(memberUUID, contributionEntity);
-            LOG.info("zmieniono " + memberEntity.getSecondName());
-            memberEntity.setActive(memberEntity.getHistory().getContributionList().get(0).getValidThru().isAfter(LocalDate.now()));
-            memberRepository.save(memberEntity);
-        }
-        return response;
+        ContributionEntity contribution = member.getHistory().getContributionList().stream().filter(c -> c.getUuid().equals(contributionUUID)).findFirst().orElseThrow(EntityNotFoundException::new);
+
+        historyService.removeContribution(memberUUID, contribution);
+
+        member.setActive(member.getHistory().getContributionList().getFirst().getValidThru().isAfter(LocalDate.now()));
+
+        memberRepository.save(member);
+
+        LOG.info("Usunięto składkę: {} {}", member.getSecondName(), member.getFirstName());
+        return ResponseEntity.ok("Usunięto składkę");
     }
 
-    public ResponseEntity<?> updateContribution(String memberUUID, String contributionUUID, LocalDate paymentDay, LocalDate validThru, String pinCode) throws NoUserPermissionException {
-        if (!memberRepository.existsById(memberUUID)) {
-            return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
-        }
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
 
-        ContributionEntity contributionEntity = contributionRepository.getOne(contributionUUID);
+    @RecordHistory(action = "Contribution.update", entity = HistoryEntityType.CONTRIBUTION, entityArgIndex = 1)
+    public ResponseEntity<?> updateContribution(String memberUUID, String contributionUUID, LocalDate paymentDay, LocalDate validThru, String pinCode) {
+
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
+
+        ContributionEntity contribution = contributionRepository.findById(contributionUUID).orElseThrow(EntityNotFoundException::new);
 
         if (paymentDay != null) {
-            contributionEntity.setPaymentDay(paymentDay);
+            contribution.setPaymentDay(paymentDay);
+        }
+        if (validThru != null) {
+            contribution.setValidThru(validThru);
         }
 
-        if (validThru != null) {
-            contributionEntity.setValidThru(validThru);
-        }
-        contributionEntity.setAcceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName());
-        contributionEntity.setEdited(true);
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, contributionEntity, HttpStatus.OK, "Edytuj składkę", "Edytowano składkę " + memberEntity.getFullName());
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            contributionRepository.save(contributionEntity);
-            memberEntity.setActive(memberEntity.getHistory().getContributionList().get(0).getValidThru().isAfter(LocalDate.now()));
-            memberRepository.save(memberEntity);
-        }
-        return response;
+        contribution.setEdited(true);
+        contributionRepository.save(contribution);
+
+        member.setActive(member.getHistory().getContributionList().getFirst().getValidThru().isAfter(LocalDate.now()));
+
+        memberRepository.save(member);
+
+        LOG.info("Zaktualizowano składkę: {}", member.getFullName());
+        return ResponseEntity.ok("Zaktualizowano składkę");
     }
+
 
 }

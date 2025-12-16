@@ -5,14 +5,13 @@ import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoPersonToAmmunitionException;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -114,17 +113,9 @@ public class AmmoEvidenceController {
 
     @Transactional
     @PatchMapping("/ammoOpen")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
     public ResponseEntity<?> openEvidence(@RequestParam String pinCode, @RequestParam String evidenceUUID) throws NoUserPermissionException {
-        System.out.println("wchodzę");
-        System.out.println(pinCode);
-        System.out.println(evidenceUUID);
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName(),UserSubType.WEAPONS_WAREHOUSEMAN.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
             return ammoEvidenceService.openEvidence(evidenceUUID, pinCode);
-        } else {
-            return code;
-        }
     }
 
 }

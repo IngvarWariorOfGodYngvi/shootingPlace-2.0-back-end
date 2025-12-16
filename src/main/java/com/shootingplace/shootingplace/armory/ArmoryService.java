@@ -9,20 +9,20 @@ import com.shootingplace.shootingplace.armory.gunRepresentation.GunRepresentatio
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.file.FilesRepository;
-import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.history.UsedHistoryEntity;
-import com.shootingplace.shootingplace.history.UsedHistoryRepository;
+import com.shootingplace.shootingplace.history.*;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.security.UserAuthService;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -34,6 +34,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ArmoryService {
 
     private final AmmoEvidenceRepository ammoEvidenceRepository;
@@ -49,29 +50,11 @@ public class ArmoryService {
     private final UserRepository userRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
     private final MemberRepository memberRepository;
+    private final UserAuthService userAuthService;
 
     private final Logger LOG = LogManager.getLogger();
     private final GunUsedRepository gunUsedRepository;
     private final GunRepresentationRepository gunRepresentationRepository;
-
-
-    public ArmoryService(AmmoEvidenceRepository ammoEvidenceRepository, CaliberService caliberService, CaliberRepository caliberRepository, CaliberUsedRepository caliberUsedRepository, CalibersAddedRepository calibersAddedRepository, GunRepository gunRepository, GunStoreRepository gunStoreRepository, FilesRepository filesRepository, UsedHistoryRepository usedHistoryRepository, HistoryService historyService, UserRepository userRepository, AmmoInEvidenceRepository ammoInEvidenceRepository, MemberRepository memberRepository, GunUsedRepository gunUsedRepository, GunRepresentationRepository gunRepresentationRepository) {
-        this.ammoEvidenceRepository = ammoEvidenceRepository;
-        this.caliberService = caliberService;
-        this.caliberRepository = caliberRepository;
-        this.caliberUsedRepository = caliberUsedRepository;
-        this.calibersAddedRepository = calibersAddedRepository;
-        this.gunRepository = gunRepository;
-        this.gunStoreRepository = gunStoreRepository;
-        this.filesRepository = filesRepository;
-        this.usedHistoryRepository = usedHistoryRepository;
-        this.historyService = historyService;
-        this.userRepository = userRepository;
-        this.ammoInEvidenceRepository = ammoInEvidenceRepository;
-        this.memberRepository = memberRepository;
-        this.gunUsedRepository = gunUsedRepository;
-        this.gunRepresentationRepository = gunRepresentationRepository;
-    }
 
     public List<Caliber> getSumFromAllAmmoList(LocalDate firstDate, LocalDate secondDate) {
         List<Caliber> list = caliberService.getCalibersEntityList().stream().map(Mapping::map).toList();
@@ -92,38 +75,28 @@ public class ArmoryService {
         return list1;
     }
 
-    public ResponseEntity<?> updateAmmo(String caliberUUID, Integer count, LocalDate date, LocalTime time, String description, String imageUUID, String pinCode) throws NoUserPermissionException {
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
-        if (user == null) {
-            if (imageUUID != null) {
-                filesRepository.deleteById(imageUUID);
-            }
-            return ResponseEntity.badRequest().body("Nieprawidłowy PIN");
+    @Transactional
+    @RecordHistory(action = "AMMO.updateAmmo", entity = HistoryEntityType.AMMO, entityArgIndex = 0)
+    public ResponseEntity<?> updateAmmo(String caliberUUID, Integer count, LocalDate date, LocalTime time, String description, String imageUUID, String pinCode) {
+
+        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
+        CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new);
+
+        if (caliber.getQuantity() == null) {
+            caliber.setQuantity(0);
         }
-        if (user.getUserPermissionsList() == null || !user.getUserPermissionsList().contains(UserSubType.WEAPONS_WAREHOUSEMAN.getName())) {
-            if (imageUUID != null) {
-                filesRepository.deleteById(imageUUID);
-            }
-            return ResponseEntity.badRequest().body("Brak uprawnień");
+
+        int currentAmmo = caliberService.getCaliberAmmoInStore(caliberUUID);
+
+        CalibersAddedEntity added = CalibersAddedEntity.builder().addedBy(user.getFullName()).imageUUID(imageUUID).ammoAdded(count).belongTo(caliberUUID).caliberName(caliber.getName()).date(date).time(time).description(description).stateForAddedDay(currentAmmo).finalStateForAddedDay(currentAmmo + count).build();
+        calibersAddedRepository.save(added);
+        if (caliber.getAmmoAdded() != null) {
+            caliber.getAmmoAdded().add(added);
         }
-        CaliberEntity caliberEntity = caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new);
-        if (caliberEntity.getQuantity() == null) {
-            caliberEntity.setQuantity(0);
-        }
-        int caliberAmmoInStore = caliberService.getCaliberAmmoInStore(caliberUUID);
-        CalibersAddedEntity calibersAddedEntity = CalibersAddedEntity.builder().addedBy(user.getFullName()).imageUUID(imageUUID).ammoAdded(count).belongTo(caliberUUID).caliberName(caliberEntity.getName()).date(date).time(time).description(description).stateForAddedDay(caliberAmmoInStore).finalStateForAddedDay(caliberAmmoInStore + count).build();
-        calibersAddedRepository.save(calibersAddedEntity);
-        List<CalibersAddedEntity> ammoAdded = caliberEntity.getAmmoAdded();
-        if (ammoAdded != null) {
-            ammoAdded.add(calibersAddedEntity);
-        }
-        caliberEntity.setQuantity(caliberEntity.getQuantity() + calibersAddedEntity.getAmmoAdded());
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, caliberEntity, HttpStatus.OK, "Dodano amunicję do kalibru " + caliberEntity.getName(), "Dodano amunicję do kalibru " + caliberEntity.getName());
-        if (response.getStatusCode() == HttpStatus.OK) {
-            caliberRepository.save(caliberEntity);
-        }
-        return response;
+        caliber.setQuantity(caliber.getQuantity() + count);
+        caliberRepository.save(caliber);
+        LOG.info("Dodano {} szt. amunicji do kalibru {} przez {}", count, caliber.getName(), user.getFullName());
+        return ResponseEntity.ok("Dodano amunicję do kalibru " + caliber.getName());
     }
 
 
@@ -278,27 +251,23 @@ public class ArmoryService {
     }
 
 
-    public ResponseEntity<?> removeGun(String gunUUID, String basisOfRemoved, String pinCode, String imageUUID) throws NoUserPermissionException {
+    @Transactional
+    @RecordHistory(action = "Gun.remove", entity = HistoryEntityType.GUN, entityArgIndex = 0)
+    public ResponseEntity<?> removeGun(String gunUUID, String basisOfRemoved, String pinCode, String imageUUID) {
 
-        GunEntity gunEntity = gunRepository.findById(gunUUID).orElseThrow(() -> new EntityNotFoundException("Nie ma takiej broni"));
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
-        if (user == null) {
-            throw new NoUserPermissionException();
-        }
-        gunEntity.setInStock(false);
-        gunEntity.setBasisOfRemoved(basisOfRemoved);
-        gunEntity.setRemovedBy(user.getFullName());
-        gunEntity.setRemovedSign(imageUUID);
-        gunEntity.setRemovedUserUUID(user.getUuid());
-        GunStoreEntity gunStoreEntity = gunStoreRepository.findAll().stream().filter(f -> f.getTypeName().equals(gunEntity.getGunType())).findFirst().orElseThrow(EntityNotFoundException::new);
-        // VERY IMPORTANT
-        changeList(gunEntity, gunStoreEntity);
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, gunEntity, HttpStatus.OK, "removeGun", "Usunięto broń ze stanu magazynu");
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            gunStoreRepository.save(gunStoreEntity);
-        }
-        return response;
+        GunEntity gun = gunRepository.findById(gunUUID).orElseThrow(() -> new EntityNotFoundException("Nie ma takiej broni"));
+        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
+        gun.setInStock(false);
+        gun.setBasisOfRemoved(basisOfRemoved);
+        gun.setRemovedBy(user.getFullName());
+        gun.setRemovedSign(imageUUID);
+        gun.setRemovedUserUUID(user.getUuid());
+        GunStoreEntity gunStore = gunStoreRepository.findAll().stream().filter(s -> s.getTypeName().equals(gun.getGunType())).findFirst().orElseThrow(EntityNotFoundException::new);
+        changeList(gun, gunStore);
+        gunRepository.save(gun);
+        gunStoreRepository.save(gunStore);
+        LOG.info("Usunięto broń {} ze stanu przez {} (podstawa: {})", gun.getSerialNumber(), user.getFullName(), basisOfRemoved);
+        return ResponseEntity.ok("Usunięto broń ze stanu magazynu");
     }
 
     private void changeList(GunEntity gunEntity, GunStoreEntity gunStoreEntity) {
@@ -392,55 +361,62 @@ public class ArmoryService {
         return ResponseEntity.ok(gunRepository.findById(gunUUID).orElseThrow(EntityNotFoundException::new));
     }
 
-    public ResponseEntity<?> changeCaliberUnitPrice(String caliberUUID, Float price, String pinCode) throws NoUserPermissionException {
-        CaliberEntity caliberEntity = caliberRepository.getOne(caliberUUID);
-        caliberEntity.setUnitPrice(price);
-        return historyService.getStringResponseEntity(pinCode, caliberEntity, HttpStatus.OK, "changeCaliberUnitPrice " + caliberEntity.getName(), "zmieniono cenę amunicji");
-
+    @Transactional
+    @RecordHistory(action = "Caliber.changeUnitPrice", entity = HistoryEntityType.CALIBER, entityArgIndex = 0)
+    public ResponseEntity<?> changeCaliberUnitPrice(String caliberUUID, Float price, String pinCode) {
+        CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono kalibru"));
+        caliber.setUnitPrice(price);
+        caliberRepository.save(caliber);
+        LOG.info("Zmieniono cenę jednostkową kalibru {} na {}", caliber.getName(), price);
+        return ResponseEntity.ok("Zmieniono cenę amunicji");
     }
 
-    public ResponseEntity<?> changeCaliberUnitPriceForNotMember(String caliberUUID, Float price, String pinCode) throws NoUserPermissionException {
-        CaliberEntity caliberEntity = caliberRepository.getOne(caliberUUID);
-        caliberEntity.setUnitPriceForNotMember(price);
-        return historyService.getStringResponseEntity(pinCode, caliberEntity, HttpStatus.OK, "changeCaliberUnitPriceForNotMember " + caliberEntity.getName(), "zmieniono cenę amunicji dla pozostałych");
 
+    @Transactional
+    @RecordHistory(action = "Caliber.changeUnitPriceForNotMember", entity = HistoryEntityType.CALIBER, entityArgIndex = 0)
+    public ResponseEntity<?> changeCaliberUnitPriceForNotMember(String caliberUUID, Float price, String pinCode) {
+        CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono kalibru"));
+        caliber.setUnitPriceForNotMember(price);
+        caliberRepository.save(caliber);
+        LOG.info("Zmieniono cenę kalibru {} dla osób spoza klubu na {}", caliber.getName(), price);
+        return ResponseEntity.ok("Zmieniono cenę amunicji dla pozostałych");
     }
 
-    public ResponseEntity<?> signUpkeepAmmo(String ammoInEvidenceUUID, String imageUUID, String pinCode) throws NoUserPermissionException {
 
-        AmmoInEvidenceEntity a = ammoInEvidenceRepository.findById(ammoInEvidenceUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono wpisu amunicji"));
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
-        if (user == null) {
-            throw new NoUserPermissionException();
-        }
-        if (user.getUserPermissionsList() == null || !user.getUserPermissionsList().contains(UserSubType.WEAPONS_WAREHOUSEMAN.getName())) {
-            filesRepository.deleteById(imageUUID);
-            return ResponseEntity.badRequest().body("Brak uprawnień");
-        }
-        if (a.isLocked()) {
+    @Transactional
+    @RecordHistory(action = "AmmoEvidence.signUpkeep", entity = HistoryEntityType.AMMO_IN_EVIDENCE, entityArgIndex = 0)
+    public ResponseEntity<?> signUpkeepAmmo(String ammoInEvidenceUUID, String imageUUID, String pinCode) {
+
+        AmmoInEvidenceEntity entry = ammoInEvidenceRepository.findById(ammoInEvidenceUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono wpisu amunicji"));
+        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
+
+        if (entry.isLocked()) {
             return ResponseEntity.badRequest().body("Już zatwierdzono");
         }
-        a.setImageUUID(imageUUID);
-        a.setSignedBy(user.getFullName());
-        a.setSignedDate(a.getDateTime().toLocalDate());
-        a.setSignedTime(a.getDateTime().toLocalTime().withNano(0));
-        a.lock();
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, a, HttpStatus.OK, "signUpkeepAmmo", "zablokowano listę z kalibrem " + a.getCaliberName());
 
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            LOG.info("zapisuję");
-            ammoInEvidenceRepository.save(a);
-        }
-        AmmoEvidenceEntity one = ammoEvidenceRepository.findById(a.getEvidenceUUID()).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono listy ewidencji"));
-        boolean allLocked = one.getAmmoInEvidenceEntityList().stream().allMatch(AmmoInEvidenceEntity::isLocked);
+        entry.setImageUUID(imageUUID);
+        entry.setSignedBy(user.getFullName());
+        entry.setSignedDate(entry.getDateTime().toLocalDate());
+        entry.setSignedTime(entry.getDateTime().toLocalTime().withNano(0));
+        entry.lock();
+
+        ammoInEvidenceRepository.save(entry);
+
+        AmmoEvidenceEntity evidence = ammoEvidenceRepository.findById(entry.getEvidenceUUID()).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono listy ewidencji"));
+
+        boolean allLocked = evidence.getAmmoInEvidenceEntityList().stream().allMatch(AmmoInEvidenceEntity::isLocked);
+
         if (allLocked) {
-            LOG.info("blokuję całą listę");
-            one.lockEvidence();
-            ammoEvidenceRepository.save(one);
+            evidence.lockEvidence();
+            ammoEvidenceRepository.save(evidence);
+            LOG.info("Zablokowano całą listę ewidencji {}", evidence.getUuid());
         }
-        return response;
+
+        LOG.info("Podpisano i zablokowano wpis amunicji {} przez {}", entry.getUuid(), user.getFullName());
+
+        return ResponseEntity.ok("Zablokowano listę z kalibrem " + entry.getCaliberName());
     }
+
 
     private String getHash(String pinCode) {
         return Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();

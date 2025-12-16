@@ -3,14 +3,13 @@ package com.shootingplace.shootingplace.tournament;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -35,6 +34,7 @@ public class TournamentController {
     public ResponseEntity<?> getListOfGunsOnTournament(@RequestParam String tournamentUUID) {
         return ResponseEntity.ok(tournamentService.getListOfGunsOnTournament(tournamentUUID));
     }
+
     @GetMapping("/getShootersNamesList")
     public ResponseEntity<?> getShootersNamesList(@RequestParam String tournamentUUID) {
         return ResponseEntity.ok(tournamentService.getShootersNamesList(tournamentUUID));
@@ -62,7 +62,7 @@ public class TournamentController {
 
     @GetMapping("/getJudgingList")
     public ResponseEntity<?> getJudgingList(@RequestParam String firstDate, @RequestParam String secondDate) {
-        return tournamentService.getJudgingList(firstDate,secondDate);
+        return tournamentService.getJudgingList(firstDate, secondDate);
     }
 
     @PostMapping("/")
@@ -106,14 +106,9 @@ public class TournamentController {
 
     @Transactional
     @PatchMapping("/open/{tournamentUUID}")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> openTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return tournamentService.openTournament(tournamentUUID, pinCode);
-        } else {
-            return code;
-        }
+        return tournamentService.openTournament(tournamentUUID, pinCode);
     }
 
     @Transactional

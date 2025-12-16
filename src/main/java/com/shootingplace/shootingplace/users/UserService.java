@@ -2,69 +2,47 @@ package com.shootingplace.shootingplace.users;
 
 import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.club.ClubRepository;
-import com.shootingplace.shootingplace.contributions.ContributionRepository;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
-import com.shootingplace.shootingplace.license.LicenseRepository;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
+import com.shootingplace.shootingplace.security.UserAuthService;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import com.shootingplace.shootingplace.tournament.TournamentService;
 import com.shootingplace.shootingplace.utils.Mapping;
-import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceEntity;
-import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final ChangeHistoryService changeHistoryService;
     private final MemberRepository memberRepository;
-    private final LicenseRepository licenseRepository;
-    private final ContributionRepository contributionRepository;
     private final OtherPersonRepository otherPersonRepository;
     private final TournamentService tournamentService;
     private final TournamentRepository tournamentRepository;
     private final ClubRepository clubRepository;
-
-    private final WorkingTimeEvidenceRepository workingTimeEvidenceRepository;
+    private final UserAuthService userAuthService;
     private final Logger LOG = LogManager.getLogger(getClass());
 
-
-    public UserService(UserRepository userRepository, ChangeHistoryService changeHistoryService, MemberRepository memberRepository, LicenseRepository licenseRepository, ContributionRepository contributionRepository, OtherPersonRepository otherPersonRepository, TournamentService tournamentService, TournamentRepository tournamentRepository, ClubRepository clubRepository, WorkingTimeEvidenceRepository workingTimeEvidenceRepository) {
-        this.userRepository = userRepository;
-        this.changeHistoryService = changeHistoryService;
-        this.memberRepository = memberRepository;
-        this.licenseRepository = licenseRepository;
-        this.contributionRepository = contributionRepository;
-        this.otherPersonRepository = otherPersonRepository;
-        this.tournamentService = tournamentService;
-        this.tournamentRepository = tournamentRepository;
-        this.clubRepository = clubRepository;
-        this.workingTimeEvidenceRepository = workingTimeEvidenceRepository;
-    }
-
     public List<UserDTO> getListOfUser() {
-        return userRepository.findAll()
-                .stream()
-                .filter(UserEntity::isActive)
-                .filter(f -> !f.getUserPermissionsList().contains(UserSubType.ADMIN.getName()))
-                .map(Mapping::map)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().filter(UserEntity::isActive).filter(f -> !f.getUserPermissionsList().contains(UserSubType.ADMIN.getName())).map(Mapping::map).collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> createUser(String firstName, String secondName, List<String> userPermissionsList, String pinCode, String superPinCode, String memberUUID, Integer otherID) throws NoUserPermissionException {
+    @Transactional
+    public ResponseEntity<?> createUser(String firstName, String secondName, List<String> userPermissionsList, String pinCode, String superPinCode, String memberUUID, Integer otherID) {
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
         String superPin = Hashing.sha256().hashString(superPinCode, StandardCharsets.UTF_8).toString();
         if (userRepository.findAll().stream().filter(f -> f.getPinCode().equals(superPin)).noneMatch(a -> a.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()))) {
@@ -85,7 +63,7 @@ public class UserService {
             String splinted = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase() + " ";
             trim1.append(splinted);
         }
-        boolean anyMatch = userRepository.findAll().stream().anyMatch(a -> a.getFirstName().equals(trim.toString()) && a.getSecondName().equals(trim1.toString()));
+        boolean anyMatch = userRepository.findAll().stream().anyMatch(a -> a.getFirstName().contentEquals(trim) && a.getSecondName().contentEquals(trim1));
         if (anyMatch) {
             return ResponseEntity.status(406).body("Taki użytkownik już istnieje.");
         }
@@ -93,7 +71,7 @@ public class UserService {
         if (b) {
             return ResponseEntity.badRequest().body("Wymyśl inny Kod PIN");
         }
-        if (memberUUID != null && !memberUUID.equals("") && !memberRepository.existsById(memberUUID)) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberRepository.existsById(memberUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza o podanym identyfikatorze - nie można utworzyć użytkownika");
         }
 
@@ -133,17 +111,11 @@ public class UserService {
         if (otherID == null) {
             otherID = 0;
         }
-        UserEntity userEntity = UserEntity.builder()
-                .firstName(trim.toString())
-                .secondName(trim1.toString())
-                .pinCode(pin)
-                .active(true)
-                .otherID(otherID)
-                .member(memberRepository.findById(memberUUID).orElse(null))
-                .build();
+        UserEntity userEntity = UserEntity.builder().firstName(trim.toString()).secondName(trim1.toString()).pinCode(pin).active(true).otherID(otherID).member(memberRepository.findById(memberUUID).orElse(null)).build();
         userEntity.setUserPermissionsList(userPermissionsList);
         userRepository.save(userEntity);
-        changeHistoryService.addRecordToChangeHistory(superPinCode, userEntity.getClass().getSimpleName() + " " + "createUser", userEntity.getUuid());
+        UserEntity actor = userAuthService.getAuthenticatedUser(superPinCode);
+        changeHistoryService.record(actor, UserEntity.class.getSimpleName() + " createUser", userEntity.getUuid());
         return ResponseEntity.status(201).body("Utworzono użytkownika " + userEntity.getFullName());
 
     }
@@ -154,10 +126,10 @@ public class UserService {
         if (userRepository.findAll().stream().filter(f -> f.getPinCode().equals(superPin)).noneMatch(a -> a.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()))) {
             return ResponseEntity.badRequest().body("Nie można utworzyć użytkownika. Brak użytkownika z uprawnieniami.");
         }
-        UserEntity entity = userRepository.getOne(userUUID);
+        UserEntity entity = userRepository.findById(userUUID).orElseThrow(EntityNotFoundException::new);
         StringBuilder trim = new StringBuilder();
         StringBuilder trim1 = new StringBuilder();
-        if (firstName != null && !firstName.equals("null") && !firstName.equals("")) {
+        if (firstName != null && !firstName.equals("null") && !firstName.isEmpty()) {
 
             String[] s1 = firstName.split(" ");
             for (String value : s1) {
@@ -167,7 +139,7 @@ public class UserService {
         } else {
             trim.append(entity.getFirstName());
         }
-        if (secondName != null && !secondName.equals("null") && !secondName.equals("")) {
+        if (secondName != null && !secondName.equals("null") && !secondName.isEmpty()) {
 
             String[] s2 = secondName.split(" ");
             for (String value : s2) {
@@ -178,7 +150,7 @@ public class UserService {
             trim1.append(entity.getSecondName());
         }
         if (firstName != null || secondName != null) {
-            boolean anyMatch = userRepository.findAll().stream().anyMatch(a -> a.getFirstName().equals(trim.toString()) && a.getSecondName().equals(trim1.toString()) && !a.getUuid().equals(userUUID));
+            boolean anyMatch = userRepository.findAll().stream().anyMatch(a -> a.getFirstName().contentEquals(trim) && a.getSecondName().contentEquals(trim1) && !a.getUuid().equals(userUUID));
             if (anyMatch) {
                 return ResponseEntity.status(406).body("Taki użytkownik już istnieje.");
             } else {
@@ -231,13 +203,13 @@ public class UserService {
         if (userPermissionsList != null && !userPermissionsList.isEmpty()) {
             entity.setUserPermissionsList(userPermissionsList);
         }
-        if (memberUUID != null && !memberUUID.equals("null") && !memberUUID.equals("") && !memberUUID.equals("undefined")) {
+        if (memberUUID != null && !memberUUID.equals("null") && !memberUUID.isEmpty() && !memberUUID.equals("undefined")) {
             if (memberRepository.existsById(memberUUID)) {
-                entity.setMember(memberRepository.getOne(memberUUID));
+                entity.setMember(memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new));
                 entity.setOtherID(null);
             }
         }
-        if (otherID != null && !otherID.equals("null") && !otherID.equals("") && !otherID.equals("undefined")) {
+        if (otherID != null && !otherID.equals("null") && !otherID.isEmpty() && !otherID.equals("undefined")) {
             if (otherPersonRepository.existsById(Integer.parseInt(otherID))) {
                 entity.setOtherID(Integer.valueOf(otherID));
                 entity.setMember(null);
@@ -247,15 +219,10 @@ public class UserService {
         return ResponseEntity.ok("aktualizowano użytkownika");
     }
 
-    public ResponseEntity<?> getUserActions(String uuid) {
-        UserEntity one = userRepository.getOne(uuid);
+    public ResponseEntity<?> getUserActions(String userUUID) {
+        UserEntity one = userRepository.findById(userUUID).orElseThrow(EntityNotFoundException::new);
 
-        List<ChangeHistoryDTO> all = one.getList()
-                .stream()
-                .filter(f -> !f.getUserEntity().getFirstName().equals("Admin"))
-                .map(Mapping::map)
-                .sorted(Comparator.comparing(ChangeHistoryDTO::getDayNow).thenComparing(ChangeHistoryDTO::getTimeNow).reversed())
-                .collect(Collectors.toList());
+        List<ChangeHistoryDTO> all = one.getList().stream().filter(f -> !f.getUserEntity().getFirstName().equals("Admin")).map(Mapping::map).sorted(Comparator.comparing(ChangeHistoryDTO::getDayNow).thenComparing(ChangeHistoryDTO::getTimeNow).reversed()).collect(Collectors.toList());
 //        all.forEach(e -> {
 //                    if (e.getBelongsTo() != null) {
 //                        if (memberRepository.existsById(e.getBelongsTo())) {
@@ -280,38 +247,8 @@ public class UserService {
 
     }
 
-
-    public ResponseEntity<?> getAccess(String pinCode) throws NoUserPermissionException {
-        ResponseEntity<?> response;
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        if (userRepository.existsByPinCode(pin)) {
-            UserEntity user = userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new);
-
-            WorkingTimeEvidenceEntity workingTimeEvidenceEntity = workingTimeEvidenceRepository.findAll()
-                    .stream()
-                    .filter(f -> f.getUser().getPinCode().equals(pin))
-                    .filter(f -> !f.isClose())
-                    .findFirst()
-                    .orElse(null);
-            if ((workingTimeEvidenceEntity != null && user.getUserPermissionsList().contains(UserSubType.MANAGEMENT.getName())) || user.getUserPermissionsList().contains(UserSubType.ADMIN.getName()) || user.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())) {
-                response = ResponseEntity.ok().build();
-                changeHistoryService.addRecordToChangeHistory(pin, "uzyskaj dostęp", user.getMember() != null ? user.getMember().getUuid() : null);
-            } else {
-                response = ResponseEntity.status(HttpStatus.FORBIDDEN).body("Brak dostępu ");
-            }
-
-        } else {
-            response = ResponseEntity.badRequest().body("Błędny kod");
-        }
-
-
-        return response;
-    }
-
     public ResponseEntity<?> checkArbiterByCode(String code) {
-        String pin = Hashing.sha256()
-                .hashString(code, StandardCharsets.UTF_8)
-                .toString();
+        String pin = Hashing.sha256().hashString(code, StandardCharsets.UTF_8).toString();
         Optional<UserEntity> userOpt = userRepository.findByPinCode(pin);
         if (userOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Próba się nie powiodła");
@@ -320,23 +257,11 @@ public class UserService {
             return ResponseEntity.badRequest().body("Żadne zawody nie są otwarte");
         }
         UserEntity user = userOpt.get();
-        if (user.getMember() != null
-                && user.getMember().getMemberPermissions() != null
-                && user.getMember().getMemberPermissions().getArbiterNumber() != null) {
-            return ResponseEntity.ok(
-                    user.getMember().getMemberPermissions().getArbiterNumber()
-            );
+        if (user.getMember() != null && user.getMember().getMemberPermissions() != null && user.getMember().getMemberPermissions().getArbiterNumber() != null) {
+            return ResponseEntity.ok(user.getMember().getMemberPermissions().getArbiterNumber());
         }
         if (user.getOtherID() != null) {
-            return otherPersonRepository.findById(user.getOtherID())
-                    .filter(op -> op.getPermissionsEntity() != null)
-                    .filter(op -> op.getPermissionsEntity().getArbiterNumber() != null)
-                    .map(op -> tournamentRepository.findByOpenIsTrue().getUuid())
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() ->
-                            ResponseEntity.badRequest()
-                                    .body("użytkownik nie posiada licencji sędziowskiej")
-                    );
+            return otherPersonRepository.findById(user.getOtherID()).filter(op -> op.getPermissionsEntity() != null).filter(op -> op.getPermissionsEntity().getArbiterNumber() != null).map(op -> tournamentRepository.findByOpenIsTrue().getUuid()).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej"));
         }
         return ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej");
     }
@@ -351,9 +276,7 @@ public class UserService {
         if (clubRepository.findById(1).orElseThrow(EntityNotFoundException::new).getShortName().equals("firstStart"))
             return ResponseEntity.ok(true);
 
-        List<UserEntity> collect = userRepository.findAll()
-                .stream()
-                .filter(f -> !f.getSecondName().equals("Admin")).toList();
+        List<UserEntity> collect = userRepository.findAll().stream().filter(f -> !f.getSecondName().equals("Admin")).toList();
 
         long superUserCount = collect.stream().filter(f -> f.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())).count();
         long userCount = collect.stream().filter(f -> !f.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())).count();
@@ -365,23 +288,17 @@ public class UserService {
     }
 
     public List<String> getPermissions() {
-        return Arrays.stream(UserSubType.values())
-                .map(UserSubType::getName)
-                .filter(name -> !name.equals(UserSubType.ADMIN.getName())).collect(Collectors.toList());
+        return Arrays.stream(UserSubType.values()).map(UserSubType::getName).filter(name -> !name.equals(UserSubType.ADMIN.getName())).collect(Collectors.toList());
     }
 
     public ResponseEntity<?> deleteUser(String userID, String code) throws NoUserPermissionException {
-        String pin = Hashing.sha256()
-                .hashString(code, StandardCharsets.UTF_8)
-                .toString();
-        UserEntity targetUser = userRepository.findById(userID)
-                .orElseThrow(NoUserPermissionException::new);
+        String pin = Hashing.sha256().hashString(code, StandardCharsets.UTF_8).toString();
+        UserEntity targetUser = userRepository.findById(userID).orElseThrow(NoUserPermissionException::new);
         UserEntity authUser = userRepository.findByPinCode(pin).orElse(null);
         if (authUser == null) {
             throw new NoUserPermissionException();
         }
-        if (authUser.getUserPermissionsList() == null
-                || !authUser.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())) {
+        if (authUser.getUserPermissionsList() == null || !authUser.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())) {
             throw new NoUserPermissionException();
         }
         targetUser.setActive(false);

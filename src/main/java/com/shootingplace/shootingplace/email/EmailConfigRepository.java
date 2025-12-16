@@ -1,12 +1,7 @@
 package com.shootingplace.shootingplace.email;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EmailConfigRepository {
+public interface EmailConfigRepository extends JpaRepository<EmailConfig, String> {
 
-    EmailConfig save(EmailConfig config);
-
-    List<EmailConfig> findAll();
-
-    EmailConfig getOne(String uuid);
 }

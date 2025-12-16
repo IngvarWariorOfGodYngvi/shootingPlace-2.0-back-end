@@ -1,136 +1,132 @@
 package com.shootingplace.shootingplace.license;
 
-import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.email.EmailService;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.*;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.users.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LicensePaymentService {
 
     private final MemberRepository memberRepository;
-    private final UserRepository userRepository;
     private final LicenseRepository licenseRepository;
     private final LicensePaymentHistoryRepository licensePaymentHistoryRepository;
     private final HistoryRepository historyRepository;
-    private final HistoryService historyService;
 
     private final EmailService emailService;
 
     private final Logger LOG = LogManager.getLogger(getClass());
 
-
-    public LicensePaymentService(MemberRepository memberRepository, UserRepository userRepository, LicenseRepository licenseRepository, LicensePaymentHistoryRepository licensePaymentHistoryRepository, HistoryRepository historyRepository, HistoryService historyService, EmailService emailService) {
-        this.memberRepository = memberRepository;
-        this.userRepository = userRepository;
-        this.licenseRepository = licenseRepository;
-        this.licensePaymentHistoryRepository = licensePaymentHistoryRepository;
-        this.historyRepository = historyRepository;
-        this.historyService = historyService;
-        this.emailService = emailService;
-    }
-
-    public ResponseEntity<?> addLicenseHistoryPayment(String memberUUID, String pinCode) throws NoUserPermissionException {
-
-        if (!memberRepository.existsById(memberUUID)) {
+    @Transactional
+    @RecordHistory(
+            action = "License.addPayment",
+            entity = HistoryEntityType.LICENSE_PAYMENT,
+            entityArgIndex = 0
+    )
+    public ResponseEntity<?> addLicenseHistoryPayment(String memberUUID, String pinCode) {
+        MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
+        if (member == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
         }
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
-        LicenseEntity licenseEntity = memberEntity.getLicense();
-
-        HistoryEntity historyEntity = memberEntity.getHistory();
-        if (!licenseEntity.isPaid()) {
-            if (historyEntity.getLicensePaymentHistory() == null) {
-                historyEntity.setLicensePaymentHistory(new ArrayList<>());
-            }
-            int dateYear = memberEntity.getLicense().getValidThru() != null ? memberEntity.getLicense().getValidThru().getYear() + 1 : LocalDate.now().getYear();
-            List<LicensePaymentHistoryEntity> licensePaymentHistory = historyEntity.getLicensePaymentHistory();
-            String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-            LicensePaymentHistoryEntity build = LicensePaymentHistoryEntity.builder()
-                    .date(LocalDate.now())
-                    .validForYear(dateYear)
-                    .memberUUID(memberUUID)
-                    .isPayInPZSSPortal(false)
-                    .isNew(licenseEntity.getNumber() == null)
-                    .acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName())
-                    .build();
-            licensePaymentHistoryRepository.save(build);
-            licensePaymentHistory.add(build);
-
-            LOG.info("Dodano wpis o nowej płatności za licencję " + LocalDate.now());
-            historyRepository.save(historyEntity);
-            emailService.sendLicensePaymentConfirmation(memberUUID);
-
-        } else {
+        LicenseEntity license = member.getLicense();
+        if (license == null) {
+            return ResponseEntity.badRequest().body("Klubowicz nie posiada licencji");
+        }
+        if (license.isPaid()) {
             return ResponseEntity.badRequest().body("Licencja na ten moment jest opłacona");
         }
-
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, memberEntity, HttpStatus.OK, "addLicenseHistoryPayment", "Dodano płatność za Licencję");
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            licenseEntity.setPaid(true);
-            licenseRepository.save(licenseEntity);
+        HistoryEntity history = member.getHistory();
+        if (history.getLicensePaymentHistory() == null) {
+            history.setLicensePaymentHistory(new ArrayList<>());
         }
-        return response;
-
-
+        int validForYear = license.getValidThru() != null
+                ? license.getValidThru().getYear() + 1
+                : LocalDate.now().getYear();
+        LicensePaymentHistoryEntity payment = LicensePaymentHistoryEntity.builder()
+                .date(LocalDate.now())
+                .validForYear(validForYear)
+                .memberUUID(memberUUID)
+                .isPayInPZSSPortal(false)
+                .isNew(license.getNumber() == null)
+                .build();
+        licensePaymentHistoryRepository.save(payment);
+        history.getLicensePaymentHistory().add(payment);
+        historyRepository.save(history);
+        license.setPaid(true);
+        licenseRepository.save(license);
+        emailService.sendLicensePaymentConfirmation(memberUUID);
+        LOG.info("Dodano wpis o nowej płatności za licencję {}", LocalDate.now());
+        return ResponseEntity.ok("Dodano płatność za Licencję");
     }
-    public ResponseEntity<?> toggleLicencePaymentInPZSS(String paymentUUID, boolean condition, String pinCode) throws NoUserPermissionException {
 
-        if (!licensePaymentHistoryRepository.existsById(paymentUUID)) {
+
+    @Transactional
+    @RecordHistory(action = "License.togglePaymentInPZSS", entity = HistoryEntityType.LICENSE_PAYMENT, entityArgIndex = 0   // paymentUUID
+    )
+    public ResponseEntity<?> toggleLicencePaymentInPZSS(String paymentUUID, boolean condition, String pinCode) {
+        LicensePaymentHistoryEntity payment = licensePaymentHistoryRepository.findById(paymentUUID).orElse(null);
+        if (payment == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono płatności");
         }
-
-        LicensePaymentHistoryEntity licensePaymentHistoryEntity = licensePaymentHistoryRepository.findById(paymentUUID).orElseThrow(EntityNotFoundException::new);
-        licensePaymentHistoryEntity.setPayInPZSSPortal(condition);
-        licensePaymentHistoryRepository.save(licensePaymentHistoryEntity);
-        return historyService.getStringResponseEntity(pinCode, memberRepository.getOne(licensePaymentHistoryEntity.getMemberUUID()), HttpStatus.OK, "toggleLicencePaymentInPZSS", "Oznaczono jako " + (condition ? "" : "nie") + "opłacone w Portalu PZSS");
+        payment.setPayInPZSSPortal(condition);
+        licensePaymentHistoryRepository.save(payment);
+        LOG.info("Zmieniono status PZSS paymentUUID={} na {}", paymentUUID, condition);
+        return ResponseEntity.ok("Oznaczono jako " + (condition ? "" : "nie ") + "opłacone w Portalu PZSS");
     }
-    public ResponseEntity<?> updateLicensePayment(String memberUUID, String paymentUUID, LocalDate date, Integer year, String pinCode) throws NoUserPermissionException {
 
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
-        LicensePaymentHistoryEntity licensePaymentHistoryEntity = memberEntity.getHistory().getLicensePaymentHistory().stream().filter(f -> f.getUuid().equals(paymentUUID)).findFirst().orElseThrow(EntityNotFoundException::new);
 
+    @Transactional
+    @RecordHistory(action = "LicensePayment.update", entity = HistoryEntityType.LICENSE_PAYMENT, entityArgIndex = 1)
+    public ResponseEntity<?> updateLicensePayment(String memberUUID, String paymentUUID, LocalDate date, Integer year, String pinCode) {
+        MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
+
+        if (member == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono klubowicza");
+        }
+        LicensePaymentHistoryEntity payment = member.getHistory().getLicensePaymentHistory().stream().filter(p -> p.getUuid().equals(paymentUUID)).findFirst().orElse(null);
+        if (payment == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono płatności");
+        }
         if (date != null) {
-            licensePaymentHistoryEntity.setDate(date);
+            payment.setDate(date);
         }
         if (year != null) {
-            licensePaymentHistoryEntity.setValidForYear(year);
+            payment.setValidForYear(year);
         }
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, memberEntity, HttpStatus.OK, "updateLicensePayment", "Poprawiono płatność za licencję");
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            licensePaymentHistoryRepository.save(licensePaymentHistoryEntity);
-        }
-        return response;
+        licensePaymentHistoryRepository.save(payment);
+        LOG.info("Zaktualizowano płatność licencji paymentUUID={}", paymentUUID);
+        return ResponseEntity.ok("Poprawiono płatność za licencję");
     }
-    public ResponseEntity<?> removeLicensePaymentRecord(String paymentUUID, String pinCode) throws NoUserPermissionException {
 
-        LicensePaymentHistoryEntity licensePaymentHistoryEntity = licensePaymentHistoryRepository.findById(paymentUUID).orElseThrow(EntityNotFoundException::new);
 
-        MemberEntity memberEntity = memberRepository.findById(licensePaymentHistoryEntity.getMemberUUID()).orElseThrow(EntityNotFoundException::new);
-
-        HistoryEntity history = memberEntity.getHistory();
-
-        history.getLicensePaymentHistory().remove(licensePaymentHistoryEntity);
-
+    @Transactional
+    @RecordHistory(action = "LicensePayment.remove", entity = HistoryEntityType.LICENSE_PAYMENT, entityArgIndex = 0)
+    public ResponseEntity<?> removeLicensePaymentRecord(String paymentUUID, String pinCode) {
+        LicensePaymentHistoryEntity payment = licensePaymentHistoryRepository.findById(paymentUUID).orElse(null);
+        if (payment == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono płatności");
+        }
+        MemberEntity member = memberRepository.findById(payment.getMemberUUID()).orElse(null);
+        if (member == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono klubowicza");
+        }
+        HistoryEntity history = member.getHistory();
+        history.getLicensePaymentHistory().remove(payment);
         historyRepository.save(history);
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, memberEntity, HttpStatus.OK, "removeLicensePaymentRecord", "usunięto");
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            licensePaymentHistoryRepository.delete(licensePaymentHistoryEntity);
-        }
-        return response;
+        licensePaymentHistoryRepository.delete(payment);
+        LOG.info("Usunięto płatność licencji paymentUUID={}", paymentUUID);
+        return ResponseEntity.ok("Usunięto płatność licencji");
     }
+
+
 }

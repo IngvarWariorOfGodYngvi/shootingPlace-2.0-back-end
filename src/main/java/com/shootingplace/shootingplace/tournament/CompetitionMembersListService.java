@@ -252,10 +252,13 @@ public class CompetitionMembersListService {
     }
 
     public CompetitionMembersList getCompetitionListByID(String uuid) {
-        if (uuid.equals(""))
+        if (uuid == null || uuid.isBlank()) {
             return null;
-        else
-            return Mapping.map(competitionMembersListRepository.getOne(uuid));
+        }
+
+        return competitionMembersListRepository.findById(uuid)
+                .map(Mapping::map)
+                .orElse(null);
     }
 
     public ResponseEntity<?> getMemberScoresFromComtetitionMemberListUUID(String competitionMemberListUUID) {

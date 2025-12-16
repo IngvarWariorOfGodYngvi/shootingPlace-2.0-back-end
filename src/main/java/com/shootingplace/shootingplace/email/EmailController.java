@@ -3,14 +3,13 @@ package com.shootingplace.shootingplace.email;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import jakarta.mail.MessagingException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +42,7 @@ public class EmailController {
 
         return emailService.getSentEmails(parsedFirstDate, parsedSecondDate);
     }
+
     @GetMapping("/mailingConfigList")
     public ResponseEntity<?> getMailingConfigList() {
         return ResponseEntity.ok(emailService.getMailingConfigList());
@@ -69,6 +69,7 @@ public class EmailController {
     public ResponseEntity<?> sendEmails(@RequestBody EmailRequest request, @RequestParam List<String> emailList) {
         return emailService.sendCustomEmails(request, emailList);
     }
+
     @Transactional
     @PostMapping("/sendSingleEmail")
     public ResponseEntity<?> sendSingleEmail(@RequestBody EmailRequest request) {
@@ -94,26 +95,17 @@ public class EmailController {
         return emailService.sendTestEmail(request);
     }
 
+    @Transactional
     @PutMapping
-    public ResponseEntity<?> saveConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName(), UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode, acceptedPermissions);
-        ResponseEntity<?> result = ResponseEntity.badRequest().body("Połączenie odrzucone");
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            result = emailService.saveConnection(emailConfig);
-        }
-        return result;
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.ADMIN, UserSubType.SUPER_USER})
+    public ResponseEntity<?> saveConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode) {
+        return emailService.saveConnection(emailConfig);
     }
 
     @PutMapping("/edit")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.ADMIN, UserSubType.SUPER_USER})
     public ResponseEntity<?> editConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode, @RequestParam String uuid) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName(), UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode, acceptedPermissions);
-        ResponseEntity<?> result = ResponseEntity.badRequest().body("Połączenie odrzucone");
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            result = emailService.editConnection(emailConfig, uuid);
-        }
-        return result;
+        return emailService.editConnection(emailConfig, uuid);
     }
 
 }

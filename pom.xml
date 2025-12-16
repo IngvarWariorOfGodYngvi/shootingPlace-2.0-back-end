@@ -6,12 +6,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.4.12</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.shootingplace</groupId>
     <artifactId>shootingplace</artifactId>
-    <version>2.0</version>
+    <version>2.0.0</version>
     <packaging>war</packaging>
     <name>ShootingPlace 2.0</name>
     <description>CRM</description>
@@ -78,13 +78,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.0.0</version>
+            <version>5.5.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.cdimascio</groupId>

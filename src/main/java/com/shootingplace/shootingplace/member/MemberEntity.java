@@ -48,7 +48,7 @@ public class MemberEntity extends Person {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ShootingPatentEntity shootingPatent;
     @Email
-    private String email = "";
+    private String email;
     @NotBlank
     @ValidPESEL
     @Pattern(regexp = "[0-9]*")
@@ -71,11 +71,11 @@ public class MemberEntity extends Person {
     private String imageUUID;
 
     private String signBy;
-    private boolean active = true;
-    private boolean adult = true;
-    private boolean erased = false;
-    private boolean pzss = false;
-    private boolean declarationLOK = false;
+    private boolean active;
+    private boolean adult;
+    private boolean erased;
+    private boolean pzss;
+    private boolean declarationLOK;
 
     @Nullable
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

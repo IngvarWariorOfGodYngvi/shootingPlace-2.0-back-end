@@ -20,9 +20,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -560,7 +560,8 @@ public class TournamentService {
                 .sorted(Comparator.comparing(TournamentDTO::getDate).reversed())
                 .collect(Collectors.toList());
     }
-
+    @Transactional
+    @RecordHistory(action = "Tournament.delete", entity = HistoryEntityType.TOURNAMENT, entityArgIndex = 0)
     public ResponseEntity<?> deleteTournament(String tournamentUUID, String pinCode) throws NoUserPermissionException {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
@@ -584,11 +585,9 @@ public class TournamentService {
         if (!tournamentEntity.getArbitersList().isEmpty()) {
             tournamentEntity.getArbitersList().forEach(e -> historyService.removeJudgingRecord(e.getUuid(), tournamentEntity.getUuid()));
         }
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, tournamentEntity, HttpStatus.OK, "deleteTournament", "Zawody zostały usunięte - nie da się już ich przywrócić");
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            tournamentRepository.delete(tournamentEntity);
-        }
-        return response;
+         tournamentRepository.delete(tournamentEntity);
+
+        return ResponseEntity.ok().build();
 
     }
 
@@ -790,19 +789,18 @@ public class TournamentService {
         list.add(String.valueOf(list4.size()));
         return list;
     }
-
+    @Transactional
+    @RecordHistory(action = "Tournament.openTournament", entity = HistoryEntityType.TOURNAMENT, entityArgIndex = 0)
     public ResponseEntity<?> openTournament(String tournamentUUID, String pinCode) throws NoUserPermissionException {
         if (tournamentRepository.findAll().stream().anyMatch(TournamentEntity::isOpen)) {
             return ResponseEntity.badRequest().body("Nie można otworzyć zawodów gdy inne są otwarte");
         } else {
             TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
-            ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, tournamentEntity, HttpStatus.OK, "openTournament", "Otwarto zawody z dnia" + tournamentEntity.getDate());
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
                 tournamentEntity.setOpen(true);
                 tournamentRepository.save(tournamentEntity);
-                LOG.info("Zawody " + tournamentEntity.getName() + " zostały otwarte");
-            }
-            return response;
+            LOG.info("Zawody {} zostały otwarte", tournamentEntity.getName());
+
+            return ResponseEntity.ok().build();
 
         }
     }

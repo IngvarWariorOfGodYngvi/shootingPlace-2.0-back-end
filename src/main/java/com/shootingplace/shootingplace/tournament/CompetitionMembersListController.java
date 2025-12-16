@@ -5,6 +5,7 @@ import com.shootingplace.shootingplace.armory.ShootingPacketEntity;
 import com.shootingplace.shootingplace.armory.ShootingPacketService;
 import com.shootingplace.shootingplace.exceptions.NoPersonToAmmunitionException;
 import com.shootingplace.shootingplace.score.ScoreService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/competitionMembersList")
 @CrossOrigin
+@RequiredArgsConstructor
 public class CompetitionMembersListController {
 
     private final CompetitionMembersListService competitionMembersListService;
@@ -24,14 +26,6 @@ public class CompetitionMembersListController {
     private final ScoreService scoreService;
     private final CompetitionMembersListRepository competitionMembersListRepository;
     private final ShootingPacketService shootingPacketService;
-
-    public CompetitionMembersListController(CompetitionMembersListService competitionMembersListService, AmmoUsedService ammoUsedService, ScoreService scoreService, CompetitionMembersListRepository competitionMembersListRepository, ShootingPacketService shootingPacketService) {
-        this.competitionMembersListService = competitionMembersListService;
-        this.ammoUsedService = ammoUsedService;
-        this.scoreService = scoreService;
-        this.competitionMembersListRepository = competitionMembersListRepository;
-        this.shootingPacketService = shootingPacketService;
-    }
 
     @GetMapping("/getShooterStarts")
     public ResponseEntity<?> getShooterStarts( @RequestParam String tournamentUUID, @RequestParam String startNumber) {

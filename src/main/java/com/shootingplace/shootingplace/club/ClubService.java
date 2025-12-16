@@ -1,10 +1,9 @@
 package com.shootingplace.shootingplace.club;
 
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.member.MemberEntity;
+import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -35,17 +34,12 @@ public class ClubService {
     }
 
     public List<ClubEntity> getAllClubs() {
-        return clubRepository.findAll()
-                .stream()
-                .filter(f -> !f.getId().equals(2))
-                .collect(Collectors.toList());
+        return clubRepository.findAll().stream().filter(f -> !f.getId().equals(2)).collect(Collectors.toList());
     }
 
     public List<String> getAllClubsToTournament() {
         List<String> list = new ArrayList<>();
-        clubRepository.findAll().stream()
-                .filter(f -> f.getId() != 1)
-                .forEach(e -> list.add(e.getShortName()));
+        clubRepository.findAll().stream().filter(f -> f.getId() != 1).forEach(e -> list.add(e.getShortName()));
         list.sort(String::compareTo);
         return list;
     }
@@ -119,10 +113,7 @@ public class ClubService {
 
     public ResponseEntity<?> createNewClub(Club club) {
 
-        Integer id = clubRepository.findAll()
-                .stream()
-                .max(Comparator.comparing(ClubEntity::getId)).orElseThrow(EntityNotFoundException::new)
-                .getId() + 1;
+        Integer id = clubRepository.findAll().stream().max(Comparator.comparing(ClubEntity::getId)).orElseThrow(EntityNotFoundException::new).getId() + 1;
         club.setId(id);
         ClubEntity clubEntity = buildCLub(club);
         clubRepository.save(clubEntity);
@@ -132,10 +123,7 @@ public class ClubService {
     public List<ClubEntity> getAllClubsToMember() {
         List<ClubEntity> list = new ArrayList<>();
         list.add(clubRepository.findById(1).orElseThrow(EntityNotFoundException::new));
-        List<ClubEntity> collect = clubRepository.findAll()
-                .stream()
-                .filter(f -> f.getId() != 1)
-                .sorted(Comparator.comparing(ClubEntity::getShortName)).toList();
+        List<ClubEntity> collect = clubRepository.findAll().stream().filter(f -> f.getId() != 1).sorted(Comparator.comparing(ClubEntity::getShortName)).toList();
         list.addAll(collect);
         return list;
     }
@@ -153,11 +141,7 @@ public class ClubService {
             return ResponseEntity.ok("importowano Klub: " + club.getShortName());
 
         }
-        boolean b = clubRepository.findAll()
-                .stream()
-                .anyMatch(a -> a.getShortName()
-                        .replaceAll(" ", "")
-                        .equalsIgnoreCase(club.getShortName().replaceAll(" ", "")));
+        boolean b = clubRepository.findAll().stream().anyMatch(a -> a.getShortName().replaceAll(" ", "").equalsIgnoreCase(club.getShortName().replaceAll(" ", "")));
         if (!b) {
             ClubEntity clubEntity = buildCLub(club);
             clubRepository.save(clubEntity);
@@ -170,41 +154,30 @@ public class ClubService {
     }
 
     private ClubEntity buildCLub(Club club) {
-        return ClubEntity.builder()
-                .city(club.getCity())
-                .wzss(club.getWzss())
-                .vovoidership(club.getVovoidership())
-                .url(club.getUrl())
-                .phoneNumber(club.getPhoneNumber())
-                .appartmentNumber(club.getAppartmentNumber())
-                .street(club.getStreet())
-                .houseNumber(club.getHouseNumber())
-                .licenseNumber(club.getLicenseNumber())
-                .email(club.getEmail())
-                .fullName(club.getFullName())
-                .shortName(club.getShortName())
-                .id(club.getId())
-                .build();
+        return ClubEntity.builder().city(club.getCity()).wzss(club.getWzss()).vovoidership(club.getVovoidership()).url(club.getUrl()).phoneNumber(club.getPhoneNumber()).appartmentNumber(club.getAppartmentNumber()).street(club.getStreet()).houseNumber(club.getHouseNumber()).licenseNumber(club.getLicenseNumber()).email(club.getEmail()).fullName(club.getFullName()).shortName(club.getShortName()).id(club.getId()).build();
     }
 
-    public ResponseEntity<?> deleteClub(Integer id, String pinCode) throws NoUserPermissionException {
-        if (id == 2 || id == 1) {
+    @RecordHistory(action = "Club.delete", entity = HistoryEntityType.CLUB)
+    public ResponseEntity<?> deleteClub(Integer id, String pinCode) {
+        if (id == 1 || id == 2) {
             return ResponseEntity.badRequest().body("Nie można usunąć tego Klubu");
         }
-        ClubEntity one = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
-        List<MemberEntity> collect = memberRepository.findAll().stream().filter(f -> f.getClub().getId().equals(id)).collect(Collectors.toList());
-        collect.forEach(e -> {
-            e.setClub(clubRepository.findById(2).orElseThrow(EntityNotFoundException::new));
-            memberRepository.save(e);
-        });
-        List<OtherPersonEntity> collect1 = otherPersonRepository.findAll().stream().filter(f -> f.getClub().getId().equals(id)).collect(Collectors.toList());
-        collect1.forEach(e -> {
-            e.setClub(clubRepository.findById(2).orElseThrow(EntityNotFoundException::new));
-            otherPersonRepository.save(e);
+        ClubEntity clubToDelete = clubRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        ClubEntity fallbackClub = clubRepository.findById(2).orElseThrow(EntityNotFoundException::new);
+        memberRepository.findAll().stream().filter(m -> m.getClub().getId().equals(id)).forEach(m -> {
+            m.setClub(fallbackClub);
+            memberRepository.save(m);
         });
 
-        clubRepository.delete(one);
-        return historyService.getStringResponseEntity(pinCode, one, HttpStatus.OK, "Delete Competition", "Usunięto konkurencję " + one.getShortName());
+        otherPersonRepository.findAll().stream().filter(p -> p.getClub().getId().equals(id)).forEach(p -> {
+            p.setClub(fallbackClub);
+            otherPersonRepository.save(p);
+        });
 
+        clubRepository.delete(clubToDelete);
+
+        LOG.info("Usunięto klub: {}", clubToDelete.getShortName());
+        return ResponseEntity.ok("Usunięto klub " + clubToDelete.getShortName());
     }
+
 }

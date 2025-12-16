@@ -1,42 +1,36 @@
 package com.shootingplace.shootingplace.ammoEvidence;
 
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.HistoryService;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
+import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AmmoEvidenceService {
 
 
     private final AmmoEvidenceRepository ammoEvidenceRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
-    private final HistoryService historyService;
     private final Logger LOG = LogManager.getLogger(getClass());
-
-
-    public AmmoEvidenceService(AmmoEvidenceRepository ammoEvidenceRepository, AmmoInEvidenceRepository ammoInEvidenceRepository, HistoryService historyService) {
-        this.ammoEvidenceRepository = ammoEvidenceRepository;
-        this.ammoInEvidenceRepository = ammoInEvidenceRepository;
-        this.historyService = historyService;
-    }
 
     public ResponseEntity<?> getOpenEvidence() {
         List<AmmoEvidenceEntity> allByOpenTrue = ammoEvidenceRepository.findAllByOpenTrue();
-        if (allByOpenTrue.size() > 0) {
-            return ResponseEntity.ok(Mapping.map(allByOpenTrue.get(0)));
+        if (!allByOpenTrue.isEmpty()) {
+            return ResponseEntity.ok(Mapping.map(allByOpenTrue.getFirst()));
         }
         return ResponseEntity.ok(null);
 //        return ammoEvidenceRepository.findAllByOpenTrue().size() > 0 ? ResponseEntity.ok(Mapping.map(ammoEvidenceRepository.findAllByOpenTrue().get(0))) : ResponseEntity.ok(new ArrayList<>());
@@ -58,9 +52,7 @@ public class AmmoEvidenceService {
         if (!ammoEvidenceRepository.existsById(evidenceUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono listy");
         }
-        AmmoEvidenceEntity ammoEvidenceEntity = ammoEvidenceRepository
-                .findById(evidenceUUID)
-                .orElseThrow(EntityNotFoundException::new);
+        AmmoEvidenceEntity ammoEvidenceEntity = ammoEvidenceRepository.findById(evidenceUUID).orElseThrow(EntityNotFoundException::new);
         ammoEvidenceEntity.setOpen(false);
         ammoEvidenceEntity.setForceOpen(false);
         ammoEvidenceRepository.save(ammoEvidenceEntity);
@@ -73,28 +65,31 @@ public class AmmoEvidenceService {
         return ammoEvidenceRepository.findAllByOpenFalse(page).map(Mapping::map1).toList();
     }
 
-    public ResponseEntity<?> openEvidence(String evidenceUUID, String pinCode) throws NoUserPermissionException {
-        if (ammoEvidenceRepository.findAll().stream().anyMatch(AmmoEvidenceEntity::isOpen)) {
-            return ResponseEntity.badRequest().body("Nie można otworzyć listy bo inna jest otwarta");
-        }
+    @Transactional
+    @RecordHistory(action = "AmmoEvidence.open", entity = HistoryEntityType.AMMO_EVIDENCE, entityArgIndex = 0)
+    public ResponseEntity<?> openEvidence(String evidenceUUID, String pinCode) {
 
-        AmmoEvidenceEntity ammoEvidenceEntity = ammoEvidenceRepository.getOne(evidenceUUID);
-        if (ammoEvidenceEntity.isLocked()) {
-            return ResponseEntity.badRequest().body("Lista Została zablokowana - nie można jej już otworzyć");
+        boolean anyOpen = ammoEvidenceRepository.findAll().stream().anyMatch(AmmoEvidenceEntity::isOpen);
+        if (anyOpen) {
+            return ResponseEntity.badRequest().body("Nie można otworzyć listy – inna lista jest już otwarta");
         }
-        ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, ammoEvidenceEntity, HttpStatus.OK, "openEvidence", "Ręcznie otworzono listę - Pamiętaj by ją zamknąć!");
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            ammoEvidenceEntity.setOpen(true);
-            ammoEvidenceEntity.setForceOpen(true);
-            ammoEvidenceRepository.save(ammoEvidenceEntity);
-            LOG.info("otworzono");
+        AmmoEvidenceEntity evidence = ammoEvidenceRepository.findById(evidenceUUID).orElse(null);
+        if (evidence == null) {
+            return ResponseEntity.badRequest().body("Nie znaleziono listy ewidencji");
         }
-        return response;
-
+        if (evidence.isLocked()) {
+            return ResponseEntity.badRequest().body("Lista została zablokowana – nie można jej otworzyć");
+        }
+        evidence.setOpen(true);
+        evidence.setForceOpen(true);
+        ammoEvidenceRepository.save(evidence);
+        LOG.info("Ręcznie otworzono listę ewidencji amunicji {}", evidenceUUID);
+        return ResponseEntity.ok("Ręcznie otworzono listę – pamiętaj, aby ją zamknąć");
     }
 
+
     public String checkAnyOpenEvidence() {
-        // send name of colours with -> \" \" <-
+        // send name of colors with -> \" \" <-
         // primary
         // secondary
         // accent

@@ -4,15 +4,16 @@ import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.domain.Person;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.HistoryService;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
+import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,21 +23,14 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BarCodeCardService {
 
     private final BarCodeCardRepository barCodeCardRepo;
     private final UserRepository userRepository;
     private final MemberRepository memberRepository;
-    private final HistoryService historyService;
 
-    private static final Logger log = LoggerFactory.getLogger(BarCodeCardService.class);
-
-    public BarCodeCardService(BarCodeCardRepository barCodeCardRepo, UserRepository userRepository, MemberRepository memberRepository, HistoryService historyService) {
-        this.barCodeCardRepo = barCodeCardRepo;
-        this.userRepository = userRepository;
-        this.memberRepository = memberRepository;
-        this.historyService = historyService;
-    }
+    private final Logger LOG = LogManager.getLogger();
 
     public ResponseEntity<?> createNewCard(String barCode, String uuid, String pinCode) throws NoUserPermissionException {
         String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
@@ -48,7 +42,7 @@ public class BarCodeCardService {
         if (barCodeCardRepo.existsByBarCode(barCode)) {
             return ResponseEntity.badRequest().body("Taki numer jest już do kogoś przypisany - użyj innej karty");
         }
-        if (barCode.isEmpty() || barCode.isBlank()) {
+        if (barCode.isBlank()) {
             return ResponseEntity.badRequest().body("Nie podano numeru Karty");
         }
         if (userEntity.getUserPermissionsList().stream().noneMatch(acceptedPermissions::contains)) {
@@ -63,14 +57,7 @@ public class BarCodeCardService {
             if (size > 2) {
                 return ResponseEntity.badRequest().body("Nie można dodać więcej kart do " + userEntity.getFirstName());
             }
-            BarCodeCardEntity build = BarCodeCardEntity.builder()
-                    .barCode(barCode)
-                    .belongsTo(userEntity.getUuid())
-                    .isActive(true)
-                    .isMaster(true)
-                    .activatedDay(LocalDate.now())
-                    .type("User")
-                    .build();
+            BarCodeCardEntity build = BarCodeCardEntity.builder().barCode(barCode).belongsTo(userEntity.getUuid()).isActive(true).isMaster(true).activatedDay(LocalDate.now()).type("User").build();
             BarCodeCardEntity save = barCodeCardRepo.save(build);
             barCodeCardList = userEntity.getBarCodeCardList();
             barCodeCardList.add(save);
@@ -87,14 +74,7 @@ public class BarCodeCardService {
             if (size > 2) {
                 return ResponseEntity.badRequest().body("Nie można dodać więcej kart do " + userEntity.getFirstName());
             }
-            BarCodeCardEntity build = BarCodeCardEntity.builder()
-                    .barCode(barCode)
-                    .belongsTo(memberEntity.getUuid())
-                    .isActive(true)
-                    .isMaster(true)
-                    .activatedDay(LocalDate.now())
-                    .type("Member")
-                    .build();
+            BarCodeCardEntity build = BarCodeCardEntity.builder().barCode(barCode).belongsTo(memberEntity.getUuid()).isActive(true).isMaster(true).activatedDay(LocalDate.now()).type("Member").build();
             BarCodeCardEntity save = barCodeCardRepo.save(build);
             barCodeCardList = memberEntity.getBarCodeCardList();
             barCodeCardList.add(save);
@@ -132,17 +112,16 @@ public class BarCodeCardService {
 
     }
 
-    public ResponseEntity<?> deactivateCard(String barCode, String pinCode) throws NoUserPermissionException {
-
+    @RecordHistory(action = "BarcodeCard.deactivate", entity = HistoryEntityType.BARCODE_CARD)
+    public ResponseEntity<?> deactivateCard(String barCode, String pinCode) {
         BarCodeCardEntity card = barCodeCardRepo.findByBarCode(barCode);
-        if (card != null) {
-            card.setActive(false);
-            ResponseEntity<?> response = historyService.getStringResponseEntity(pinCode, card, HttpStatus.OK, "Dezaktywacja karty", "Dezaktywowano Kartę Klubowicza");
-            if (response.getStatusCode().equals(HttpStatus.OK)) {
-                barCodeCardRepo.save(card);
-            }
-            return response;
+        if (card == null) {
+            return ResponseEntity.badRequest().body("Brak numeru Karty");
         }
-        return ResponseEntity.badRequest().body("Brak numeru Karty");
+        card.setActive(false);
+        barCodeCardRepo.save(card);
+        LOG.info("Dezaktywowano kartę: {}", barCode);
+        return ResponseEntity.ok("Dezaktywowano Kartę Klubowicza");
     }
+
 }

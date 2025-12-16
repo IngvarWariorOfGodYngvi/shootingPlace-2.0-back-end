@@ -3,12 +3,11 @@ package com.shootingplace.shootingplace.competition;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
-import org.springframework.http.HttpStatus;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -60,24 +59,15 @@ public class CompetitionController {
 
     @Transactional
     @PutMapping("/update")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> updateCompetition(@RequestParam String uuid, @RequestBody Competition competition, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return competitionService.updateCompetition(uuid, competition, pinCode);
-        } else {
-            return code;
-        }
+        return competitionService.updateCompetition(uuid, competition, pinCode);
     }
+
     @Transactional
     @DeleteMapping("/delete")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> deleteCompetition(@RequestParam String uuid, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return competitionService.deleteCompetition(uuid, pinCode);
-        } else {
-            return code;
-        }
+        return competitionService.deleteCompetition(uuid, pinCode);
     }
 }

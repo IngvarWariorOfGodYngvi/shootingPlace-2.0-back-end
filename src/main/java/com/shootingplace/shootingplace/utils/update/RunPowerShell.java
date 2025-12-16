@@ -27,23 +27,9 @@ public class RunPowerShell {
             LOG.info("RunPowerShell");
 
             LOG.info("Start: Front-end");
-            switch (env.getActiveProfiles()[0]) {
-                case "prod":
-                    new ProcessBuilder("powershell", "-ExecutionPolicy", "Bypass", "-File", "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/downloadfrontdziesiatka.ps1")
-                            .inheritIO()
-                            .start();
-                    break;
-                case "rcs":
-                    new ProcessBuilder("powershell", "-ExecutionPolicy", "Bypass", "-File", "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/downloadfrontpanaszew.ps1")
-                            .inheritIO()
-                            .start();
-                    break;
-                default:
-                    new ProcessBuilder("powershell", "-ExecutionPolicy", "Bypass", "-File", "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/downloadfrontdziesiatka.ps1")
-                            .inheritIO()
-                            .start();
-                    break;
-            }
+            new ProcessBuilder("powershell", "-ExecutionPolicy", "Bypass", "-File", "C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/downloadfront.ps1")
+                    .inheritIO()
+                    .start();
             LOG.info("Stop: Front-end");
 
             LOG.info("Start: Back-end");

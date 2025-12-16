@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum UserSubType {
     ADMIN("Admin"),
     MANAGEMENT("Zarząd"),
@@ -14,7 +17,4 @@ public enum UserSubType {
     UserSubType(String name) {this.name = name;}
 
 
-    public String getName() {
-        return name;
-    }
 }

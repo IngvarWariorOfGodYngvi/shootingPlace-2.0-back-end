@@ -3,7 +3,7 @@ package com.shootingplace.shootingplace.club;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
-import org.springframework.http.HttpStatus;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -63,13 +63,8 @@ public class ClubController {
 
     @Transactional
     @DeleteMapping("/delete")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT})
     public ResponseEntity<?> deleteClub(@RequestParam String id, String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = List.of(UserSubType.MANAGEMENT.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode, acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
-            return clubService.deleteClub(Integer.parseInt(id), pinCode);
-        } else {
-            return code;
-        }
+        return clubService.deleteClub(Integer.parseInt(id), pinCode);
     }
 }

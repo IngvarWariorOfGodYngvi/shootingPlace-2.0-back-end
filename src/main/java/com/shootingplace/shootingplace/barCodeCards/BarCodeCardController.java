@@ -3,12 +3,9 @@ package com.shootingplace.shootingplace.barCodeCards;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
-import org.springframework.http.HttpStatus;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/barCode")
@@ -33,13 +30,9 @@ public class BarCodeCardController {
         return barCodeCardService.createNewCard(barCode, uuid, pinCode);
     }
     @PutMapping("/")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.SUPER_USER})
     public ResponseEntity<?> deactivateCard(@RequestParam String barCode, @RequestParam String pinCode) throws NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName(), UserSubType.SUPER_USER.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode,acceptedPermissions);
-        if (code.getStatusCode().equals(HttpStatus.OK)) {
             return barCodeCardService.deactivateCard(barCode, pinCode);
-        }
-        return code;
     }
 
 }

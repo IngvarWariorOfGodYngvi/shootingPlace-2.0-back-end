@@ -1,13 +1,6 @@
 package com.shootingplace.shootingplace.armory;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ShootingPacketRepository {
-    List<ShootingPacketEntity> findAll();
-
-    ShootingPacketEntity save(ShootingPacketEntity entity);
-
-    ShootingPacketEntity getOne(String uuid);
-
-    void delete(ShootingPacketEntity entity);
+public interface ShootingPacketRepository extends JpaRepository<ShootingPacketEntity,String> {
 }

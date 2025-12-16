@@ -4,14 +4,12 @@ import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.club.Club;
 import com.shootingplace.shootingplace.club.ClubService;
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import com.shootingplace.shootingplace.security.RequirePermissions;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.update.RunPowerShell;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,26 +18,19 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/settings")
 @CrossOrigin
+@RequiredArgsConstructor
 public class SettingsController {
 
     private final ClubService clubService;
     private final Environment environment;
-    private final ChangeHistoryService changeHistoryService;
     private final UserRepository userRepository;
-    private final Logger LOG = LogManager.getLogger();
-
-
-    public SettingsController(ClubService clubService, Environment environment, ChangeHistoryService changeHistoryService, UserRepository userRepository) {
-        this.clubService = clubService;
-        this.environment = environment;
-        this.changeHistoryService = changeHistoryService;
-        this.userRepository = userRepository;
-    }
 
     @Transactional
     @PostMapping("/createMotherClub")
@@ -76,12 +67,11 @@ public class SettingsController {
 
     @Transactional
     @PostMapping("/update")
-    public ResponseEntity<?> updateProgram(@RequestParam String pinCode) throws IOException, NoUserPermissionException {
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName(), UserSubType.CEO.getName());
-        ResponseEntity<?> code = changeHistoryService.comparePinCode(pinCode, acceptedPermissions);
+    @RequirePermissions(value = {UserSubType.ADMIN, UserSubType.SUPER_USER,UserSubType.CEO})
+    public ResponseEntity<?> updateProgram(@RequestParam String pinCode) throws IOException {
+        ResponseEntity<?> code = ResponseEntity.ok().build();
         new RunPowerShell(environment, code);
         return code;
-
 
     }
 
