@@ -8,6 +8,7 @@ import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class StartConfiguration {
 
     private final UserRepository userRepository;
@@ -32,17 +34,6 @@ public class StartConfiguration {
     private final GunUsedRepository gunUsedRepository;
     private final JdbcTemplate jdbcTemplate;
     private final Logger LOG = LogManager.getLogger(getClass());
-
-    public StartConfiguration(UserRepository userRepository,
-                              Environment environment,
-                              GunRepresentationService gunRepresentationService,
-                              GunUsedRepository gunUsedRepository, JdbcTemplate jdbcTemplate) {
-        this.userRepository = userRepository;
-        this.environment = environment;
-        this.gunRepresentationService = gunRepresentationService;
-        this.gunUsedRepository = gunUsedRepository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @PostConstruct
     public void init() {
