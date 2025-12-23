@@ -28,6 +28,7 @@ public class SettingsController {
     private final ClubService clubService;
     private final UserRepository userRepository;
     private final ApplicationLicenseService applicationLicenseService;
+    private final UpdateService updateService;
 
     @Transactional
     @PostMapping("/createMotherClub")
@@ -61,11 +62,10 @@ public class SettingsController {
         return isEnd ? ResponseEntity.badRequest().body(map) : ResponseEntity.ok(map);
     }
 
-    @Transactional
     @PostMapping("/update")
     @RequirePermissions(value = {UserSubType.ADMIN, UserSubType.SUPER_USER, UserSubType.CEO})
     public ResponseEntity<?> updateProgram(@RequestParam String pinCode) {
-        new UpdateService().startUpdateAgent();
+        updateService.startUpdateAgent();
         return ResponseEntity.ok().build();
 
     }

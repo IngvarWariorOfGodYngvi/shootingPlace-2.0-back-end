@@ -1,20 +1,32 @@
 package com.shootingplace.shootingplace.configurations;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 
+@Service
+@RequiredArgsConstructor
 public class UpdateService {
-    private final Logger LOG = LogManager.getLogger();
-    public UpdateService() {
-    }
+
+    private final Logger log = LogManager.getLogger();
+    private final UpdateAgentProperties props;
+
     public void startUpdateAgent() {
         try {
-            new ProcessBuilder("java", "-jar", "C:/update-agent/update-agent-1.0.0.jar").directory(new File("C:/update-agent")).start();
+            File dir = new File(props.getDir());
+
+            new ProcessBuilder("java", "-jar", props.getJar()).directory(dir).start();
+
+            log.info("Update Agent started from {}", dir.getAbsolutePath());
+
         } catch (IOException e) {
-            LOG.error("Failed to start update agent", e);
+            log.error("Failed to start Update Agent", e);
+            throw new IllegalStateException("Cannot start update agent", e);
         }
     }
 }
+
