@@ -37,7 +37,7 @@ public class AmmoEvidenceService {
     }
 
     public AmmoEvidenceDTO getEvidence(String uuid) {
-        return Mapping.map(ammoEvidenceRepository.getOne(uuid));
+        return Mapping.map(ammoEvidenceRepository.findById(uuid).orElseThrow(EntityNotFoundException::new));
     }
 
     public void automationCloseEvidence() {
@@ -56,7 +56,7 @@ public class AmmoEvidenceService {
         ammoEvidenceEntity.setOpen(false);
         ammoEvidenceEntity.setForceOpen(false);
         ammoEvidenceRepository.save(ammoEvidenceEntity);
-        LOG.info("zamknięto listę " + ammoEvidenceEntity.getNumber() + " z dnia " + ammoEvidenceEntity.getDate());
+        LOG.info("zamknięto listę {} z dnia {}", ammoEvidenceEntity.getNumber(), ammoEvidenceEntity.getDate());
         return ResponseEntity.ok("Lista została zamknięta");
     }
 
@@ -67,7 +67,7 @@ public class AmmoEvidenceService {
 
     @Transactional
     @RecordHistory(action = "AmmoEvidence.open", entity = HistoryEntityType.AMMO_EVIDENCE, entityArgIndex = 0)
-    public ResponseEntity<?> openEvidence(String evidenceUUID, String pinCode) {
+    public ResponseEntity<?> openEvidence(String evidenceUUID) {
 
         boolean anyOpen = ammoEvidenceRepository.findAll().stream().anyMatch(AmmoEvidenceEntity::isOpen);
         if (anyOpen) {
@@ -95,7 +95,7 @@ public class AmmoEvidenceService {
         // accent
         // warning
         // negative
-        // rest of colours
+        // rest of colors
         String message = "\"primary\"";
 
         if (ammoEvidenceRepository.findAll().stream().anyMatch(f -> f.isOpen() && !f.isForceOpen())) {
@@ -111,7 +111,7 @@ public class AmmoEvidenceService {
         return ammoEvidenceRepository.findAll().stream().filter(f -> !f.isLocked()).map(Mapping::map).sorted(Comparator.comparing(AmmoEvidenceDTO::getDate).reversed()).collect(Collectors.toList());
     }
 
-    public List<?> getAmmoInEvidece(String caliberUUID) {
+    public List<?> getAmmoInEvidence(String caliberUUID) {
         return ammoInEvidenceRepository.findAll().stream().filter(f -> f.getCaliberUUID().equals(caliberUUID)).filter(f -> f.isLocked() && f.getSignedBy() != null).map(Mapping::map).sorted(Comparator.comparing(AmmoInEvidenceDTO::getDate).reversed()).collect(Collectors.toList());
     }
 }

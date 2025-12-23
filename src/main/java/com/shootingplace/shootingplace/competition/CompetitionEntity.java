@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -46,9 +47,7 @@ public class CompetitionEntity {
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
-            for (String s : disciplineList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(disciplineList.split(";")));
         }
         return vals;
     }
@@ -68,9 +67,7 @@ public class CompetitionEntity {
     public List<String> getNumberOfManyShotsList() {
         List<String> vals = new ArrayList<>();
         if (numberOfManyShotsList != null) {
-            for (String s : numberOfManyShotsList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(numberOfManyShotsList.split(";")));
         }
         return vals;
     }

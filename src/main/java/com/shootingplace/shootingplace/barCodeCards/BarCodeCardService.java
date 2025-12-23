@@ -11,6 +11,7 @@ import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +51,7 @@ public class BarCodeCardService {
         }
         Person person = null;
         if (userRepository.existsById(uuid)) {
-            userEntity = userRepository.getOne(uuid);
+            userEntity = userRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
             List<BarCodeCardEntity> barCodeCardList;
             List<BarCodeCardEntity> allByBelongsTo = barCodeCardRepo.findAllByBelongsTo(userEntity.getUuid());
             int size = (int) allByBelongsTo.stream().filter(f -> f.getActivatedDay().getMonthValue() == LocalDate.now().getMonthValue()).count();
@@ -67,7 +68,7 @@ public class BarCodeCardService {
             return ResponseEntity.ok("Zapisano numer i przypisano do: " + person.getFirstName() + " " + person.getSecondName());
         }
         if (memberRepository.existsById(uuid)) {
-            MemberEntity memberEntity = memberRepository.getOne(uuid);
+            MemberEntity memberEntity = memberRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
             List<BarCodeCardEntity> barCodeCardList;
             List<BarCodeCardEntity> allByBelongsTo = barCodeCardRepo.findAllByBelongsTo(userEntity.getUuid());
             int size = (int) allByBelongsTo.stream().filter(f -> f.getActivatedDay().getMonthValue() == LocalDate.now().getMonthValue()).count();
@@ -97,12 +98,12 @@ public class BarCodeCardService {
         String belongsTo = barCodeCardEntity.getBelongsTo();
         MemberEntity member;
         // szukam u userów
-        UserEntity userEntity = userRepository.getOne(belongsTo);
+        UserEntity userEntity = userRepository.findById(belongsTo).orElseThrow(EntityNotFoundException::new);
         if (userEntity != null) {
             member = userEntity.getMember();
         } else {
             // szukam u memberów
-            member = memberRepository.getOne(belongsTo);
+            member = memberRepository.findById(belongsTo).orElseThrow(EntityNotFoundException::new);
         }
         if (member != null) {
             return ResponseEntity.ok(Mapping.map1(member));
@@ -113,7 +114,7 @@ public class BarCodeCardService {
     }
 
     @RecordHistory(action = "BarcodeCard.deactivate", entity = HistoryEntityType.BARCODE_CARD)
-    public ResponseEntity<?> deactivateCard(String barCode, String pinCode) {
+    public ResponseEntity<?> deactivateCard(String barCode) {
         BarCodeCardEntity card = barCodeCardRepo.findByBarCode(barCode);
         if (card == null) {
             return ResponseEntity.badRequest().body("Brak numeru Karty");

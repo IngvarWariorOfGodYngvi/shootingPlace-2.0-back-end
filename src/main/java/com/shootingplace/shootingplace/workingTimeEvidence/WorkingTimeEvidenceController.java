@@ -1,9 +1,8 @@
 package com.shootingplace.shootingplace.workingTimeEvidence;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/work")
 @CrossOrigin
+@RequiredArgsConstructor
 public class WorkingTimeEvidenceController {
 
     private final WorkingTimeEvidenceService workService;
-    private final ChangeHistoryService changeHistoryService;
-
-
-    public WorkingTimeEvidenceController(WorkingTimeEvidenceService workService, ChangeHistoryService changeHistoryService) {
-        this.workService = workService;
-        this.changeHistoryService = changeHistoryService;
-    }
 
     @PostMapping("/")
     public ResponseEntity<?> startStopWork(@RequestParam String number) {
@@ -45,7 +38,7 @@ public class WorkingTimeEvidenceController {
     }
 
     @GetMapping("/month")
-    public ResponseEntity<?> getAllWorkingTimeEvidenceInMonth(@Nullable @RequestParam String year, @Nullable @RequestParam String month, @Nullable @RequestParam String workType) {
+    public ResponseEntity<?> getAllWorkingTimeEvidenceInMonth(@Nullable @RequestParam String year, @Nullable @RequestParam String month) {
         if (year == null || year.equals("null") || month == null || month.equals("null")) {
             return ResponseEntity.badRequest().body("Musisz podać Rok i Miesiąc aby wyświetlić wyniki");
         }
@@ -76,12 +69,13 @@ public class WorkingTimeEvidenceController {
     @Transactional
     @PatchMapping("/accept")
     @RequirePermissions(value = {UserSubType.CEO})
-    public ResponseEntity<?> acceptWorkingTime(@RequestParam List<String> uuidList, @RequestParam String pinCode) throws NoUserPermissionException {
-            return workService.acceptWorkingTime(uuidList, pinCode);
+    public ResponseEntity<?> acceptWorkingTime(@RequestParam List<String> uuidList, @RequestParam String pinCode) {
+            return workService.acceptWorkingTime(uuidList);
     }
 
     @Transactional
     @PutMapping("/")
+    @RequirePermissions(value = {UserSubType.CEO})
     public ResponseEntity<?> inputChangesToWorkTime(@RequestParam String[] list, @RequestParam String pinCode) {
         List<WorkingTimeEvidenceDTO> list1 = new ArrayList<>();
         for (String s : list) {
@@ -97,6 +91,6 @@ public class WorkingTimeEvidenceController {
 
         }
 
-        return workService.inputChangesToWorkTime(list1, pinCode);
+        return workService.inputChangesToWorkTime(list1);
     }
 }

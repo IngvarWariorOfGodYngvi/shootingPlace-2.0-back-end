@@ -20,7 +20,7 @@ public class GuardiansStrategy implements ContributionStrategy, EmailStrategy, S
         if (list.isEmpty()) {
             validThru = calculateFirstYearValidThru(paymentDay);
         } else {
-            validThru = list.get(0)
+            validThru = list.getFirst()
                     .getValidThru()
                     .plusYears(1);
         }

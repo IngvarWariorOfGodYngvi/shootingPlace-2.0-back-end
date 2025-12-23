@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.armory;
 
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.HistoryService;
 import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.utils.Mapping;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceRepository;
@@ -26,7 +25,6 @@ public class ShootingPacketService {
     private final ShootingPacketRepository shootingPacketRepository;
     private final CaliberForShootingPacketRepository caliberForShootingPacketRepository;
     private final WorkingTimeEvidenceRepository workingTimeEvidenceRepository;
-    private final HistoryService historyService;
     private final CaliberRepository caliberRepository;
 
     private final Logger LOG = LogManager.getLogger();
@@ -40,12 +38,12 @@ public class ShootingPacketService {
     }
 
     public List<CaliberForShootingPacketEntity> getAllCalibersFromShootingPacket(String shootingPacketUUID) {
-        return shootingPacketRepository.getOne(shootingPacketUUID).getCalibers();
+        return shootingPacketRepository.findById(shootingPacketUUID).orElseThrow(EntityNotFoundException::new).getCalibers();
     }
 
     @Transactional
     @RecordHistory(action = "ShootingPacket.create", entity = HistoryEntityType.SHOOTING_PACKET)
-    public ResponseEntity<?> addShootingPacket(String name, float price, Map<String, Integer> calibers, String pinCode) {
+    public ResponseEntity<?> addShootingPacket(String name, float price, Map<String, Integer> calibers) {
         if (!workingTimeEvidenceRepository.existsByIsCloseFalse()) {
             return ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt");
         }
@@ -72,7 +70,7 @@ public class ShootingPacketService {
 
     @Transactional
     @RecordHistory(action = "ShootingPacket.update", entity = HistoryEntityType.SHOOTING_PACKET, entityArgIndex = 0)
-    public ResponseEntity<?> updateShootingPacket(String uuid, String name, Float price, Map<String, Integer> calibers, String pinCode) {
+    public ResponseEntity<?> updateShootingPacket(String uuid, String name, Float price, Map<String, Integer> calibers) {
         if (!workingTimeEvidenceRepository.existsByIsCloseFalse()) {
             return ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt");
         }
@@ -108,7 +106,7 @@ public class ShootingPacketService {
 
     @Transactional
     @RecordHistory(action = "ShootingPacket.delete", entity = HistoryEntityType.SHOOTING_PACKET, entityArgIndex = 0)
-    public ResponseEntity<?> deleteShootingPacket(String uuid, String pinCode) {
+    public ResponseEntity<?> deleteShootingPacket(String uuid) {
         ShootingPacketEntity packet = shootingPacketRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono pakietu"));
 
         shootingPacketRepository.delete(packet);

@@ -12,7 +12,7 @@ import java.util.List;
 public class PanaszewStrategy implements ContributionStrategy, EmailStrategy, SystemPropertiesStrategy {
     @Override
     public LocalDate calculateValidThru(LocalDate paymentDay, List<ContributionEntity> list) {
-        LocalDate localDate = list.isEmpty() ? paymentDay.plusYears(1) : list.get(0).getValidThru().plusYears(1);
+        LocalDate localDate = list.isEmpty() ? paymentDay.plusYears(1) : list.getFirst().getValidThru().plusYears(1);
         logToCalculateValidThru(localDate);
         return localDate;
     }

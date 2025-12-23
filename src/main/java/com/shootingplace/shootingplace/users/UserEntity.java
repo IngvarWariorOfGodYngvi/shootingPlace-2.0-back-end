@@ -12,6 +12,7 @@ import org.hibernate.annotations.UuidGenerator;
 import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -46,9 +47,7 @@ public class UserEntity extends Person {
     public List<String> getUserPermissionsList() {
         List<String> vals = new ArrayList<>();
         if (userPermissionsList != null) {
-            for (String s : userPermissionsList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(userPermissionsList.split(";")));
         }
         return vals;
     }

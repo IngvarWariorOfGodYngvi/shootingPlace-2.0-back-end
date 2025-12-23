@@ -48,7 +48,7 @@ public class ContributionService {
     }
 
     @RecordHistory(action = "Cntribution.add", entity = HistoryEntityType.CONTRIBUTION)
-    public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, String pinCode, Integer contributionCount) {
+    public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, Integer contributionCount) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
 
@@ -108,7 +108,7 @@ public class ContributionService {
 
 
     @RecordHistory(action = "Contribution.update", entity = HistoryEntityType.CONTRIBUTION, entityArgIndex = 1)
-    public ResponseEntity<?> updateContribution(String memberUUID, String contributionUUID, LocalDate paymentDay, LocalDate validThru, String pinCode) {
+    public ResponseEntity<?> updateContribution(String memberUUID, String contributionUUID, LocalDate paymentDay, LocalDate validThru) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
 

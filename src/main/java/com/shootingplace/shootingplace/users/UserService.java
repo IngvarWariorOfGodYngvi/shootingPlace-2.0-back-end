@@ -266,7 +266,7 @@ public class UserService {
         return ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej");
     }
 
-    // Minimalne wymagania aby zwróciło false:
+    // Minimalne wymagania, aby zwróciło false:
     // minimum 1 Klub
     // minimum 1 SuperUser
     // minimum 1 User

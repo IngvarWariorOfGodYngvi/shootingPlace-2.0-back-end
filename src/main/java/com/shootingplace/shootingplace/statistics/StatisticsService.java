@@ -57,7 +57,7 @@ public class StatisticsService {
     public List<LicensePaymentHistoryDTO> getLicenseSum(LocalDate firstDate, LocalDate secondDate) {
         List<LicensePaymentHistoryDTO> list1 = new ArrayList<>();
         licensePaymentHistoryRepository.findAllByPayInPZSSPortalBetweenDate(firstDate, secondDate).forEach(e -> {
-            MemberEntity member = memberRepository.getOne(e.getMemberUUID());
+            MemberEntity member = memberRepository.findById(e.getMemberUUID()).orElseThrow(EntityNotFoundException::new);
             list1.add(LicensePaymentHistoryDTO.builder()
                     .paymentUuid(e.getUuid())
                     .firstName(member.getFirstName())
@@ -113,7 +113,7 @@ public class StatisticsService {
     }
 
     public String getMaxLegNumber() {
-        return String.valueOf(memberRepository.findAll().size() == 0 ? 0 : memberRepository.getMaxLegitimationNumber());
+        return String.valueOf(memberRepository.findAll().isEmpty() ? 0 : memberRepository.getMaxLegitimationNumber());
     }
 
     public String getActualYearMemberCounts() {
@@ -303,7 +303,7 @@ public class StatisticsService {
         List<MemberEntity> all = memberRepository.findAllByErasedFalse()
                 .stream()
                 .filter(f -> f.getHistory() != null)
-                .filter(f -> f.getHistory().getCompetitionHistory().size() > 0)
+                .filter(f -> !f.getHistory().getCompetitionHistory().isEmpty())
                 .collect(Collectors.toList());
         List<MemberEntity> list1 = new ArrayList<>();
 
@@ -339,7 +339,7 @@ public class StatisticsService {
                 .stream()
                 .filter(f -> !f.isErased())
                 .filter(f -> f.getHistory() != null)
-                .filter(f -> f.getHistory().getContributionList().size() > 0)
+                .filter(f -> !f.getHistory().getContributionList().isEmpty())
                 .collect(Collectors.toList());
         List<MemberEntity> list1 = new ArrayList<>();
 
@@ -372,7 +372,7 @@ public class StatisticsService {
                 .stream()
                 .filter(f -> !f.isErased())
                 .filter(f -> f.getHistory() != null)
-                .filter(f -> f.getHistory().getCompetitionHistory().size() > 0).toList();
+                .filter(f -> !f.getHistory().getCompetitionHistory().isEmpty()).toList();
         Map<String, Float> map1 = new HashMap<>();
         all.forEach(e -> {
                     AtomicReference<Float> score = new AtomicReference<>((float) 0);

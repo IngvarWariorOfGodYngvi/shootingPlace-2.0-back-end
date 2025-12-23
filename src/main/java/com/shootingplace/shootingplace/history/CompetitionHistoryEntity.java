@@ -1,16 +1,15 @@
 package com.shootingplace.shootingplace.history;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -19,7 +18,6 @@ import java.util.List;
 @Builder
 public class CompetitionHistoryEntity {
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -67,9 +65,7 @@ public class CompetitionHistoryEntity {
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
-            for (String s : disciplineList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(disciplineList.split(";")));
         }
         return vals;
     }

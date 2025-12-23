@@ -3,8 +3,8 @@ package com.shootingplace.shootingplace.armory;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.file.FilesService;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,33 +17,18 @@ import java.util.Map;
 @RestController
 @RequestMapping("/armory")
 @CrossOrigin
+@RequiredArgsConstructor
 public class ArmoryController {
 
     private final ArmoryService armoryService;
     private final CaliberService caliberService;
     private final AmmoUsedService ammoUsedService;
-    private final ChangeHistoryService changeHistoryService;
     private final ShootingPacketService shootingPacketService;
     private final FilesService filesService;
-
-
-    public ArmoryController(ArmoryService armoryService, CaliberService caliberService, AmmoUsedService ammoUsedService, ChangeHistoryService changeHistoryService, ShootingPacketService shootingPacketService, FilesService filesService) {
-        this.armoryService = armoryService;
-        this.caliberService = caliberService;
-        this.ammoUsedService = ammoUsedService;
-        this.changeHistoryService = changeHistoryService;
-        this.shootingPacketService = shootingPacketService;
-        this.filesService = filesService;
-    }
 
     @GetMapping("/recount")
     public void recount() {
         ammoUsedService.recountAmmo();
-    }
-
-    @GetMapping("/getCaiberNameFromCaliberUUID")
-    public ResponseEntity<?> getCaiberNameFromCaliberUUID(@RequestParam String caliberUUID) {
-        return ResponseEntity.ok(caliberService.getCaliberNameFromCaliberUUID(caliberUUID));
     }
 
     @GetMapping("/getAllGunUsedIssuance")
@@ -74,7 +59,7 @@ public class ArmoryController {
     }
 
     @GetMapping("/caliberQuantity")
-    public ResponseEntity<?> getcalibersQuantity(@RequestParam String uuid, @RequestParam String date) {
+    public ResponseEntity<?> getCalibersQuantity(@RequestParam String uuid, @RequestParam String date) {
         LocalDate parseDate = LocalDate.parse(date);
         return ResponseEntity.ok(caliberService.getCalibersQuantity(uuid, parseDate));
     }
@@ -153,28 +138,28 @@ public class ArmoryController {
     @Transactional
     @PostMapping("/addShootingPacket")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> addShootingPacket(@RequestParam String name, @RequestParam float price, @RequestBody Map<String, Integer> map, @RequestParam String pinCode) throws NoUserPermissionException {
-        return shootingPacketService.addShootingPacket(name, price, map, pinCode);
+    public ResponseEntity<?> addShootingPacket(@RequestParam String name, @RequestParam float price, @RequestBody Map<String, Integer> map, @RequestParam String pinCode) {
+        return shootingPacketService.addShootingPacket(name, price, map);
     }
 
     @Transactional
     @DeleteMapping("/deleteShootingPacket")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> deleteShootingPacket(@RequestParam String uuid, @RequestParam String pinCode) throws NoUserPermissionException {
-        return shootingPacketService.deleteShootingPacket(uuid, pinCode);
+    public ResponseEntity<?> deleteShootingPacket(@RequestParam String uuid, @RequestParam String pinCode) {
+        return shootingPacketService.deleteShootingPacket(uuid);
     }
 
     @Transactional
     @PostMapping("/updateShootingPacket")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> updateShootingPacket(@RequestParam String uuid, @RequestParam String name, @RequestParam Float price, @RequestBody Map<String, Integer> map, @RequestParam String pinCode) throws NoUserPermissionException {
-        return shootingPacketService.updateShootingPacket(uuid, name, price, map, pinCode);
+    public ResponseEntity<?> updateShootingPacket(@RequestParam String uuid, @RequestParam String name, @RequestParam Float price, @RequestBody Map<String, Integer> map, @RequestParam String pinCode) {
+        return shootingPacketService.updateShootingPacket(uuid, name, price, map);
     }
 
     @Transactional
     @PutMapping("/addAmmo")
     @RequirePermissions(value = {UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> updateAmmoQuantity(@RequestParam String caliberUUID, @RequestParam Integer count, @RequestParam String date, @RequestParam String time, @RequestParam String description, @RequestParam String pinCode, @RequestBody String imageString) throws NoUserPermissionException {
+    public ResponseEntity<?> updateAmmoQuantity(@RequestParam String caliberUUID, @RequestParam Integer count, @RequestParam String date, @RequestParam String time, @RequestParam String description, @RequestParam String pinCode, @RequestBody String imageString) {
         LocalDate parse = LocalDate.parse(date);
         LocalTime parseTime = LocalTime.parse(time);
         String imageUUID = filesService.storeImageAddedAmmo(imageString, pinCode);
@@ -184,7 +169,7 @@ public class ArmoryController {
     @Transactional
     @PutMapping("/signUpkeepAmmo")
     @RequirePermissions(value = {UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> signUpkeepAmmo(@RequestParam String ammoInEvidenceUUID, @RequestParam String pinCode, @RequestBody String imageString) throws NoUserPermissionException {
+    public ResponseEntity<?> signUpkeepAmmo(@RequestParam String ammoInEvidenceUUID, @RequestParam String pinCode, @RequestBody String imageString) {
         String imageUUID = filesService.storeImageUpkeepAmmo(imageString, pinCode);
         return armoryService.signUpkeepAmmo(ammoInEvidenceUUID, imageUUID, pinCode);
     }
@@ -192,7 +177,7 @@ public class ArmoryController {
     @Transactional
     @PostMapping("/addGun")
     @RequirePermissions(value = {UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> addGunEntity(@RequestBody AddGunImageWrapper addGunImageWrapper, @RequestParam String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> addGunEntity(@RequestBody AddGunImageWrapper addGunImageWrapper, @RequestParam String pinCode) {
         String imageUUID = filesService.storeImageAddGun(addGunImageWrapper.getImageString(), pinCode);
         return armoryService.addGunEntity(addGunImageWrapper, imageUUID, pinCode);
     }
@@ -214,7 +199,7 @@ public class ArmoryController {
     @Transactional
     @PutMapping("/remove")
     @RequirePermissions(value = {UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> removeGun(@RequestParam String gunUUID, @RequestParam String pinCode, @RequestParam String basisOfRemoved, @RequestBody String imageString) throws NoUserPermissionException {
+    public ResponseEntity<?> removeGun(@RequestParam String gunUUID, @RequestParam String pinCode, @RequestParam String basisOfRemoved, @RequestBody String imageString) {
         String imageUUID = filesService.storeImageRemoveGun(imageString, pinCode);
         return armoryService.removeGun(gunUUID, basisOfRemoved, pinCode, imageUUID);
     }
@@ -222,7 +207,7 @@ public class ArmoryController {
     @Transactional
     @PostMapping("/calibers")
     @RequirePermissions(value = {UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> createNewCaliber(@RequestParam String caliber, @RequestParam String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> createNewCaliber(@RequestParam String caliber, @RequestParam String pinCode) {
         if (caliber.isEmpty()) {
             return ResponseEntity.badRequest().body("Wprowadź dane");
         }
@@ -232,25 +217,25 @@ public class ArmoryController {
     @Transactional
     @PostMapping("/activateOrDeactivateCaliber")
     @RequirePermissions(value = {UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> activateOrDeactivateCaliber(@RequestParam String caliberUUID, @RequestParam String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> activateOrDeactivateCaliber(@RequestParam String caliberUUID, @RequestParam String pinCode) {
         if (caliberUUID.isEmpty()) {
             return ResponseEntity.badRequest().body("Wprowadź dane");
         }
-        return caliberService.activateOrDeactivateCaliber(caliberUUID, pinCode);
+        return caliberService.activateOrDeactivateCaliber(caliberUUID);
     }
 
     @Transactional
     @PatchMapping("/changeCaliberUnitPrice")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> changeCaliberUnitPrice(@RequestParam String caliberUUID, @RequestParam Float price, @RequestParam String pinCode) throws NoUserPermissionException {
-        return armoryService.changeCaliberUnitPrice(caliberUUID, price, pinCode);
+    public ResponseEntity<?> changeCaliberUnitPrice(@RequestParam String caliberUUID, @RequestParam Float price, @RequestParam String pinCode) {
+        return armoryService.changeCaliberUnitPrice(caliberUUID, price);
     }
 
     @Transactional
     @PatchMapping("/changeCaliberUnitPriceForNotMember")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> changeCaliberUnitPriceForNotMember(@RequestParam String caliberUUID, @RequestParam Float price, @RequestParam String pinCode) throws NoUserPermissionException {
-        return armoryService.changeCaliberUnitPriceForNotMember(caliberUUID, price, pinCode);
+    public ResponseEntity<?> changeCaliberUnitPriceForNotMember(@RequestParam String caliberUUID, @RequestParam Float price, @RequestParam String pinCode) {
+        return armoryService.changeCaliberUnitPriceForNotMember(caliberUUID, price);
     }
 
     @Transactional

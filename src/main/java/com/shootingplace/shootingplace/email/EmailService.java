@@ -14,6 +14,7 @@ import com.shootingplace.shootingplace.utils.CryptoUtil;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ public class EmailService {
                 LOG.info("Udaję, że wysyłam mail");
             } else {
 //                mailSender.send(message);
-                LOG.info("Mail został wysłany do:" + log.getRecipient());
+                LOG.info("Mail został wysłany do:{}", log.getRecipient());
             }
             SentEmail save = sentEmailRepository.save(log);
             if (memberEntity != null) {
@@ -135,7 +136,7 @@ public class EmailService {
                 sentEmailsHistory.add(save);
                 history.setSentEmailsHistory(sentEmailsHistory);
                 historyRepository.save(history);
-                LOG.info("Dodaję maila do historii " + memberEntity.getFullName());
+                LOG.info("Dodaję maila do historii {}", memberEntity.getFullName());
             }
             LOG.info("Wysłano wiadomość i zapisano w bazie");
             return "Wysłano wiadomość i zapisano w bazie";
@@ -150,9 +151,9 @@ public class EmailService {
                 sentEmailsHistory.add(save);
                 history.setSentEmailsHistory(sentEmailsHistory);
                 historyRepository.save(history);
-                LOG.info("Dodaję maila do historii " + memberEntity.getFullName());
+                LOG.info("Dodaję maila do historii {}", memberEntity.getFullName());
             }
-            LOG.info("NIE WYSŁANO WIADOMOŚCI DO: " + request.getTo() + " i zapisano w bazie");
+            LOG.info("NIE WYSŁANO WIADOMOŚCI DO: {} i zapisano w bazie", request.getTo());
             return "NIE WYSŁANO WIADOMOŚCI DO: " + request.getTo() + " i zapisano w bazie";
 
         }
@@ -161,27 +162,27 @@ public class EmailService {
     // 1 Przypomnienie o Składkach Członkowskich
     public ResponseEntity<?> sendRemindersForActiveOneMonthBefore() {
         if (!checkSendingEmails())
-            return ResponseEntity.badRequest().body("Opcja wysyłania widomości email jest wyłączona");
+            return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
         memberRepository.findAllByErasedFalseAndActiveTrue()
                 .stream()
                 .filter(f -> f.getHistory().getContributionList() != null)
-                .filter(f -> f.getHistory().getContributionList().get(0).getValidThru().isAfter(LocalDate.now()) && f.getHistory().getContributionList().get(0).getValidThru().isBefore(LocalDate.now().plusMonths(1)))
+                .filter(f -> f.getHistory().getContributionList().getFirst().getValidThru().isAfter(LocalDate.now()) && f.getHistory().getContributionList().getFirst().getValidThru().isBefore(LocalDate.now().plusMonths(1)))
                 .forEach(e -> {
                     String validThru = "BRAK SKŁADEK";
                     if (e.getHistory().getContributionList() != null) {
-                        if (e.getHistory().getContributionList().get(0) != null) {
-                            validThru = e.getHistory().getContributionList().get(0).getValidThru().format(dateFormat());
+                        if (e.getHistory().getContributionList().getFirst() != null) {
+                            validThru = e.getHistory().getContributionList().getFirst().getValidThru().format(dateFormat());
                         }
                     }
-                    boolean alreadySent = sentEmailRepository.getEmailsByMemberUUIDAndMailTypeAndSuccessTrueAndSentAtIsBetween(
+                    boolean alreadySent = !sentEmailRepository.getEmailsByMemberUUIDAndMailTypeAndSuccessTrueAndSentAtIsBetween(
                             e.getUuid(),
                             MailType.SUBSCRIPTION_REMINDER_BEFORE.getName(),
                             LocalDateTime.now().minusMonths(1),
-                            LocalDateTime.now()).size() > 0;
-                    boolean notYetSent = scheduledEmailRepository.findTodayByMemberAndMailType(e.getUuid(),
-                            MailType.SUBSCRIPTION_REMINDER_BEFORE.getName()).size() > 0;
+                            LocalDateTime.now()).isEmpty();
+                    boolean notYetSent = !scheduledEmailRepository.findTodayByMemberAndMailType(e.getUuid(),
+                            MailType.SUBSCRIPTION_REMINDER_BEFORE.getName()).isEmpty();
                     if (alreadySent || notYetSent) {
-                        LOG.info("Wiadomość do: " + e.getEmail() + " nie będzie wysłana bo była wysłana mniej niż miesiąc temu.");
+                        LOG.info("Wiadomość do: {} nie będzie wysłana bo była wysłana mniej niż miesiąc temu.", e.getEmail());
                     } else {
                         ScheduledEmail email = new ScheduledEmail();
                         email.setRecipient(e.getEmail());
@@ -206,7 +207,7 @@ public class EmailService {
                                                 "<div>Nr: PL 83 1600 1462 1854 6971 5000 0001</div>" : "") +
                                 "<div>Wiadomość automatyczna - prosimy na nią nie odpowiadać.<br />");
                         scheduledEmailRepository.save(email);
-                        LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+                        LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
                     }
                 });
         return ResponseEntity.ok("Wywołano przypomnienie o składce dla aktywnych");
@@ -215,23 +216,23 @@ public class EmailService {
     // 2 Przypomnienie o składkach
     public ResponseEntity<?> sendRemindersForNonActive() {
         if (!checkSendingEmails())
-            return ResponseEntity.badRequest().body("Opcja wysyłania widomości email jest wyłączona");
+            return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
         memberRepository.findAllByErasedFalseAndActiveFalse().forEach(e -> {
             String validThru = "BRAK SKŁADEK";
             if (e.getHistory().getContributionList() != null) {
-                if (e.getHistory().getContributionList().get(0) != null) {
-                    validThru = e.getHistory().getContributionList().get(0).getValidThru().format(dateFormat());
+                if (e.getHistory().getContributionList().getFirst() != null) {
+                    validThru = e.getHistory().getContributionList().getFirst().getValidThru().format(dateFormat());
                 }
             }
-            boolean alreadySent = sentEmailRepository.getEmailsByMemberUUIDAndMailTypeAndSuccessTrueAndSentAtIsBetween(
+            boolean alreadySent = !sentEmailRepository.getEmailsByMemberUUIDAndMailTypeAndSuccessTrueAndSentAtIsBetween(
                     e.getUuid(),
                     MailType.SUBSCRIPTION_REMINDER.getName(),
                     LocalDateTime.now().minusMonths(1),
-                    LocalDateTime.now()).size() > 0;
-            boolean notYetSent = scheduledEmailRepository.findTodayByMemberAndMailType(e.getUuid(),
-                    MailType.SUBSCRIPTION_REMINDER.getName()).size() > 0;
+                    LocalDateTime.now()).isEmpty();
+            boolean notYetSent = !scheduledEmailRepository.findTodayByMemberAndMailType(e.getUuid(),
+                    MailType.SUBSCRIPTION_REMINDER.getName()).isEmpty();
             if (alreadySent || notYetSent) {
-                LOG.info("Wiadomość do: " + e.getEmail() + " nie będzie wysłana bo była wysłana mniej niż miesiąc temu.");
+                LOG.info("Wiadomość do: {} nie będzie wysłana bo była wysłana mniej niż miesiąc temu.", e.getEmail());
             } else {
                 ScheduledEmail email = new ScheduledEmail();
                 email.setRecipient(e.getEmail());
@@ -256,7 +257,7 @@ public class EmailService {
                                         "<div>Nr: PL 83 1600 1462 1854 6971 5000 0001</div>" : "") +
                         "<div>Wiadomość automatyczna - prosimy na nią nie odpowiadać.<br />");
                 scheduledEmailRepository.save(email);
-                LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+                LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
             }
         });
         return ResponseEntity.ok("Wywołano przypomnienie o składce dla nieaktywnych");
@@ -298,7 +299,7 @@ public class EmailService {
                             "<div>-------------</div>\n" +
                             "<div>Wiadomość automatyczna - prosimy na nią nie odpowiadać.<br />");
                     scheduledEmailRepository.save(email);
-                    LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+                    LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
                 });
 
     }
@@ -306,7 +307,7 @@ public class EmailService {
     // 4
     public void sendRegistrationConfirmation(String memberUUID) {
         if (!checkSendingEmails()) return;
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         ScheduledEmail email = new ScheduledEmail();
         email.setRecipient(memberEntity.getEmail());
         EmailStrategy strategy = profileContext.getEmailStrategy();
@@ -329,7 +330,7 @@ public class EmailService {
         email.setMailType(MailType.REGISTRATION_CONFIRMATION.getName());
         email.setMemberUUID(memberEntity.getUuid());
         scheduledEmailRepository.save(email);
-        LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+        LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
 
 
     }
@@ -337,15 +338,15 @@ public class EmailService {
     // 5
     public void sendContributionConfirmation(String memberUUID) {
         if (!checkSendingEmails()) return;
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
-        ContributionEntity contributionEntity = memberEntity.getHistory().getContributionList().get(0);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        ContributionEntity contributionEntity = memberEntity.getHistory().getContributionList().getFirst();
         LocalDate paymentDay = contributionEntity.getPaymentDay();
         String validThru = contributionEntity.getValidThru().format(dateFormat());
         ScheduledEmail email = new ScheduledEmail();
         email.setRecipient(memberEntity.getEmail());
         String name = getClubName();
         email.setSubject("Potwierdzenie Opłacenia Składki Członkowskiej " + name);
-        email.setHtmlContent("<p>Dnia <b>" + paymentDay + "</b> opłacono twoje składki cłonkowskie.</p>\n" +
+        email.setHtmlContent("<p>Dnia <b>" + paymentDay + "</b> opłacono twoje składki członkowskie.</p>\n" +
                 "<p>Data ważności Twoich aktualnych składek członkowskich to: <b>" + validThru + "</b></p><br/>\n" +
                 "<p>Dziękujemy!</p>\n" +
                 "<p>Zespół " + name + "</p>\n" +
@@ -355,15 +356,15 @@ public class EmailService {
         email.setMailType(MailType.CONTRIBUTION_CONFIRMATION.getName());
         email.setMemberUUID(memberEntity.getUuid());
         scheduledEmailRepository.save(email);
-        LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+        LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
 
     }
 
     // 6
     public void sendLicensePaymentConfirmation(String memberUUID) {
         if (!checkSendingEmails()) return;
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
-        LicensePaymentHistoryEntity licensePaymentHistoryEntity = memberEntity.getHistory().getLicensePaymentHistory().get(0);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        LicensePaymentHistoryEntity licensePaymentHistoryEntity = memberEntity.getHistory().getLicensePaymentHistory().getFirst();
         String paymentDate = LocalDate.now().format(dateFormat());
         int validForYear = licensePaymentHistoryEntity.getValidForYear() + 1;
         ScheduledEmail email = new ScheduledEmail();
@@ -380,14 +381,14 @@ public class EmailService {
         email.setMailType(MailType.LICENSE_PAYMENT_CONFIRMATION.getName());
         email.setMemberUUID(memberEntity.getUuid());
         scheduledEmailRepository.save(email);
-        LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+        LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
 
     }
 
     // 7
     public ResponseEntity<?> sendSingleEmail(EmailRequest request) {
         if (!checkSendingEmails())
-            return ResponseEntity.badRequest().body("Opcja wysyłania widomości email jest wyłączona");
+            return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
 
         Optional<MemberEntity> byEmail = memberRepository.findAllByErasedFalse().stream().filter(f -> f.getEmail().equals(request.getTo())).findFirst();
 
@@ -401,7 +402,7 @@ public class EmailService {
                 email.setSubject(request.getSubject());
                 email.setHtmlContent(request.getHtmlContent());
                 scheduledEmailRepository.save(email);
-                LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+                LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
                 sendRichEmail(request, MailType.CUSTOM.getName(), byEmail.get().getUuid());
                 return ResponseEntity.ok("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
             } catch (MessagingException ex) {
@@ -415,7 +416,7 @@ public class EmailService {
     // 8
     public ResponseEntity<?> sendTestEmail(EmailRequest request) throws MessagingException {
         if (!checkSendingEmails())
-            return ResponseEntity.badRequest().body("Opcja wysyłania widomości email jest wyłączona");
+            return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
         EmailConfig configEntity = emailConfigRepository.findAll().stream().findFirst().orElse(null);
         if (configEntity == null) return ResponseEntity.badRequest().body("brak konfiguracji połączenia z mailem");
         mailSender = createMailSender(configEntity);
@@ -448,7 +449,7 @@ public class EmailService {
     // 9
     public ResponseEntity<?> sendCustomEmails(EmailRequest request, List<String> emailsList) {
         if (!checkSendingEmails())
-            return ResponseEntity.badRequest().body("Opcja wysyłania widomości email jest wyłączona");
+            return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
         List<String> responses = new ArrayList<>();
         emailsList.forEach(e -> {
             Optional<MemberEntity> byEmail = memberRepository.findAllByErasedFalse().stream().filter(f -> f.getEmail().equals(e)).findFirst();
@@ -463,7 +464,7 @@ public class EmailService {
                     email.setSubject(request.getSubject());
                     email.setHtmlContent(request.getHtmlContent());
                     scheduledEmailRepository.save(email);
-                    LOG.info("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
+                    LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
                     sendRichEmail(request, MailType.CUSTOM.getName(), byEmail.get().getUuid());
                     responses.add("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
                 } catch (MessagingException ex) {
@@ -480,7 +481,7 @@ public class EmailService {
     }
 
     public ResponseEntity<?> saveConnection(EmailConfig emailConfig) {
-        LOG.info("Zapisuję połączenie: " + emailConfig.getConnectionName() + "\n" + emailConfig.getHost() + "\n" + emailConfig.getUsername());
+        LOG.info("Zapisuję połączenie: {}\n{}\n{}", emailConfig.getConnectionName(), emailConfig.getHost(), emailConfig.getUsername());
         emailConfigRepository.save(emailConfig);
         return ResponseEntity.ok("zapisano połączenie");
     }
@@ -521,7 +522,7 @@ public class EmailService {
 
     public ResponseEntity<?> editConnection(EmailConfig newConfig, String uuid) {
 
-        EmailConfig oldConfig = emailConfigRepository.getOne(uuid);
+        EmailConfig oldConfig = emailConfigRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
 
         if (newConfig.getConnectionName() != null && !newConfig.getConnectionName().isEmpty()) {
             oldConfig.setConnectionName(newConfig.getConnectionName());
@@ -548,7 +549,7 @@ public class EmailService {
         List<ScheduledEmailDTO> scheduledEmailDTOList = new ArrayList<>();
         scheduledEmailRepository.findAll().forEach(e -> {
             ScheduledEmailDTO map = Mapping.map(e);
-            map.setMemberName(memberRepository.getOne(e.getMemberUUID()).getFullName());
+            map.setMemberName(memberRepository.findById(e.getMemberUUID()).orElseThrow(EntityNotFoundException::new).getFullName());
             scheduledEmailDTOList.add(map);
         });
         scheduledEmailDTOList.sort(Comparator.comparing(ScheduledEmailDTO::getScheduledFor).reversed());
@@ -560,7 +561,7 @@ public class EmailService {
         List<SentEmailDTO> sentEmailDTOList = new ArrayList<>();
         sentEmailRepository.getEmailSentBetween(firstDate, secondDate.plusDays(1)).forEach(e -> {
             SentEmailDTO map = Mapping.map(e);
-            map.setMemberName(memberRepository.getOne(e.getMemberUUID()).getFullName());
+            map.setMemberName(memberRepository.findById(e.getMemberUUID()).orElseThrow(EntityNotFoundException::new).getFullName());
             sentEmailDTOList.add(map);
         });
         sentEmailDTOList.sort(Comparator.comparing(SentEmailDTO::getSentAt).reversed());
@@ -574,20 +575,12 @@ public class EmailService {
 
     private String getClubName() {
         String activeProfile = environment.getActiveProfiles()[0];
-        String name = "";
-        switch (activeProfile) {
-            case "prod":
-            case "test":
-                name = "Klubu Strzeleckiego Dziesiątka LOK w Łodzi";
-                break;
-            case "rcs":
-                name = "Klubu Strzeleckiego RCS Panaszew";
-                break;
-            case "uks":
-                name = "Klubu Strzeleckiego Mechanik w Tomaszowie Mazowieckim ";
-                break;
-        }
-        return name;
+        return switch (activeProfile) {
+            case "prod", "test" -> "Klubu Strzeleckiego Dziesiątka LOK w Łodzi";
+            case "rcs" -> "Klubu Strzeleckiego RCS Panaszew";
+            case "uks" -> "Klubu Strzeleckiego Mechanik w Tomaszowie Mazowieckim ";
+            default -> "";
+        };
     }
 
     public Map<String, Boolean> getMailingConfigList() {

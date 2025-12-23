@@ -3,9 +3,8 @@ package com.shootingplace.shootingplace.ammoEvidence;
 import com.shootingplace.shootingplace.armory.AmmoUsedService;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoPersonToAmmunitionException;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -18,17 +17,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/ammoEvidence")
 @CrossOrigin
+@RequiredArgsConstructor
 public class AmmoEvidenceController {
 
     private final AmmoEvidenceService ammoEvidenceService;
     private final AmmoUsedService ammoUsedService;
-    private final ChangeHistoryService changeHistoryService;
-
-    public AmmoEvidenceController(AmmoEvidenceService ammoEvidenceService, AmmoUsedService ammoUsedService, ChangeHistoryService changeHistoryService) {
-        this.ammoEvidenceService = ammoEvidenceService;
-        this.ammoUsedService = ammoUsedService;
-        this.changeHistoryService = changeHistoryService;
-    }
 
     @GetMapping("/isEvidenceIsClosed")
     public ResponseEntity<?> isEvidenceIsClosedOrEqual(@RequestParam(required = false) int quantity) {
@@ -50,6 +43,7 @@ public class AmmoEvidenceController {
     public ResponseEntity<?> getEvidence(@RequestParam String uuid) {
         return ResponseEntity.ok(ammoEvidenceService.getEvidence(uuid));
     }
+
     @GetMapping("/notLockedEvidences")
     public ResponseEntity<?> getNotLockedEvidences() {
         return ResponseEntity.ok(ammoEvidenceService.getNotLockedEvidences());
@@ -64,9 +58,10 @@ public class AmmoEvidenceController {
     public ResponseEntity<?> checkAnyOpenEvidence() {
         return ResponseEntity.ok().body(ammoEvidenceService.checkAnyOpenEvidence());
     }
+
     @GetMapping("/getAmmoInEvidece")
-    public ResponseEntity<?> getAmmoInEvidece(String caliberUUID) {
-        return ResponseEntity.ok().body(ammoEvidenceService.getAmmoInEvidece(caliberUUID));
+    public ResponseEntity<?> getAmmoInEvidence(String caliberUUID) {
+        return ResponseEntity.ok().body(ammoEvidenceService.getAmmoInEvidence(caliberUUID));
     }
 
     @Transactional
@@ -82,14 +77,14 @@ public class AmmoEvidenceController {
     @Transactional
     @PostMapping("/listOfAmmo")
     public ResponseEntity<?> createAmmoUsed(@RequestBody Map<String, String> caliberUUIDAmmoQuantityMap, @RequestParam Integer legitimationNumber, @RequestParam Integer otherID) throws NoPersonToAmmunitionException {
-        boolean[] caliberAmmocheck = new boolean[caliberUUIDAmmoQuantityMap.size()];
+        boolean[] caliberAmmoCheck = new boolean[caliberUUIDAmmoQuantityMap.size()];
         final int[] iterator = {0};
         caliberUUIDAmmoQuantityMap.forEach((key, value) -> {
-            caliberAmmocheck[iterator[0]] = value != null && Integer.parseInt(value) != 0;
+            caliberAmmoCheck[iterator[0]] = value != null && Integer.parseInt(value) != 0;
             iterator[0]++;
         });
         boolean check = true;
-        for (boolean b : caliberAmmocheck) {
+        for (boolean b : caliberAmmoCheck) {
             if (!b) {
                 check = false;
                 break;
@@ -114,8 +109,8 @@ public class AmmoEvidenceController {
     @Transactional
     @PatchMapping("/ammoOpen")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> openEvidence(@RequestParam String pinCode, @RequestParam String evidenceUUID) throws NoUserPermissionException {
-            return ammoEvidenceService.openEvidence(evidenceUUID, pinCode);
+    public ResponseEntity<?> openEvidence(@RequestParam String pinCode, @RequestParam String evidenceUUID) {
+        return ammoEvidenceService.openEvidence(evidenceUUID);
     }
 
 }

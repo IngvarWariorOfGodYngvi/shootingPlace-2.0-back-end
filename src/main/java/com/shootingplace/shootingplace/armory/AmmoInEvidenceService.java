@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.armory;
 
 import com.shootingplace.shootingplace.ammoEvidence.*;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AmmoInEvidenceService {
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
     private final AmmoUsedToEvidenceEntityRepository ammoUsedToEvidenceEntityRepository;
@@ -21,13 +23,6 @@ public class AmmoInEvidenceService {
     private final AmmoEvidenceRepository ammoEvidenceRepository;
 
     private final Logger LOG = LogManager.getLogger();
-
-    public AmmoInEvidenceService(AmmoInEvidenceRepository ammoInEvidenceRepository, AmmoUsedToEvidenceEntityRepository ammoUsedToEvidenceEntityRepository, ArmoryService armoryService, AmmoEvidenceRepository ammoEvidenceRepository) {
-        this.ammoInEvidenceRepository = ammoInEvidenceRepository;
-        this.ammoUsedToEvidenceEntityRepository = ammoUsedToEvidenceEntityRepository;
-        this.armoryService = armoryService;
-        this.ammoEvidenceRepository = ammoEvidenceRepository;
-    }
 
     boolean addAmmoUsedEntityToAmmoInEvidenceEntity(AmmoUsedToEvidenceEntity ammoUsedToEvidenceEntity) {
         //      Nie znaleziono żadnej listy
@@ -132,7 +127,7 @@ public class AmmoInEvidenceService {
                             .findFirst()
                             .orElseThrow(EntityNotFoundException::new);
                     if (ammoUsedToEvidenceEntity.getCounter() <= 0) {
-//                      to jest to co należy dodać do magazynu amunicji     -ammoUsedToEvidenceEntity1.getCounter()
+//                      to jest to co należy dodać do magazynu amunicji - ammoUsedToEvidenceEntity1.getCounter()
                         if (ammoUsedToEvidenceEntity1.getCounter() + ammoUsedToEvidenceEntity.getCounter() < 0) {
                             ammoUsedToEvidenceEntity.setCounter(-ammoUsedToEvidenceEntity1.getCounter());
                         }
@@ -172,7 +167,7 @@ public class AmmoInEvidenceService {
             }
 
         }
-//          Usuwanie listy jeśli ilość sztuk wynosi 0
+//          Usuwanie listy, jeśli ilość sztuk wynosi 0
         AmmoEvidenceEntity ammoEvidenceEntity = ammoEvidenceRepository.findAllByOpenTrue()
                 .stream()
                 .findFirst()
@@ -195,7 +190,7 @@ public class AmmoInEvidenceService {
 
             ammoEvidenceEntity.getAmmoInEvidenceEntityList().remove(ammoInEvidenceEntity);
             ammoInEvidenceRepository.delete(ammoInEvidenceEntity);
-            //        Usuwanie ewidencji jeśli nie ma żadnej listy z amunicją
+            //        Usuwanie ewidencji, jeśli nie ma żadnej listy z amunicją
             if (ammoEvidenceEntity.getAmmoInEvidenceEntityList().isEmpty()) {
                 ammoEvidenceRepository.delete(ammoEvidenceEntity);
             }

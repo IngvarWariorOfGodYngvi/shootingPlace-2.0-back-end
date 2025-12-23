@@ -1,10 +1,9 @@
 package com.shootingplace.shootingplace.email;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +15,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/email")
 @CrossOrigin
+@RequiredArgsConstructor
 public class EmailController {
-    private final EmailService emailService;
-    private final ChangeHistoryService changeHistoryService;
 
-    public EmailController(EmailService emailService, ChangeHistoryService changeHistoryService) {
-        this.emailService = emailService;
-        this.changeHistoryService = changeHistoryService;
-    }
+    private final EmailService emailService;
 
     @GetMapping
     public ResponseEntity<?> getConnections() {
@@ -104,7 +99,7 @@ public class EmailController {
 
     @PutMapping("/edit")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.ADMIN, UserSubType.SUPER_USER})
-    public ResponseEntity<?> editConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode, @RequestParam String uuid) throws NoUserPermissionException {
+    public ResponseEntity<?> editConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode, @RequestParam String uuid) {
         return emailService.editConnection(emailConfig, uuid);
     }
 

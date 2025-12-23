@@ -49,7 +49,7 @@ public class RegistrationRecordsService {
                 LOG.info("Osoba znajduje się już na liście");
                 return ResponseEntity.badRequest().body("Osoba znajduje się już na liście");
             } else {
-                // jeśli klubowicz jest również użytokwnikiem to włączam mu czas pracy
+                // jeśli klubowicz jest również użytkownikiem to włączam mu czas pracy
                 UserEntity userEntity = userRepository.findByMemberUuid(member.getUuid()).orElseThrow(EntityNotFoundException::new);
                 if (userEntity != null) {
                     workingTimeEvidenceService.openWTEByUser(userEntity);
@@ -69,7 +69,7 @@ public class RegistrationRecordsService {
                 r.setPeselOrID(member.getPesel());
                 r.setDayIndex(getDayIndex() + 1);
                 String name = r.getSecondName() + ' ' + r.getFirstName();
-                LOG.info("Zapisano do książki " + name);
+                LOG.info("Zapisano do książki {}", name);
                 registrationRepo.save(r);
                 return ResponseEntity.ok("Zapisano do książki " + name);
             }
@@ -99,7 +99,7 @@ public class RegistrationRecordsService {
             r.setPeselOrID(String.valueOf(otherPersonEntity.getId()));
             r.setDayIndex(getDayIndex() + 1);
             String name = r.getSecondName() + ' ' + r.getFirstName();
-            LOG.info("Zapisano do książki " + name);
+            LOG.info("Zapisano do książki {}", name);
             registrationRepo.save(r);
             return ResponseEntity.ok("Zapisano do książki " + name);
         }
@@ -108,7 +108,7 @@ public class RegistrationRecordsService {
     public ResponseEntity<?> createRecordInBook(String imageUUID, ImageOtherPersonWrapper other) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();
         if (other.getOther().getId() != null) {
-            OtherPersonEntity one = otherPersonRepository.getOne(Integer.valueOf(other.getOther().getId()));
+            OtherPersonEntity one = otherPersonRepository.findById(Integer.valueOf(other.getOther().getId())).orElseThrow(EntityNotFoundException::new);
             if (registrationRepo.findAll().stream().anyMatch(f ->
                     LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(String.valueOf(one.getId())))) {
                 LOG.info("Osoba znajduje się już na liście");
@@ -141,7 +141,7 @@ public class RegistrationRecordsService {
 
         r.setDayIndex(getDayIndex() + 1);
         String name = r.getSecondName() + ' ' + r.getFirstName();
-        LOG.info("Zapisano do książki " + name);
+        LOG.info("Zapisano do książki {}", name);
         registrationRepo.save(r);
         return ResponseEntity.ok("Zapisano do książki " + name);
 
@@ -165,7 +165,7 @@ public class RegistrationRecordsService {
 
     public ResponseEntity<?> getRecordsBetweenDate(LocalDate firstDate, LocalDate secondDate) {
         return ResponseEntity.ok(registrationRepo
-                .findAllBeetweenDate(LocalDateTime.of(firstDate, LocalTime.of(0, 0)), LocalDateTime.of(secondDate, LocalTime.of(23, 59, 59)))
+                .findAllBetweenDate(LocalDateTime.of(firstDate, LocalTime.of(0, 0)), LocalDateTime.of(secondDate, LocalTime.of(23, 59, 59)))
                 .stream().sorted(Comparator.comparing(RegistrationRecordEntity::getDateTime).reversed()));
 
     }

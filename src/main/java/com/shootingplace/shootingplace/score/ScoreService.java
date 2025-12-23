@@ -47,7 +47,7 @@ public class ScoreService {
 
         List<ScoreEntity> scoreEntityList = new ArrayList<>();
 
-        tournamentRepository.getOne(competitionMembersListEntity.getAttachedToTournament()).getCompetitionsList().forEach(e -> scoreEntityList.addAll(e.getScoreList()));
+        tournamentRepository.findById(competitionMembersListEntity.getAttachedToTournament()).orElseThrow(EntityNotFoundException::new).getCompetitionsList().forEach(e -> scoreEntityList.addAll(e.getScoreList()));
 
         ScoreEntity scoreEntity = scoreEntityList.stream().max(Comparator.comparing(ScoreEntity::getMetricNumber)).orElse(null);
 
@@ -108,7 +108,7 @@ public class ScoreService {
                 .createDate(LocalDateTime.now())
                 .build());
 
-        LOG.info("Utworzono wynik dla " + name);
+        LOG.info("Utworzono wynik dla {}", name);
 
         return scoreEntity;
 
@@ -219,7 +219,7 @@ public class ScoreService {
                     .getScoreList()
                     .stream()
                     .filter(f -> f.isDsq() || f.isDnf() || f.isPk())
-                    .collect(Collectors.toList());
+                    .toList();
             scoreList.addAll(collect);
             competitionMembersListEntity.setScoreList(scoreList);
 
@@ -257,7 +257,7 @@ public class ScoreService {
                     .sorted(Comparator.comparing(ScoreEntity::getScore)
                             .thenComparing(ScoreEntity::getInnerTen)
                             .thenComparing(ScoreEntity::getOuterTen).reversed())
-                    .collect(Collectors.toList());
+                    .toList();
 
             scoreList.addAll(collect);
 
@@ -294,7 +294,7 @@ public class ScoreService {
                     .stream()
                     .filter(f -> f.isDnf() || f.isDsq() || f.isPk() || f.getScore() == 0)
                     .sorted(Comparator.comparingInt(s -> (int) s.getScore() + (s.getProcedures() * time)))
-                    .collect(Collectors.toList());
+                    .toList();
             scoreList.addAll(collect);
 
             competitionMembersListEntity.setScoreList(scoreList);
@@ -389,12 +389,12 @@ public class ScoreService {
                     .getScoreList()
                     .stream()
                     .filter(f -> f.isDsq() || f.isDnf() || f.isPk())
-                    .collect(Collectors.toList());
+                    .toList();
             scoreList.addAll(collect);
             competitionMembersListEntity.setScoreList(scoreList);
 
         }
-        // Mateoda dla Dziesiątki
+        // Metoda dla Dziesiątki
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.DYNAMIKADZIESIATKA.getName())) {
 
             // czas
@@ -419,14 +419,14 @@ public class ScoreService {
                     .sorted(Comparator.comparing(ScoreEntity::getScore).reversed())
                     .collect(Collectors.toList());
 
-            int alfaPoint, charliePoint = 0, deltaPoint = 0;
+            int alfaPoint, charliePoint, deltaPoint;
             alfaPoint = (int) (alfa * 5);
             charliePoint = (int) (charlie * 3);
             deltaPoint = (int) (delta * 1);
 
             int points;
 
-            points = (int) ((alfaPoint) + (charliePoint) + (deltaPoint));
+            points = (alfaPoint) + (charliePoint) + (deltaPoint);
 
             if (points < 0) {
                 points = 0;
@@ -478,7 +478,7 @@ public class ScoreService {
                     .getScoreList()
                     .stream()
                     .filter(f -> f.isDsq() || f.isDnf() || f.isPk())
-                    .collect(Collectors.toList());
+                    .toList();
             scoreList.addAll(collect);
             competitionMembersListEntity.setScoreList(scoreList);
         }
@@ -515,7 +515,7 @@ public class ScoreService {
                     .sorted(Comparator.comparing(ScoreEntity::getScore)
                             .thenComparing(ScoreEntity::getInnerTen)
                             .thenComparing(ScoreEntity::getOuterTen).reversed())
-                    .collect(Collectors.toList());
+                    .toList();
 
             scoreList.addAll(collect);
 
@@ -535,7 +535,7 @@ public class ScoreService {
 
 
         scoreRepository.save(scoreEntity);
-        LOG.info("wydaję amunicję " + scoreEntity.getName());
+        LOG.info("wydaję amunicję {}", scoreEntity.getName());
         return ResponseEntity.ok("Wydano amunicję " + scoreEntity.getName());
     }
 
@@ -548,7 +548,7 @@ public class ScoreService {
         scoreEntity.toggleGun();
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
-        LOG.info("wydaję broń " + scoreEntity.getName());
+        LOG.info("wydaję broń {}", scoreEntity.getName());
         return ResponseEntity.ok("Wydano broń " + scoreEntity.getName());
     }
 
@@ -562,7 +562,7 @@ public class ScoreService {
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
 
-        LOG.info("Ustawiam DNF " + scoreEntity.getName());
+        LOG.info("Ustawiam DNF {}", scoreEntity.getName());
         return ResponseEntity.ok("Ustawiono DNF " + scoreEntity.getName());
     }
 
@@ -583,7 +583,7 @@ public class ScoreService {
         } else {
             name = scoreEntity.getOtherPersonEntity().getFirstName() + " " + scoreEntity.getOtherPersonEntity().getSecondName();
         }
-        LOG.info("Ustawiam DSQ " + name);
+        LOG.info("Ustawiam DSQ {}", name);
         return ResponseEntity.ok("Ustawiono DSQ " + name);
     }
 
@@ -597,7 +597,7 @@ public class ScoreService {
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
 
-        LOG.info("Ustawiono PK " + scoreEntity.getName());
+        LOG.info("Ustawiono PK {}", scoreEntity.getName());
         return ResponseEntity.ok("Ustawiono PK " + scoreEntity.getName());
     }
 
@@ -619,11 +619,11 @@ public class ScoreService {
         List<ScoreEntity> scoreList = competitionMembersListEntity.getScoreList().stream().filter(f -> !f.isDsq()).filter(f -> !f.isDnf()).filter(f -> !f.isPk()).sorted(Comparator.comparing(ScoreEntity::getScore)
                 .reversed()).collect(Collectors.toList());
 
-        List<ScoreEntity> collect = competitionMembersListEntity.getScoreList().stream().filter(f -> f.isDsq() || f.isDnf() || f.isPk()).collect(Collectors.toList());
+        List<ScoreEntity> collect = competitionMembersListEntity.getScoreList().stream().filter(f -> f.isDsq() || f.isDnf() || f.isPk()).toList();
         scoreList.addAll(collect);
         competitionMembersListEntity.setScoreList(scoreList);
         competitionMembersListRepository.save(competitionMembersListEntity);
-        LOG.info("Ustawiono wynik na twardo " + scoreEntity.getName());
+        LOG.info("Ustawiono wynik na twardo {}", scoreEntity.getName());
         return ResponseEntity.ok("Ustawiono wynik " + scoreEntity.getName());
     }
 }

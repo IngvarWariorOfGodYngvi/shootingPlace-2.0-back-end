@@ -6,9 +6,11 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,44 +29,20 @@ public class AddressEntity {
     private String streetNumber;
     private String flatNumber;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
-    }
-
-    public String getPostOfficeCity() {
-        return postOfficeCity;
     }
 
     public void setPostOfficeCity(String postOfficeCity) {
         this.postOfficeCity = postOfficeCity;
     }
 
-    public String getStreet() {
-        return street;
-    }
-
     public void setStreet(String street) {
         this.street = street;
     }
 
-    public String getStreetNumber() {
-        return streetNumber;
-    }
-
     public void setStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
-    }
-
-    public String getFlatNumber() {
-        return flatNumber;
     }
 
     public void setFlatNumber(String flatNumber) {

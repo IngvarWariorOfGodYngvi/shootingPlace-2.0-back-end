@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.email;
 
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,7 +35,7 @@ public class EmailScheduler {
                 emailService.sendRichEmail(item.getRequest(), item.getMailType(), s);
             } catch (Exception e) {
                 LOG.error(e.getStackTrace());
-                LOG.error("Błąd wysyłania do: " + item.getRequest().getTo() + ", " + e.getMessage());
+                LOG.error("Błąd wysyłania do: {}, {}", item.getRequest().getTo(), e.getMessage());
             }
         }
     }
@@ -45,8 +46,8 @@ public class EmailScheduler {
             request.setTo(e.getRecipient());
             request.setSubject(e.getSubject());
             request.setHtmlContent(e.getHtmlContent());
-            Mapping.map(request, e.getMailType(), memberRepository.getOne(e.getMemberUUID()));
-            emailQueueService.enqueue(Mapping.map(request, e.getMailType(), memberRepository.getOne(e.getMemberUUID())));
+            Mapping.map(request, e.getMailType(), memberRepository.findById(e.getMemberUUID()).orElseThrow(EntityNotFoundException::new));
+            emailQueueService.enqueue(Mapping.map(request, e.getMailType(), memberRepository.findById(e.getMemberUUID()).orElseThrow(EntityNotFoundException::new)));
             scheduledEmailRepository.delete(e);
 
         });

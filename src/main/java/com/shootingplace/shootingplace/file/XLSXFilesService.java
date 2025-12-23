@@ -162,7 +162,7 @@ public class XLSXFilesService {
                         .sorted(Comparator.comparing(ScoreEntity::getScore)
                                 .thenComparing(ScoreEntity::getInnerTen)
                                 .thenComparing(ScoreEntity::getOuterTen).reversed())
-                        .collect(Collectors.toList());
+                        .toList();
 
                 if (competitionMembersListEntity.getCountingMethod().equals(CountingMethod.TIME.getName())) {
                     scoreList = competitionMembersListEntity.getScoreList().stream()
@@ -194,8 +194,8 @@ public class XLSXFilesService {
                 XSSFCell cell33 = row3.createCell(cc++);
                 XSSFCell cell34 = row3.createCell(cc++); // klub
                 List<XSSFCell> series = new ArrayList<>();
-                if (competitionMembersListEntity.getScoreList().get(0).getSeries().size() > 1 && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.NORMAL.getName())) {
-                    for (int k = 0; k < competitionMembersListEntity.getScoreList().get(0).getSeries().size(); k++) {
+                if (competitionMembersListEntity.getScoreList().getFirst().getSeries().size() > 1 && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.NORMAL.getName())) {
+                    for (int k = 0; k < competitionMembersListEntity.getScoreList().getFirst().getSeries().size(); k++) {
                         series.add(row3.createCell(cc++));
                     }
                 }
@@ -207,7 +207,7 @@ public class XLSXFilesService {
                 cell32.setCellValue("Nazwisko i Imię");
                 cell33.setCellValue("");
                 cell34.setCellValue("Klub");
-                if (competitionMembersListEntity.getScoreList().get(0).getSeries().size() > 1 && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.NORMAL.getName())) {
+                if (competitionMembersListEntity.getScoreList().getFirst().getSeries().size() > 1 && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.NORMAL.getName())) {
                     for (int k = 0; k < series.size(); k++) {
                         series.get(k).setCellValue("Seria " + arabicToRomanNumberConverter(k + 1));
                         series.get(k).setCellStyle(cellStyleCompetitionSubTitle);
@@ -366,7 +366,7 @@ public class XLSXFilesService {
                     XSSFCell cell44 = row4.createCell(cc++); //Klub
                     List<XSSFCell> series1 = new ArrayList<>();
                     if (scoreList.get(j).getSeries().size() > 1 && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.NORMAL.getName())) {
-                        for (int k = 0; k < competitionMembersListEntity.getScoreList().get(0).getSeries().size(); k++) {
+                        for (int k = 0; k < competitionMembersListEntity.getScoreList().getFirst().getSeries().size(); k++) {
                             series1.add(row4.createCell(cc++));
                         }
                     }
@@ -496,7 +496,7 @@ public class XLSXFilesService {
         FilesEntity filesEntity = createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -592,7 +592,7 @@ public class XLSXFilesService {
         FilesEntity filesEntity = createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -606,7 +606,7 @@ public class XLSXFilesService {
                 .filter(f -> f.getJoinDate().isBefore(secondDate.plusDays(1)))
                 .map(Mapping::map2DTO)
                 .sorted(Comparator.comparing(MemberDTO::getJoinDate).thenComparing(MemberDTO::getSecondName).thenComparing(MemberDTO::getFirstName))
-                .collect(Collectors.toList());
+                .toList();
 
         int rc = 0;
 
@@ -692,7 +692,7 @@ public class XLSXFilesService {
         FilesEntity filesEntity = createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -707,7 +707,7 @@ public class XLSXFilesService {
                 .filter(f -> f.getErasedEntity().getDate().isBefore(secondDate.plusDays(1)))
                 .map(Mapping::map2DTO)
                 .sorted(Comparator.comparing(MemberDTO::getJoinDate).thenComparing(MemberDTO::getSecondName).thenComparing(MemberDTO::getFirstName))
-                .collect(Collectors.toList());
+                .toList();
 
         int rc = 0;
 
@@ -793,7 +793,7 @@ public class XLSXFilesService {
         FilesEntity filesEntity = createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -849,10 +849,10 @@ public class XLSXFilesService {
             cell3.setCellValue(collect.get(i).getBirthDate().format(dateFormat()));
             cell4.setCellValue(collect.get(i).getJoinDate().toString());
 
-            if (collect.get(i).getHistory().getContributionList().size() > 0) {
+            if (!collect.get(i).getHistory().getContributionList().isEmpty()) {
 
-                cell5.setCellValue(collect.get(i).getHistory().getContributionList().get(0).getPaymentDay().toString());
-                cell6.setCellValue(collect.get(i).getHistory().getContributionList().get(0).getValidThru().toString());
+                cell5.setCellValue(collect.get(i).getHistory().getContributionList().getFirst().getPaymentDay().toString());
+                cell6.setCellValue(collect.get(i).getHistory().getContributionList().getFirst().getValidThru().toString());
 
             } else {
 
@@ -878,7 +878,7 @@ public class XLSXFilesService {
         FilesEntity filesEntity = createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -890,7 +890,7 @@ public class XLSXFilesService {
                 .filter(f -> f.getClub().getId() == 1)
                 .filter(f -> f.getLicense() != null && f.getLicense().getNumber() != null)
                 .sorted(Comparator.comparing(MemberEntity::getSecondName, pl()).thenComparing(MemberEntity::getFirstName, pl()))
-                .collect(Collectors.toList());
+                .toList();
 
 
         int rc = 0;
@@ -914,7 +914,7 @@ public class XLSXFilesService {
         XSSFCell cell51;
 
         sheet.addMergedRegion(new CellRangeAddress(rc - 1, rc - 1, 0, 5));
-        cell01.setCellValue("Wykaz członków Ligi Obrony Kraju Klubu: " + collect.get(0).getClub().getFullName());
+        cell01.setCellValue("Wykaz członków Ligi Obrony Kraju Klubu: " + collect.getFirst().getClub().getFullName());
         XSSFCellStyle cellStyle = workbook.createCellStyle();
         XSSFFont fontTitle = workbook.createFont();
         fontTitle.setBold(true);
@@ -966,7 +966,7 @@ public class XLSXFilesService {
         sheet.autoSizeColumn(0);    // lp
         sheet.autoSizeColumn(1);    // Imię i nazwisko
         sheet.autoSizeColumn(2);    // PESEL
-        sheet.autoSizeColumn(3);    // Adres zamieszkania
+        sheet.autoSizeColumn(3);    // Adres
         sheet.autoSizeColumn(4);    // Klub (KS DZIESIĄTKA)
         sheet.autoSizeColumn(5);    // Numer Licencji
 
@@ -981,7 +981,7 @@ public class XLSXFilesService {
         FilesEntity filesEntity = createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -1052,8 +1052,8 @@ public class XLSXFilesService {
                     .filter(f -> f.getGunType().equals(list.get(finalI)))
                     .filter(GunEntity::isInStock)
                     .sorted(Comparator.comparing(GunEntity::getCaliber).thenComparing(GunEntity::getModelName))
-                    .collect(Collectors.toList());
-            if (collect.size() > 0) {
+                    .toList();
+            if (!collect.isEmpty()) {
 
                 for (int j = 0; j < collect.size(); j++) {
                     GunEntity gun = collect.get(j);
@@ -1112,7 +1112,7 @@ public class XLSXFilesService {
                 createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -1124,7 +1124,7 @@ public class XLSXFilesService {
                 .filter(f -> f.getErasedEntity() != null)
                 .filter(f -> f.getErasedEntity().getDate().isAfter(firstDate.minusDays(1)) && f.getErasedEntity().getDate().isBefore(secondDate.plusDays(1)))
                 .sorted(Comparator.comparing(MemberEntity::getSecondName, Collator.getInstance(Locale.forLanguageTag("pl"))).thenComparing(MemberEntity::getFirstName, Collator.getInstance(Locale.forLanguageTag("pl"))))
-                .collect(Collectors.toList());
+                .toList();
         int rc = 0;
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Lista osób skreślonych od " + firstDate.format(dateFormat()) + " do " + secondDate.format(dateFormat()) + ".xlsx");
@@ -1214,7 +1214,7 @@ public class XLSXFilesService {
                 createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -1224,11 +1224,11 @@ public class XLSXFilesService {
         String fileName = "Lista osób do skreślelnia.xlsx";
         LocalDate notValidDate = LocalDate.now().minusMonths(6);
         List<MemberEntity> list = memberRepository.findAllByErasedFalseAndActiveFalse().stream()
-                .filter(f -> f.getHistory().getContributionList().isEmpty() || f.getHistory().getContributionList().get(0).getValidThru().minusDays(1).isBefore(notValidDate))
-                .sorted(Comparator.comparing(MemberEntity::getSecondName, Collator.getInstance(Locale.forLanguageTag("pl")))).collect(Collectors.toList());
+                .filter(f -> f.getHistory().getContributionList().isEmpty() || f.getHistory().getContributionList().getFirst().getValidThru().minusDays(1).isBefore(notValidDate))
+                .sorted(Comparator.comparing(MemberEntity::getSecondName, Collator.getInstance(Locale.forLanguageTag("pl")))).toList();
         int rc = 0;
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Lista osób do skreślelnia");
+        XSSFSheet sheet = workbook.createSheet("Lista osób do skreślenia");
 
         XSSFCellStyle cellStyleNormal = workbook.createCellStyle();
         cellStyleNormal.setAlignment(HorizontalAlignment.CENTER);
@@ -1245,7 +1245,7 @@ public class XLSXFilesService {
 
         XSSFRow row2 = sheet.createRow(rc++);
         XSSFCell cellTitle = row2.createCell(0);
-        cellTitle.setCellValue("Lista osób do skreślelnia");
+        cellTitle.setCellValue("Lista osób do skreślenia");
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
         cellTitle.setCellStyle(cellStyleTitle);
 
@@ -1315,7 +1315,7 @@ public class XLSXFilesService {
                 createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -1332,7 +1332,7 @@ public class XLSXFilesService {
         all.forEach(e -> csvContent.append(e.getLegitimationNumber()).append(",")
                 .append(e.getFullName()).append(",")
                 .append(e.getLicense().getNumber()).append(",")
-                .append(e.getHistory().getContributionList().get(0).getValidThru()).append(",")
+                .append(e.getHistory().getContributionList().getFirst().getValidThru()).append(",")
                 .append(e.getHistory().getPistolCounter()).append(",")
                 .append(e.getHistory().getRifleCounter()).append(",")
                 .append(e.getHistory().getShotgunCounter()).append("\n"));
@@ -1354,7 +1354,7 @@ public class XLSXFilesService {
                 createFileEntity(filesModel);
         File file = new File(fileName);
         file.delete();
-        LOG.info("Pobrano plik " + fileName);
+        LOG.info("Pobrano plik {}", fileName);
 
         return filesEntity;
     }
@@ -1450,7 +1450,7 @@ public class XLSXFilesService {
                 arbiterClass = "Sędzia Klasy Międzynarodowej";
                 break;
             default:
-//                LOG.info("Nie znaleziono Klasy Sędziowskiej");
+                LOG.info("Nie znaleziono Klasy Sędziowskiej");
 
         }
         return arbiterClass;
@@ -1466,46 +1466,20 @@ public class XLSXFilesService {
     }
 
     private String arabicToRomanNumberConverter(int arabicNumber) {
-        String romanNumber;
-        switch (arabicNumber) {
-            case 0:
-                romanNumber = "";
-                break;
-            case 1:
-                romanNumber = "I";
-                break;
-            case 2:
-                romanNumber = "II";
-                break;
-            case 3:
-                romanNumber = "III";
-                break;
-            case 4:
-                romanNumber = "IV";
-                break;
-            case 5:
-                romanNumber = "V";
-                break;
-            case 6:
-                romanNumber = "VI";
-                break;
-            case 7:
-                romanNumber = "VII";
-                break;
-            case 8:
-                romanNumber = "VIII";
-                break;
-            case 9:
-                romanNumber = "IX";
-                break;
-            case 10:
-                romanNumber = "X";
-                break;
-            default:
-                romanNumber = "error";
-                break;
-        }
-        return romanNumber;
+        return switch (arabicNumber) {
+            case 0 -> "";
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            case 7 -> "VII";
+            case 8 -> "VIII";
+            case 9 -> "IX";
+            case 10 -> "X";
+            default -> "error";
+        };
     }
 
 }

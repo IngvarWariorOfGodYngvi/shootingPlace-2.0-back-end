@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,9 +52,7 @@ public class CompetitionHistory {
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
-            for (String s : disciplineList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(disciplineList.split(";")));
         }
         return vals;
     }

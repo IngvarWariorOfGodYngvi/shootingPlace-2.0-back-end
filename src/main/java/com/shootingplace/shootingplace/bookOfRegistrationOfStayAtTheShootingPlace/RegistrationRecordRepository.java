@@ -11,7 +11,7 @@ public interface RegistrationRecordRepository {
     List<RegistrationRecordEntity> findAll();
 
     @Query(nativeQuery = true, value = "Select * from shootingplace.registration_record_entity where(date_time between (:start) and (:stop))")
-    List<RegistrationRecordEntity> findAllBeetweenDate(@Param("start") LocalDateTime start, @Param("stop") LocalDateTime stop);
+    List<RegistrationRecordEntity> findAllBetweenDate(@Param("start") LocalDateTime start, @Param("stop") LocalDateTime stop);
 
     RegistrationRecordEntity save(RegistrationRecordEntity entity);
 

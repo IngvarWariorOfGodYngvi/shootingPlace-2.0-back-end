@@ -2,11 +2,10 @@ package com.shootingplace.shootingplace.otherPerson;
 
 import com.shootingplace.shootingplace.enums.ArbiterClass;
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.member.MemberInfo;
 import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +17,10 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/other")
 @CrossOrigin
+@RequiredArgsConstructor
 public class OtherPersonController {
-    private final OtherPersonService otherPersonService;
-    private final ChangeHistoryService changeHistoryService;
 
-    public OtherPersonController(OtherPersonService otherPersonService, ChangeHistoryService changeHistoryService) {
-        this.otherPersonService = otherPersonService;
-        this.changeHistoryService = changeHistoryService;
-    }
+    private final OtherPersonService otherPersonService;
 
     @PostMapping("")
     public ResponseEntity<?> addPerson(@RequestBody OtherPerson person, @RequestParam String club,
@@ -91,8 +86,8 @@ public class OtherPersonController {
 
     @DeleteMapping ("/deactivatePerson")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> deactivatePerson(@RequestParam int id, @RequestParam String pinCode) throws NoUserPermissionException {
-            return otherPersonService.deactivatePerson(id, pinCode);
+    public ResponseEntity<?> deactivatePerson(@RequestParam int id, @RequestParam String pinCode) {
+            return otherPersonService.deactivatePerson(id);
     }
 
     @PutMapping("/")

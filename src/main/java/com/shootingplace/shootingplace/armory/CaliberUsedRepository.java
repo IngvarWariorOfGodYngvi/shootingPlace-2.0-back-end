@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.armory;
 
-public interface CaliberUsedRepository {
-    CaliberUsedEntity save(CaliberUsedEntity entity);
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CaliberUsedRepository extends JpaRepository<CaliberUsedEntity,String> {
 }

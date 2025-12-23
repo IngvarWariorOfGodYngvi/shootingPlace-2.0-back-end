@@ -1,14 +1,6 @@
 package com.shootingplace.shootingplace.armory;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CaliberRepository{
-    List<CaliberEntity> findAll();
-
-    CaliberEntity save(CaliberEntity entity);
-
-    Optional<CaliberEntity> findById(String caliberUUID);
-
-    CaliberEntity getOne(String caliberUUID);
+public interface CaliberRepository extends JpaRepository<CaliberEntity, String> {
 }

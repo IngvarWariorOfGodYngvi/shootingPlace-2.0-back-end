@@ -1,9 +1,7 @@
 package com.shootingplace.shootingplace.armory;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface GunStoreRepository{
-    List<GunStoreEntity> findAll();
+public interface GunStoreRepository extends JpaRepository<GunStoreEntity,String> {
     GunStoreEntity findByTypeName(String typeName);
-    GunStoreEntity save(GunStoreEntity entity);
 }

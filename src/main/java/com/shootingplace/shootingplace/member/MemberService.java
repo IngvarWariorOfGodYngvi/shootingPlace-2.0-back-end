@@ -162,7 +162,7 @@ public class MemberService {
 
     @Transactional
     @RecordHistory(action = "Member.toggleActive", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
-    public ResponseEntity<?> activateOrDeactivateMember(String uuid, String pinCode) {
+    public ResponseEntity<?> activateOrDeactivateMember(String uuid) {
 
         MemberEntity member = memberRepository.findById(uuid).orElse(null);
         if (member == null) {
@@ -178,7 +178,7 @@ public class MemberService {
 
     @Transactional
     @RecordHistory(action = "Member.changeAdult", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
-    public ResponseEntity<?> changeAdult(String memberUUID, String pinCode) {
+    public ResponseEntity<?> changeAdult(String memberUUID) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
@@ -198,7 +198,7 @@ public class MemberService {
 
     @Transactional
     @RecordHistory(action = "Member.erase", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
-    public ResponseEntity<?> eraseMember(String memberUUID, String erasedType, LocalDate erasedDate, String additionalDescription, String pinCode) {
+    public ResponseEntity<?> eraseMember(String memberUUID, String erasedType, LocalDate erasedDate, String additionalDescription) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
@@ -225,7 +225,7 @@ public class MemberService {
 
     @Transactional
     @RecordHistory(action = "Member.update", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
-    public ResponseEntity<?> updateMember(String memberUUID, Member member, String pinCode) {
+    public ResponseEntity<?> updateMember(String memberUUID, Member member) {
 
         MemberEntity entity = memberRepository.findById(memberUUID).orElse(null);
         if (entity == null) {
@@ -474,7 +474,7 @@ public class MemberService {
             entity = HistoryEntityType.MEMBER,
             entityArgIndex = 0
     )
-    public ResponseEntity<?> assignMemberToGroup(String memberUUID, Long groupId, String pinCode) {
+    public ResponseEntity<?> assignMemberToGroup(String memberUUID, Long groupId) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {

@@ -2,11 +2,12 @@ package com.shootingplace.shootingplace.ammoEvidence;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -31,40 +32,20 @@ public class AmmoUsedPersonal {
         return date;
     }
 
-    public String getCaliberName() {
-        return caliberName;
-    }
-
     public void setCaliberName(String caliberName) {
         this.caliberName = caliberName;
-    }
-
-    public String getMemberUUID() {
-        return memberUUID;
     }
 
     public void setMemberUUID(String memberUUID) {
         this.memberUUID = memberUUID;
     }
 
-    public Integer getCounter() {
-        return counter;
-    }
-
     public void setCounter(Integer counter) {
         this.counter = counter;
     }
 
-    public String getCaliberUUID() {
-        return caliberUUID;
-    }
-
     public void setCaliberUUID(String caliberUUID) {
         this.caliberUUID = caliberUUID;
-    }
-
-    public String getMemberName() {
-        return memberName;
     }
 
     public void setMemberName(String memberName) {
@@ -73,10 +54,6 @@ public class AmmoUsedPersonal {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public LocalTime getTime() {
-        return time;
     }
 
     public void setTime(LocalTime time) {

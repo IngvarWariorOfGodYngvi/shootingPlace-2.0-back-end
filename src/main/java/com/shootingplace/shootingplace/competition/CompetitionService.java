@@ -4,10 +4,10 @@ import com.shootingplace.shootingplace.enums.CompetitionType;
 import com.shootingplace.shootingplace.enums.CountingMethod;
 import com.shootingplace.shootingplace.enums.Discipline;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.HistoryService;
 import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -20,29 +20,16 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CompetitionService {
 
     private final CompetitionRepository competitionRepository;
     private final CompetitionMembersListRepository competitionMembersListRepository;
-    private final HistoryService historyService;
 
     private final Logger LOG = LogManager.getLogger(getClass());
 
-
-    public CompetitionService(CompetitionRepository competitionRepository, CompetitionMembersListRepository competitionMembersListRepository, HistoryService historyService) {
-        this.competitionRepository = competitionRepository;
-        this.competitionMembersListRepository = competitionMembersListRepository;
-        this.historyService = historyService;
-    }
-
     public List<CompetitionEntity> getAllCompetitions() {
-        List<CompetitionEntity> competitionEntityList = competitionRepository.findAll().stream().sorted(Comparator.comparing(CompetitionEntity::getOrdering)).collect(Collectors.toList());
-
-//        if (competitionEntityList.isEmpty()) {
-//            createCompetitions();
-//            LOG.info("Zostały utworzone domyślne Konkurencje");
-//        }
-        return competitionEntityList;
+        return competitionRepository.findAll().stream().sorted(Comparator.comparing(CompetitionEntity::getOrdering)).collect(Collectors.toList());
     }
 
 //    private void createCompetitions() {
@@ -52,7 +39,7 @@ public class CompetitionService {
 //                .name("25m Pistolet sportowy 10 strzałów OPEN")
 //                .numberOfShots(10)
 //                .type(CompetitionType.OPEN.getName())
-////                .discipline(Discipline.PISTOL.getName())
+//                .discipline(Discipline.PISTOL.getName())
 //                .countingMethod(CountingMethod.NORMAL.getName())
 //                .ordering(3)
 //                .build());
@@ -97,7 +84,7 @@ public class CompetitionService {
 //        LOG.info("Stworzono encje konkurencji");
 //    }
     public ResponseEntity<?> createNewCompetition(Competition competition) {
-        List<String> list = competitionRepository.findAll().stream().map(CompetitionEntity::getName).collect(Collectors.toList());
+        List<String> list = competitionRepository.findAll().stream().map(CompetitionEntity::getName).toList();
         int size = competitionRepository.findAll().stream().max(Comparator.comparing(CompetitionEntity::getOrdering)).get().getOrdering() + 1;
         LOG.info(competition.getName().replaceAll("\\s+", " ").trim().toLowerCase(Locale.ROOT));
         if (list.stream().anyMatch(a -> a.trim().toLowerCase(Locale.ROOT).equals(competition.getName().trim().toLowerCase(Locale.ROOT)))) {
@@ -106,15 +93,14 @@ public class CompetitionService {
         }
         List<String> disciplines = competition.getDisciplineList();
         CompetitionEntity c = CompetitionEntity.builder().name(competition.getName().replaceAll("\\s+", " ").trim()).abbreviation(competition.getAbbreviation())
-//                .discipline(competition.getDiscipline())
                 .ordering(size).type(competition.getType()).countingMethod(competition.getCountingMethod()).caliberUUID(!competition.getCaliberUUID().isEmpty() ? competition.getCaliberUUID() : null).numberOfShots(competition.getNumberOfShots()).numberOfManyShotsList(null).build();
         c.setDisciplineList(disciplines);
         competitionRepository.save(c);
         return ResponseEntity.status(201).body("utworzono konkurencję " + c.getName());
     }
 
-    @RecordHistory(action = "Competition.", entity = HistoryEntityType.COMPETITION, entityArgIndex = 0)
-    public ResponseEntity<?> updateCompetition(String uuid, Competition competition, String pinCode) {
+    @RecordHistory(action = "Competition.update", entity = HistoryEntityType.COMPETITION, entityArgIndex = 0)
+    public ResponseEntity<?> updateCompetition(String uuid, Competition competition) {
 
         CompetitionEntity entity = competitionRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
 
@@ -208,7 +194,7 @@ public class CompetitionService {
             entity = HistoryEntityType.COMPETITION,
             entityArgIndex = 0
     )
-    public ResponseEntity<?> deleteCompetition(String uuid, String pinCode) {
+    public ResponseEntity<?> deleteCompetition(String uuid) {
 
         CompetitionEntity competition = competitionRepository.findById(uuid)
                 .orElseThrow(EntityNotFoundException::new);

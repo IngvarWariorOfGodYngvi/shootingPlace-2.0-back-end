@@ -1,13 +1,11 @@
 package com.shootingplace.shootingplace.armory.gunRepresentation;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class GunRepresentationEntity {
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
     private String gunUUID;

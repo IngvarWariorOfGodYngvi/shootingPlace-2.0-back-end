@@ -9,6 +9,7 @@ import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.score.ScoreService;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CompetitionMembersListService {
 
     private final MemberRepository memberRepository;
@@ -31,24 +32,13 @@ public class CompetitionMembersListService {
     private final TournamentRepository tournamentRepository;
     private final Logger LOG = LogManager.getLogger();
 
-
-    public CompetitionMembersListService(MemberRepository memberRepository, CompetitionMembersListRepository competitionMembersListRepository, HistoryService historyService, OtherPersonRepository otherPersonRepository, ScoreService scoreService, TournamentRepository tournamentRepository) {
-        this.memberRepository = memberRepository;
-        this.competitionMembersListRepository = competitionMembersListRepository;
-        this.historyService = historyService;
-        this.otherPersonRepository = otherPersonRepository;
-        this.scoreService = scoreService;
-        this.tournamentRepository = tournamentRepository;
-    }
-
     public List<String> addScoreToCompetitionList(String competitionUUID, int legitimationNumber, int otherPerson) {
-        CompetitionMembersListEntity list = competitionMembersListRepository.getOne(competitionUUID);
+        CompetitionMembersListEntity list = competitionMembersListRepository.findById(competitionUUID).orElseThrow(EntityNotFoundException::new);
         List<ScoreEntity> scoreList = list.getScoreList();
         List<String> returnList = new ArrayList<>();
-        String failed = null;
         String success = "Dodano Osobę do";
         String scoreUUID = "";
-        returnList.add(0, failed);
+        returnList.add(0, null);
         returnList.add(1, success);
         returnList.add(2, scoreUUID);
         if (legitimationNumber > 0) {
@@ -195,7 +185,7 @@ public class CompetitionMembersListService {
         if (metricNumber.isEmpty()) {
             return ResponseEntity.badRequest().body("Taka osoba nie znajduje się na żadnej liście");
         }
-        return ResponseEntity.ok(metricNumber.get(0));
+        return ResponseEntity.ok(metricNumber.getFirst());
 
     }
 
@@ -261,8 +251,8 @@ public class CompetitionMembersListService {
                 .orElse(null);
     }
 
-    public ResponseEntity<?> getMemberScoresFromComtetitionMemberListUUID(String competitionMemberListUUID) {
-        List<CompetitionMembersListEntity> allByAttachedToTournament = competitionMembersListRepository.findAllByAttachedToTournament(competitionMembersListRepository.getOne(competitionMemberListUUID).getAttachedToTournament());
+    public ResponseEntity<?> getMemberScoresFromCompetitionMemberListUUID(String competitionMemberListUUID) {
+        List<CompetitionMembersListEntity> allByAttachedToTournament = competitionMembersListRepository.findAllByAttachedToTournament(competitionMembersListRepository.findById(competitionMemberListUUID).orElseThrow(EntityNotFoundException::new).getAttachedToTournament());
 
         return ResponseEntity.ok(allByAttachedToTournament);
     }
@@ -274,7 +264,7 @@ public class CompetitionMembersListService {
     }
 
     public ResponseEntity<?> getShooterStarts(String tournamentUUID, String startNumber) {
-        List<CompetitionMembersListEntity> competitionsList = tournamentRepository.getOne(tournamentUUID).getCompetitionsList();
+        List<CompetitionMembersListEntity> competitionsList = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new).getCompetitionsList();
         List<ScoreEntity> scoreEntities = new ArrayList<>();
         competitionsList.forEach(e -> e.getScoreList()
                 .stream()
@@ -284,15 +274,15 @@ public class CompetitionMembersListService {
     }
 
     public Optional<ScoreEntity> getFilteredByID(String uuid, String startNumber) {
-        return competitionMembersListRepository.getOne(uuid)
+        return competitionMembersListRepository.findById(uuid).orElseThrow(EntityNotFoundException::new)
                 .getScoreList()
                 .stream()
                 .filter(f -> f.getMetricNumber() == Integer.parseInt(startNumber))
-                .collect(Collectors.toList()).stream().findFirst();
+                .toList().stream().findFirst();
     }
 
     public CompetitionMembersList getCompetitionDTOByUUID(String uuid) {
 
-        return Mapping.map(competitionMembersListRepository.getOne(uuid));
+        return Mapping.map(competitionMembersListRepository.findById(uuid).orElseThrow(EntityNotFoundException::new));
     }
 }

@@ -1,9 +1,7 @@
 package com.shootingplace.shootingplace.armory;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CaliberForShootingPacketRepository {
-    List<CaliberForShootingPacketEntity> findAll();
+public interface CaliberForShootingPacketRepository extends JpaRepository<CaliberForShootingPacketEntity, String> {
 
-    CaliberForShootingPacketEntity save(CaliberForShootingPacketEntity entity);
 }

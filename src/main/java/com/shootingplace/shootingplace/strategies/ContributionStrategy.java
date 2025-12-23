@@ -12,7 +12,7 @@ public interface ContributionStrategy {
     Logger LOG = LogManager.getLogger(ContributionStrategy.class);
 
     default LocalDate calculateValidThru(LocalDate paymentDay, List<ContributionEntity> list) {
-        LocalDate localDate = list.isEmpty() ? paymentDay.plusMonths(3) : list.get(0).getValidThru().plusMonths(3);
+        LocalDate localDate = list.isEmpty() ? paymentDay.plusMonths(3) : list.getFirst().getValidThru().plusMonths(3);
         logToCalculateValidThru(localDate);
         return localDate;
     }
@@ -28,10 +28,10 @@ public interface ContributionStrategy {
     }
 
     default void logToContribution(int baseCount) {
-        LOG.info("ilość składek : " + baseCount);
+        LOG.info("ilość składek : {}", baseCount);
     }
     default void logToCalculateValidThru(LocalDate date) {
-        LOG.info("ważność składki : " + date);
+        LOG.info("ważność składki : {}", date);
     }
 
 }

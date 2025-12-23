@@ -5,15 +5,14 @@ import com.shootingplace.shootingplace.armory.ShootingPacketEntity;
 import com.shootingplace.shootingplace.armory.ShootingPacketService;
 import com.shootingplace.shootingplace.exceptions.NoPersonToAmmunitionException;
 import com.shootingplace.shootingplace.score.ScoreService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/competitionMembersList")
@@ -33,7 +32,7 @@ public class CompetitionMembersListController {
     }
     @GetMapping("/memberScores")
     public ResponseEntity<?> getMemberScoresFromCompetitionMemberListUUID(@RequestParam String competitionMemberListUUID) {
-        return competitionMembersListService.getMemberScoresFromComtetitionMemberListUUID(competitionMemberListUUID);
+        return competitionMembersListService.getMemberScoresFromCompetitionMemberListUUID(competitionMemberListUUID);
     }
 
     @GetMapping("/tournamentScores")
@@ -81,14 +80,14 @@ public class CompetitionMembersListController {
 
     @Transactional
     @PutMapping("/addMember")
-    public ResponseEntity<?> addScoreToCompetitionMembersList(@RequestParam List<String> competitionUUIDList, @RequestParam List<String> addAmmoList, @RequestParam int legitimationNumber, @RequestParam @Nullable int otherPerson) {
+    public ResponseEntity<?> addScoreToCompetitionMembersList(@RequestParam List<String> competitionUUIDList, @RequestParam List<String> addAmmoList, @RequestParam int legitimationNumber, @RequestParam int otherPerson) {
         List<List<String>> list = new ArrayList<>();
         competitionUUIDList.forEach(e -> list.add(competitionMembersListService.addScoreToCompetitionList(e.replaceAll("\\.", ","), legitimationNumber, otherPerson)));
         addAmmoList.forEach(e -> {
-            CompetitionMembersListEntity one = competitionMembersListRepository.getOne(e);
+            CompetitionMembersListEntity one = competitionMembersListRepository.findById(e).orElseThrow(EntityNotFoundException::new);
             one.setPracticeShots(one.getPracticeShots() != null ? one.getPracticeShots() : 0);
             try {
-                if (shootingPacketService.getAllShootingPacketEntities().stream().map(ShootingPacketEntity::getUuid).collect(Collectors.toList()).contains(one.getCaliberUUID())) {
+                if (shootingPacketService.getAllShootingPacketEntities().stream().map(ShootingPacketEntity::getUuid).toList().contains(one.getCaliberUUID())) {
                     shootingPacketService.getAllCalibersFromShootingPacket(one.getCaliberUUID()).forEach(c ->
                     {
                         try {
@@ -119,7 +118,7 @@ public class CompetitionMembersListController {
                 if (e.get(0) == null) {
                     list1.add(e.get(1));
                 } else {
-                    list1.add(e.get(0));
+                    list1.add(e.getFirst());
                 }
             });
             return ResponseEntity.ok(list1);
@@ -129,7 +128,7 @@ public class CompetitionMembersListController {
 
     @Transactional
     @PostMapping("/removeMember")
-    public ResponseEntity<?> removeMemberFromList(@RequestParam List<String> competitionNameList, @RequestParam int legitimationNumber, @RequestParam @Nullable int otherPerson) {
+    public ResponseEntity<?> removeMemberFromList(@RequestParam List<String> competitionNameList, @RequestParam int legitimationNumber, @RequestParam int otherPerson) {
         List<String> list = new ArrayList<>();
         competitionNameList.forEach(e -> list.add(competitionMembersListService.removeScoreFromList(e.replaceAll("\\.", ","), legitimationNumber, otherPerson)));
         if (!list.isEmpty()) {

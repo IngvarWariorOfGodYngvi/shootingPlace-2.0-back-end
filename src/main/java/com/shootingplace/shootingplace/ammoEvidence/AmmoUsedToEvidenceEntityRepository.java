@@ -1,11 +1,7 @@
 package com.shootingplace.shootingplace.ammoEvidence;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AmmoUsedToEvidenceEntityRepository{
-    AmmoUsedToEvidenceEntity save(AmmoUsedToEvidenceEntity entity);
+public interface AmmoUsedToEvidenceEntityRepository extends JpaRepository<AmmoUsedToEvidenceEntity, String> {
 
-    List<AmmoUsedToEvidenceEntity> findAll();
-
-    void delete(AmmoUsedToEvidenceEntity entity);
 }

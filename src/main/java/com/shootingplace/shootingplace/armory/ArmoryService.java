@@ -46,7 +46,6 @@ public class ArmoryService {
     private final GunStoreRepository gunStoreRepository;
     private final FilesRepository filesRepository;
     private final UsedHistoryRepository usedHistoryRepository;
-    private final HistoryService historyService;
     private final UserRepository userRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
     private final MemberRepository memberRepository;
@@ -101,7 +100,7 @@ public class ArmoryService {
 
 
     public void substratAmmo(String caliberUUID, Integer quantity) {
-        CaliberEntity caliberEntity = caliberRepository.getOne(caliberUUID);
+        CaliberEntity caliberEntity = caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new);
         CaliberUsedEntity caliberUsedEntity = CaliberUsedEntity.builder().date(LocalDate.now()).time(LocalTime.now()).belongTo(caliberUUID).ammoUsed(quantity).unitPrice(caliberEntity.getUnitPrice()).build();
         caliberUsedRepository.save(caliberUsedEntity);
         List<CaliberUsedEntity> ammoUsed = caliberEntity.getAmmoUsed();
@@ -112,7 +111,7 @@ public class ArmoryService {
     }
 
     public List<CalibersAddedEntity> getHistoryOfCaliber(String caliberUUID) {
-        return caliberRepository.getOne(caliberUUID).getAmmoAdded().stream().sorted(Comparator.comparing(CalibersAddedEntity::getDate)).collect(Collectors.toList());
+        return caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new).getAmmoAdded().stream().sorted(Comparator.comparing(CalibersAddedEntity::getDate)).collect(Collectors.toList());
     }
 
     public ResponseEntity<?> addGunEntity(AddGunImageWrapper addGunImageWrapper, String imageUUID, String pinCode) {
@@ -363,7 +362,7 @@ public class ArmoryService {
 
     @Transactional
     @RecordHistory(action = "Caliber.changeUnitPrice", entity = HistoryEntityType.CALIBER, entityArgIndex = 0)
-    public ResponseEntity<?> changeCaliberUnitPrice(String caliberUUID, Float price, String pinCode) {
+    public ResponseEntity<?> changeCaliberUnitPrice(String caliberUUID, Float price) {
         CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono kalibru"));
         caliber.setUnitPrice(price);
         caliberRepository.save(caliber);
@@ -374,7 +373,7 @@ public class ArmoryService {
 
     @Transactional
     @RecordHistory(action = "Caliber.changeUnitPriceForNotMember", entity = HistoryEntityType.CALIBER, entityArgIndex = 0)
-    public ResponseEntity<?> changeCaliberUnitPriceForNotMember(String caliberUUID, Float price, String pinCode) {
+    public ResponseEntity<?> changeCaliberUnitPriceForNotMember(String caliberUUID, Float price) {
         CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono kalibru"));
         caliber.setUnitPriceForNotMember(price);
         caliberRepository.save(caliber);

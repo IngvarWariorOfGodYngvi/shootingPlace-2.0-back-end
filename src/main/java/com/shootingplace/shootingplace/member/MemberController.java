@@ -3,7 +3,6 @@ package com.shootingplace.shootingplace.member;
 
 import com.shootingplace.shootingplace.address.Address;
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.security.RequirePermissions;
 import com.shootingplace.shootingplace.wrappers.MemberWithAddressWrapper;
 import jakarta.validation.Valid;
@@ -132,7 +131,7 @@ public class MemberController {
     @Transactional
     @PostMapping("/")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> addMember(@RequestBody @Valid MemberWithAddressWrapper memberWithAddressWrapper, @RequestParam boolean returningToClub, @RequestParam String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> addMember(@RequestBody @Valid MemberWithAddressWrapper memberWithAddressWrapper, @RequestParam boolean returningToClub, @RequestParam String pinCode) {
         Member member = memberWithAddressWrapper.getMember();
         Address address = memberWithAddressWrapper.getAddress();
         if (member.getPesel().isEmpty() || member.getPhoneNumber().isEmpty() || member.getFirstName().isEmpty() || member.getSecondName().isEmpty() || member.getIDCard().isEmpty()) {
@@ -149,14 +148,14 @@ public class MemberController {
 
     @PutMapping("/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> updateMember(@PathVariable String uuid, @RequestBody @Valid Member member, @RequestParam String pinCode) throws NoUserPermissionException {
-        return memberService.updateMember(uuid, member, pinCode);
+    public ResponseEntity<?> updateMember(@PathVariable String uuid, @RequestBody @Valid Member member, @RequestParam String pinCode) {
+        return memberService.updateMember(uuid, member);
     }
 
     @PutMapping("/group/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> assignMemberToGroup(@PathVariable String uuid, @RequestParam Long groupId, @RequestParam String pinCode) throws NoUserPermissionException {
-        return memberService.assignMemberToGroup(uuid, groupId, pinCode);
+    public ResponseEntity<?> assignMemberToGroup(@PathVariable String uuid, @RequestParam Long groupId, @RequestParam String pinCode) {
+        return memberService.assignMemberToGroup(uuid, groupId);
     }
 
     @GetMapping("/getMembersToReportToThePolice")
@@ -177,8 +176,8 @@ public class MemberController {
     @Transactional
     @PatchMapping("/adult/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> changeAdult(@PathVariable String uuid, @RequestParam String pinCode) throws NoUserPermissionException {
-            return memberService.changeAdult(uuid, pinCode);
+    public ResponseEntity<?> changeAdult(@PathVariable String uuid, @RequestParam String pinCode) {
+            return memberService.changeAdult(uuid);
     }
 
     @PatchMapping("/togglePzss/{uuid}")
@@ -188,13 +187,13 @@ public class MemberController {
 
     @PatchMapping("/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> activateOrDeactivateMember(@PathVariable String uuid, @RequestParam String pinCode) throws NoUserPermissionException {
-            return memberService.activateOrDeactivateMember(uuid, pinCode);
+    public ResponseEntity<?> activateOrDeactivateMember(@PathVariable String uuid, @RequestParam String pinCode) {
+            return memberService.activateOrDeactivateMember(uuid);
     }
 
     @PatchMapping("/erase/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> eraseMember(@PathVariable String uuid, @RequestParam String additionalDescription, @RequestParam String erasedDate, @RequestParam String erasedType, @RequestParam String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> eraseMember(@PathVariable String uuid, @RequestParam String additionalDescription, @RequestParam String erasedDate, @RequestParam String erasedType, @RequestParam String pinCode) {
             if (additionalDescription.trim().isBlank() || additionalDescription.trim().equals("null")) {
                 additionalDescription = null;
             }
@@ -202,7 +201,7 @@ public class MemberController {
                 erasedDate = String.valueOf(LocalDate.now());
             }
             LocalDate parsedDate = LocalDate.parse(erasedDate);
-            return memberService.eraseMember(uuid, erasedType, parsedDate, additionalDescription, pinCode);
+            return memberService.eraseMember(uuid, erasedType, parsedDate, additionalDescription);
     }
 
     @PatchMapping("/changeClub/{uuid}")

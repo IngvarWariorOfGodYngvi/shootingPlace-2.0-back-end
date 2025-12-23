@@ -97,7 +97,7 @@ public class MemberPermissionsService {
                 if (ordinal.equals("5")) {
                     memberPermissionsEntity.setArbiterClass(ArbiterClass.CLASS_INTERNATIONAL.getName());
                 }
-                LOG.info("Klasa sędziego ustawiona na pole nr " + ordinal);
+                LOG.info("Klasa sędziego ustawiona na pole nr {}", ordinal);
             }
             if (memberPermissions.getArbiterPermissionValidThru() != null) {
                 LocalDate date = LocalDate.of(memberPermissions.getArbiterPermissionValidThru().getYear(), 12, 31);
@@ -137,7 +137,7 @@ public class MemberPermissionsService {
         }
         memberPermissions.setArbiterClass(arbiterClass);
         memberPermissionsRepository.save(memberPermissions);
-        return ResponseEntity.ok("\"Podniesono klasę sędziego na " + arbiterClass + "\"");
+        return ResponseEntity.ok("\"Podniesiono klasę sędziego na " + arbiterClass + "\"");
 
 
     }

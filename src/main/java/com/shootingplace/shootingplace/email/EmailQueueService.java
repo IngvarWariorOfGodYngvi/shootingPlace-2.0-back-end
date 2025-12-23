@@ -14,7 +14,7 @@ public class EmailQueueService {
 
     public void enqueue(EmailQueue item) {
         queue.add(item);
-        LOG.info("Dodano do kolejki wysyłania: " + item.getRequest().getTo());
+        LOG.info("Dodano do kolejki wysyłania: {}", item.getRequest().getTo());
     }
 
     EmailQueue dequeue() {

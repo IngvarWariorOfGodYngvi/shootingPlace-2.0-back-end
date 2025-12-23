@@ -1,9 +1,8 @@
 package com.shootingplace.shootingplace.tournament;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,15 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/tournament")
 @CrossOrigin
+@RequiredArgsConstructor
 public class TournamentController {
 
     private final TournamentService tournamentService;
-    private final ChangeHistoryService changeHistoryService;
-
-    public TournamentController(TournamentService tournamentService, ChangeHistoryService changeHistoryService) {
-        this.tournamentService = tournamentService;
-        this.changeHistoryService = changeHistoryService;
-    }
 
     @GetMapping("/openTournament")
     public ResponseEntity<?> getOpenTournament() {
@@ -74,7 +68,7 @@ public class TournamentController {
     @PostMapping("/removeArbiter/{tournamentUUID}")
     public ResponseEntity<?> removeArbiterFromTournament(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
-        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
             return tournamentService.removeArbiterFromTournament(tournamentUUID, memberUUID);
         }
         if (id > 0) {
@@ -88,7 +82,7 @@ public class TournamentController {
     @PostMapping("/removeRTSArbiter/{tournamentUUID}")
     public ResponseEntity<?> removeRTSArbiterFromTournament(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
-        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
             return tournamentService.removeRTSArbiterFromTournament(tournamentUUID, memberUUID);
         }
         if (id > 0) {
@@ -107,8 +101,8 @@ public class TournamentController {
     @Transactional
     @PatchMapping("/open/{tournamentUUID}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> openTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) throws NoUserPermissionException {
-        return tournamentService.openTournament(tournamentUUID, pinCode);
+    public ResponseEntity<?> openTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) {
+        return tournamentService.openTournament(tournamentUUID);
     }
 
     @Transactional
@@ -121,7 +115,7 @@ public class TournamentController {
     @PutMapping("/addMainArbiter/{tournamentUUID}")
     public ResponseEntity<?> addMainArbiter(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
-        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
             return tournamentService.addMainArbiter(tournamentUUID, memberUUID);
         }
         if (id > 0) {
@@ -135,7 +129,7 @@ public class TournamentController {
     @PutMapping("/addRTSArbiter/{tournamentUUID}")
     public ResponseEntity<?> addRTSArbiter(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
-        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
             return tournamentService.addRTSArbiter(tournamentUUID, memberUUID);
         }
         if (id > 0) {
@@ -150,7 +144,7 @@ public class TournamentController {
     @PutMapping("/addOthersArbiters/{tournamentUUID}")
     public ResponseEntity<?> addOthersArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
-        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
             return tournamentService.addOthersArbiters(tournamentUUID, memberUUID);
         }
         if (id > 0) {
@@ -165,7 +159,7 @@ public class TournamentController {
     @PutMapping("/addOthersRTSArbiters/{tournamentUUID}")
     public ResponseEntity<?> addOthersRTSArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
-        if (memberUUID != null && !memberUUID.equals("") && !memberUUID.equals("null")) {
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
             return tournamentService.addOthersRTSArbiters(tournamentUUID, memberUUID);
         }
         if (id > 0) {
@@ -194,7 +188,7 @@ public class TournamentController {
 
     @Transactional
     @DeleteMapping("/delete/{tournamentUUID}")
-    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) throws NoUserPermissionException {
-        return tournamentService.deleteTournament(tournamentUUID, pinCode);
+    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) {
+        return tournamentService.deleteTournament(tournamentUUID);
     }
 }

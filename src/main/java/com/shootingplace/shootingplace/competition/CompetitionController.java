@@ -1,9 +1,8 @@
 package com.shootingplace.shootingplace.competition;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +12,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/competition")
 @CrossOrigin
+@RequiredArgsConstructor
 public class CompetitionController {
 
     private final CompetitionService competitionService;
-    private final ChangeHistoryService changeHistoryService;
-
-    public CompetitionController(CompetitionService competitionService, ChangeHistoryService changeHistoryService) {
-        this.competitionService = competitionService;
-        this.changeHistoryService = changeHistoryService;
-    }
 
     @GetMapping("/")
     public ResponseEntity<List<CompetitionEntity>> getAllCompetitions() {
@@ -60,14 +54,14 @@ public class CompetitionController {
     @Transactional
     @PutMapping("/update")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> updateCompetition(@RequestParam String uuid, @RequestBody Competition competition, @RequestParam String pinCode) throws NoUserPermissionException {
-        return competitionService.updateCompetition(uuid, competition, pinCode);
+    public ResponseEntity<?> updateCompetition(@RequestParam String uuid, @RequestBody Competition competition, @RequestParam String pinCode) {
+        return competitionService.updateCompetition(uuid, competition);
     }
 
     @Transactional
     @DeleteMapping("/delete")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> deleteCompetition(@RequestParam String uuid, @RequestParam String pinCode) throws NoUserPermissionException {
-        return competitionService.deleteCompetition(uuid, pinCode);
+    public ResponseEntity<?> deleteCompetition(@RequestParam String uuid, @RequestParam String pinCode) {
+        return competitionService.deleteCompetition(uuid);
     }
 }

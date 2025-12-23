@@ -45,7 +45,7 @@ public class RegistrationRecordsController {
     public ResponseEntity<?> saveToEvidenceBookNonMember(@Nullable @RequestParam String phone, @NotNull @RequestBody ImageOtherPersonWrapper other, @RequestParam Boolean rememberMe) {
         // podpis
         String imageUUID = filesService.storeImageEvidenceBook(other,other.getImageString() );
-        // tworzenie osoby spoza Klubu bo wyrazi zgodę
+        // tworzenie osoby spoza Klubu, bo wyrazi zgodę
         if (rememberMe) {
             OtherPersonEntity otherPerson = otherPersonService.addPerson(other.getOther().getClub().getShortName(), other.getOther());
             return recordsServ.createRecordInBook(imageUUID,otherPerson);

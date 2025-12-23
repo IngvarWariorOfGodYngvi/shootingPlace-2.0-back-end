@@ -8,6 +8,7 @@ import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
     @Override
     public PdfGenerationResults generate(String tournamentUUID) throws DocumentException, IOException {
 
-        TournamentEntity tournament = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournament = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
 
         String fileName = "Lista_sędziów_na_zawodach_" + tournament.getName() + ".pdf";
 

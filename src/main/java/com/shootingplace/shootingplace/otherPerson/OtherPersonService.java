@@ -62,7 +62,7 @@ public class OtherPersonService {
         OtherPersonEntity otherPersonEntity = OtherPersonEntity.builder().firstName(person.getFirstName().substring(0, 1).toUpperCase() + person.getFirstName().substring(1).toLowerCase()).secondName(person.getSecondName().toUpperCase()).phoneNumber(person.getPhoneNumber().trim().replaceAll(" ", "")).active(true).email(person.getEmail()).permissionsEntity(permissionsEntity).weaponPermissionNumber(person.getWeaponPermissionNumber() != null ? person.getWeaponPermissionNumber().toUpperCase(Locale.ROOT) : null).club(clubEntity).address(addressEntity).build();
         otherPersonEntity.setCreationDate();
         otherPersonRepository.save(otherPersonEntity);
-        LOG.info("Zapisano nową osobę " + otherPersonEntity.getFirstName() + " " + otherPersonEntity.getSecondName());
+        LOG.info("Zapisano nową osobę {} {}", otherPersonEntity.getFirstName(), otherPersonEntity.getSecondName());
         return ResponseEntity.status(201).body("Zapisano nową osobę " + otherPersonEntity.getFirstName() + " " + otherPersonEntity.getSecondName());
 
     }
@@ -99,7 +99,7 @@ public class OtherPersonService {
             otherPersonEntity.setWeaponPermissionNumber(person.getWeaponPermissionNumber());
         }
         otherPersonEntity.setCreationDate();
-        LOG.info("Zapisano nową osobę " + otherPersonEntity.getFirstName() + " " + otherPersonEntity.getSecondName());
+        LOG.info("Zapisano nową osobę {} {}", otherPersonEntity.getFirstName(), otherPersonEntity.getSecondName());
         return otherPersonRepository.save(otherPersonEntity);
 
     }
@@ -121,7 +121,7 @@ public class OtherPersonService {
     }
 
     @RecordHistory(action = "OtherPerson.deactivate", entity = HistoryEntityType.OTHER_PERSON, entityArgIndex = 0)
-    public ResponseEntity<?> deactivatePerson(int id, String pinCode) {
+    public ResponseEntity<?> deactivatePerson(int id) {
         if (!otherPersonRepository.existsById(id)) {
             return ResponseEntity.badRequest().body("Nie znaleziono osoby");
         }
@@ -136,25 +136,25 @@ public class OtherPersonService {
 
 
     public ResponseEntity<?> updatePerson(String id, OtherPerson oP, String clubName) {
-        OtherPersonEntity one = otherPersonRepository.getOne(Integer.valueOf(id));
+        OtherPersonEntity one = otherPersonRepository.findById(Integer.valueOf(id)).orElseThrow(EntityNotFoundException::new);
         if ((oP.getEmail() != null && !oP.getEmail().isEmpty()) && !one.getEmail().equals(oP.getEmail())) {
-            LOG.info("Osobie " + one.getFullName() + " Zmieniono email");
+            LOG.info("Osobie {} Zmieniono email", one.getFullName());
             one.setEmail(oP.getEmail());
         }
         if ((oP.getPhoneNumber() != null && !oP.getPhoneNumber().isEmpty()) && !one.getPhoneNumber().equals(oP.getPhoneNumber())) {
-            LOG.info("Osobie " + one.getFullName() + " Zmieniono numer telefonu");
+            LOG.info("Osobie {} Zmieniono numer telefonu", one.getFullName());
             one.setPhoneNumber(oP.getPhoneNumber().replaceAll(" ", ""));
         }
         if ((oP.getFirstName() != null && !oP.getFirstName().isEmpty()) && !(one.getFirstName().substring(0, 1).toUpperCase() + one.getFirstName().substring(1).toLowerCase()).equals(oP.getFirstName())) {
-            LOG.info("Osobie " + one.getFullName() + " Zmieniono Imię");
+            LOG.info("Osobie {} Zmieniono Imię", one.getFullName());
             one.setFirstName(oP.getFirstName());
         }
         if ((oP.getSecondName() != null && !oP.getSecondName().isEmpty()) && !one.getSecondName().toUpperCase().equals(oP.getSecondName())) {
-            LOG.info("Osobie " + one.getFullName() + " Zmieniono nazwisko");
+            LOG.info("Osobie {} Zmieniono nazwisko", one.getFullName());
             one.setSecondName(oP.getSecondName());
         }
         if ((oP.getWeaponPermissionNumber() != null && !oP.getWeaponPermissionNumber().isEmpty()) && !one.getWeaponPermissionNumber().equals(oP.getWeaponPermissionNumber())) {
-            LOG.info("Osobie " + one.getFullName() + " Zmieniono numer Pozwolenia na broń");
+            LOG.info("Osobie {} Zmieniono numer Pozwolenia na broń", one.getFullName());
             one.setWeaponPermissionNumber(oP.getWeaponPermissionNumber());
         }
         Address a1 = oP.getAddress();
@@ -173,12 +173,12 @@ public class OtherPersonService {
                 {
                     List<ClubEntity> all = clubRepository.findAll();
                     all.sort(Comparator.comparing(ClubEntity::getId).reversed());
-                    Integer clubID = (all.get(0).getId()) + 1;
+                    Integer clubID = (all.getFirst().getId()) + 1;
                     clubEntity = ClubEntity.builder().id(clubID).shortName(clubName).build();
                     clubRepository.save(clubEntity);
                 }
             }
-            LOG.info("Osobie" + one.getFullName() + " Zmieniono Klub");
+            LOG.info("Osobie{} Zmieniono Klub", one.getFullName());
             one.setClub(clubEntity);
         }
         MemberPermissions m1 = oP.getMemberPermissions();

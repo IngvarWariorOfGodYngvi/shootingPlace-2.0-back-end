@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +56,7 @@ public class HistoryService {
     // Contribution
     public void addContribution(String memberUUID, ContributionEntity contribution) {
         HistoryEntity historyEntity = memberRepository
-                .getOne(memberUUID)
+                .findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory();
         contribution.setHistoryUUID(historyEntity.getUuid());
         List<ContributionEntity> contributionList = historyEntity
@@ -79,7 +78,7 @@ public class HistoryService {
 
     public void removeContribution(String memberUUID, ContributionEntity contribution) {
         HistoryEntity historyEntity = memberRepository
-                .getOne(memberUUID)
+                .findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory();
         historyEntity
                 .getContributionList()
@@ -93,7 +92,7 @@ public class HistoryService {
     // license
     public void addLicenseHistoryRecord(String memberUUID, int index) {
         HistoryEntity historyEntity = memberRepository
-                .getOne(memberUUID)
+                .findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory();
 
         String[] licenseTab = historyEntity.getLicenseHistory().clone();
@@ -115,7 +114,7 @@ public class HistoryService {
     }
 
     void addDateToPatentPermissions(String memberUUID, LocalDate date, int index) {
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         HistoryEntity historyEntity = memberEntity.getHistory();
         LocalDate[] dateTab = historyEntity.getPatentDay().clone();
         if (index == 0) {
@@ -164,7 +163,7 @@ public class HistoryService {
 
     //  Tournament
     private CompetitionHistoryEntity createCompetitionHistoryEntity(String tournamentUUID, LocalDate date, List<String> disciplineList, String attachedTo) {
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         String name = tournamentEntity.getName();
         CompetitionHistoryEntity build = CompetitionHistoryEntity.builder()
                 .name(name)
@@ -177,7 +176,7 @@ public class HistoryService {
     }
 
     public void addCompetitionRecord(String memberUUID, CompetitionMembersListEntity list) {
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
 
         CompetitionHistoryEntity competitionHistoryEntity = createCompetitionHistoryEntity(list.getAttachedToTournament(), list.getDate(), list.getDisciplineList(), list.getUuid());
         competitionHistoryRepository.save(competitionHistoryEntity);
@@ -199,7 +198,7 @@ public class HistoryService {
     }
 
     private void checkProlongLicense(String memberUUID) {
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         HistoryEntity historyEntity = memberEntity.getHistory();
         Integer[] arr = {
                 memberEntity.getLicense().isPistolPermission() ? historyEntity.getPistolCounter() : -1,
@@ -225,7 +224,7 @@ public class HistoryService {
                             c.setDisciplineList(disciplines);
                         else c.setDisciplineList(disciplineList);
                         System.out.println("przepisuję zawody " + c.getName());
-                        System.out.println(disciplines.toString());
+                        System.out.println(disciplines);
                         System.out.println(disciplineList.toString());
                         competitionHistoryRepository.save(c);
                     });
@@ -241,13 +240,13 @@ public class HistoryService {
     }
 
     public void checkStarts(String memberUUID) {
-        MemberEntity e = memberRepository.getOne(memberUUID);
+        MemberEntity e = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         int year = e.getLicense().getNumber() != null ? e.getLicense().getValidThru().getYear() : LocalDate.now().getYear();
         List<CompetitionHistoryEntity> collect1 = e.getHistory()
                 .getCompetitionHistory()
                 .stream()
                 .filter(f -> f.getDate().getYear() == year)
-                .collect(Collectors.toList());
+                .toList();
         if (!collect1.isEmpty()) {
             long countPistol = collect1.stream()
                     .filter(f -> f.getDiscipline() != null && f.getDiscipline().equals(Discipline.PISTOL.getName()))
@@ -262,7 +261,7 @@ public class HistoryService {
             int pistolC = 0, rifleC = 0, shotgunC = 0;
             List<CompetitionHistoryEntity> collect2 = collect1.stream()
                     .filter(f -> f.getDisciplineList() != null)
-                    .collect(Collectors.toList());
+                    .toList();
             for (CompetitionHistoryEntity entity : collect2) {
                 List<String> disciplineList = entity.getDisciplineList();
                 for (String s : disciplineList) {
@@ -292,7 +291,7 @@ public class HistoryService {
     }
 
     public void removeCompetitionRecord(String memberUUID, CompetitionMembersListEntity list) {
-        HistoryEntity historyEntity = memberRepository.getOne(memberUUID)
+        HistoryEntity historyEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory();
         CompetitionHistoryEntity competitionHistoryEntity = new CompetitionHistoryEntity();
         for (CompetitionHistoryEntity e : historyEntity.getCompetitionHistory()) {
@@ -313,10 +312,10 @@ public class HistoryService {
 
     public void addJudgingRecord(String memberUUID, String tournamentUUID, String function) {
 
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
 
         HistoryEntity historyEntity = memberRepository
-                .getOne(memberUUID)
+                .findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory();
 
         JudgingHistoryEntity judgingHistoryEntity = createJudgingHistoryEntity(tournamentEntity.getDate(), tournamentEntity.getName(), tournamentEntity.getUuid(), function);
@@ -332,7 +331,7 @@ public class HistoryService {
 
     public void removeJudgingRecord(String memberUUID, String tournamentUUID) {
 
-        List<JudgingHistoryEntity> judgingHistoryEntityList = memberRepository.getOne(memberUUID)
+        List<JudgingHistoryEntity> judgingHistoryEntityList = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory().getJudgingHistory();
 
         JudgingHistoryEntity any = judgingHistoryEntityList
@@ -341,7 +340,7 @@ public class HistoryService {
                 .findFirst().orElseThrow(EntityNotFoundException::new);
         judgingHistoryEntityList.remove(any);
         HistoryEntity historyEntity = memberRepository
-                .getOne(memberUUID)
+                .findById(memberUUID).orElseThrow(EntityNotFoundException::new)
                 .getHistory();
         historyEntity.setJudgingHistory(judgingHistoryEntityList);
         historyRepository.save(historyEntity);
@@ -378,7 +377,7 @@ public class HistoryService {
     }
 
     public void updateTournamentInJudgingHistory(String tournamentUUID) {
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.getArbitersList() != null) {
             tournamentEntity
                     .getArbitersList()

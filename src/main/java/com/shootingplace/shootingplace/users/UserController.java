@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<?> createUser(@RequestParam String firstName, @RequestParam String secondName, @RequestParam List<String> userPermissionsList, @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable Integer otherID) throws NoUserPermissionException {
+    public ResponseEntity<?> createUser(@RequestParam String firstName, @RequestParam String secondName, @RequestParam List<String> userPermissionsList, @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable Integer otherID) {
 
         return userService.createUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID);
     }

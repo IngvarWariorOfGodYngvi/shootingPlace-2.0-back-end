@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public enum MailToggleOptions {
-    SEND_REMINDERS_FOR_ACTIVE_ONE_MONTH_BEFORE("Przypomnnienie o składkach miesiąc przed", EmailSendList::isSendRemindersForActiveOneMonthBefore),
+    SEND_REMINDERS_FOR_ACTIVE_ONE_MONTH_BEFORE("Przypomnienie o składkach miesiąc przed", EmailSendList::isSendRemindersForActiveOneMonthBefore),
     SEND_REMINDERS_FOR_NON_ACTIVE("Przypomnienie o składkach", EmailSendList::isSendRemindersForNonActive),
     SEND_CONGRATULATIONS_ON_THE_ANNIVERSARY("Gratulacje Rocznicy", EmailSendList::isSendCongratulationsOnTheAnniversary),
     SEND_REGISTRATION_CONFIRMATION("Potwierdzenie zapisu", EmailSendList::isSendRegistrationConfirmation),

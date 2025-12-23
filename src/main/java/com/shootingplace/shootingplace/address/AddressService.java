@@ -27,7 +27,7 @@ public class AddressService {
 
     @Transactional
     @RecordHistory(action = "ADDRESS.updateAddress", entity = HistoryEntityType.ADDRESS, entityArgIndex = 0)
-    public ResponseEntity<?> updateAddress(String memberUUID, Address address, String pinCode) {
+    public ResponseEntity<?> updateAddress(String memberUUID, Address address) {
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
             LOG.info("Nie znaleziono Klubowicza");

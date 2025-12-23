@@ -5,7 +5,6 @@ import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceRepository;
 import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.HistoryService;
 import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.security.UserAuthService;
 import com.shootingplace.shootingplace.users.UserEntity;
@@ -31,15 +30,11 @@ public class CaliberService {
     private final CalibersAddedRepository calibersAddedRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
     private final AmmoEvidenceRepository ammoEvidenceRepository;
-    private final HistoryService historyService;
     private final ChangeHistoryService changeHistoryService;
     private final UserAuthService userAuthService;
 
     private final Logger LOG = LogManager.getLogger(getClass());
 
-    public String getCaliberNameFromCaliberUUID(String caliberUUID) {
-        return caliberRepository.getOne(caliberUUID).getName();
-    }
 
     public List<CaliberEntity> getCalibersEntityList() {
         List<CaliberEntity> caliberEntityList;
@@ -67,7 +62,7 @@ public class CaliberService {
     public int getCalibersQuantity(String uuid, LocalDate date) {
         List<CalibersAddedEntity> collect = calibersAddedRepository.findAll().stream().filter(f -> f.getBelongTo().equals(uuid)).filter(f -> f.getDate().isBefore(date.plusDays(1))).toList();
         AtomicReference<Integer> count = new AtomicReference<>(0);
-        if (collect.size() > 0) {
+        if (!collect.isEmpty()) {
             collect.forEach(f -> count.updateAndGet(v -> v + f.getAmmoAdded()));
         }
         List<AmmoInEvidenceEntity> collect1 = new ArrayList<>();
@@ -137,7 +132,7 @@ public class CaliberService {
 
     @Transactional
     @RecordHistory(action = "Caliber.toggleActive", entity = HistoryEntityType.CALIBER, entityArgIndex = 0)
-    public ResponseEntity<?> activateOrDeactivateCaliber(String caliberUUID, String pinCode) {
+    public ResponseEntity<?> activateOrDeactivateCaliber(String caliberUUID) {
         CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElse(null);
         if (caliber == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono kalibru");

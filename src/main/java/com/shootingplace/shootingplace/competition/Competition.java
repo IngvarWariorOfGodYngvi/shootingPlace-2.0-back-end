@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -36,9 +37,7 @@ public class Competition {
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
-            for (String s : disciplineList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(disciplineList.split(";")));
         }
         return vals;
     }

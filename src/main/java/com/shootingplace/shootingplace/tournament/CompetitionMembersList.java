@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -154,9 +155,7 @@ public class CompetitionMembersList {
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
-            for (String s : disciplineList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(disciplineList.split(";")));
         }
         return vals;
     }
@@ -168,9 +167,7 @@ public class CompetitionMembersList {
     public List<String> getNumberOfManyShotsList() {
         List<String> vals = new ArrayList<>();
         if (numberOfManyShotsList != null) {
-            for (String s : numberOfManyShotsList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(numberOfManyShotsList.split(";")));
         }
         return vals;
     }

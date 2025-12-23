@@ -4,7 +4,6 @@ import com.shootingplace.shootingplace.armory.CaliberRepository;
 import com.shootingplace.shootingplace.competition.CompetitionEntity;
 import com.shootingplace.shootingplace.competition.CompetitionRepository;
 import com.shootingplace.shootingplace.enums.ArbiterWorkClass;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.*;
 import com.shootingplace.shootingplace.member.MemberDTO;
 import com.shootingplace.shootingplace.member.MemberEntity;
@@ -15,6 +14,7 @@ import com.shootingplace.shootingplace.score.ScoreDTO;
 import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TournamentService {
 
     private final TournamentRepository tournamentRepository;
@@ -44,18 +45,6 @@ public class TournamentService {
     private final JudgingHistoryRepository judgingHistoryRepository;
     private final Logger LOG = LogManager.getLogger(getClass());
 
-
-    public TournamentService(TournamentRepository tournamentRepository, MemberRepository memberRepository, OtherPersonRepository otherPersonRepository, CompetitionMembersListRepository competitionMembersListRepository, CompetitionRepository competitionRepository, CaliberRepository caliberRepository, HistoryService historyService, UsedHistoryRepository usedHistoryRepository, JudgingHistoryRepository judgingHistoryRepository) {
-        this.tournamentRepository = tournamentRepository;
-        this.memberRepository = memberRepository;
-        this.otherPersonRepository = otherPersonRepository;
-        this.competitionMembersListRepository = competitionMembersListRepository;
-        this.competitionRepository = competitionRepository;
-        this.caliberRepository = caliberRepository;
-        this.historyService = historyService;
-        this.usedHistoryRepository = usedHistoryRepository;
-        this.judgingHistoryRepository = judgingHistoryRepository;
-    }
 
     public ResponseEntity<String> createNewTournament(Tournament tournament) {
         if (tournamentRepository.findAll().stream().anyMatch(TournamentEntity::isOpen)) {
@@ -74,7 +63,7 @@ public class TournamentService {
 
 
         tournamentRepository.save(tournamentEntity);
-        LOG.info("Stworzono nowe zawody " + tournamentEntity.getName());
+        LOG.info("Stworzono nowe zawody {}", tournamentEntity.getName());
 
         return ResponseEntity.status(201).body("Otworzono nowe zawody: " + tournamentEntity.getName());
     }
@@ -113,14 +102,14 @@ public class TournamentService {
 
     public ResponseEntity<?> getOpenTournament() {
 
-        List<TournamentEntity> collect = tournamentRepository.findAll().stream().filter(TournamentEntity::isOpen).collect(Collectors.toList());
+        List<TournamentEntity> collect = tournamentRepository.findAll().stream().filter(TournamentEntity::isOpen).toList();
         if (collect.size() > 1) {
             return ResponseEntity.status(409).body("Pojawił się jakiś konflikt i nie można wyświetlić zawodów");
         }
-        if (collect.size() == 0) {
+        if (collect.isEmpty()) {
             return ResponseEntity.status(418).body("Nie ma nic do wyświetlenia");
         }
-        TournamentEntity tournamentEntity = collect.get(0);
+        TournamentEntity tournamentEntity = collect.getFirst();
         MemberDTO mainArbiterDTO;
         MemberDTO commissionRTSArbiter;
         if (tournamentEntity.getMainArbiter() != null) {
@@ -171,9 +160,9 @@ public class TournamentService {
     }
 
     public ResponseEntity<?> closeTournament(String tournamentUUID) {
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
-            LOG.info("Zawody " + tournamentEntity.getName() + " zostały zamknięte");
+            LOG.info("Zawody {} zostały zamknięte", tournamentEntity.getName());
             tournamentEntity.setOpen(false);
             tournamentRepository.save(tournamentEntity);
             return ResponseEntity.ok("Zawody zostały zamknięte");
@@ -183,10 +172,10 @@ public class TournamentService {
     }
 
     public ResponseEntity<?> removeArbiterFromTournament(String tournamentUUID, String memberUUID) {
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
 
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
 
             List<MemberEntity> list = tournamentEntity.getArbitersList();
             if (!list.contains(memberEntity)) {
@@ -207,7 +196,7 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
 
         if (tournamentEntity.isOpen()) {
 
@@ -235,14 +224,14 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
 
             if (tournamentEntity.getOtherMainArbiter() != null) {
                 tournamentEntity.setOtherMainArbiter(null);
             }
             String function = ArbiterWorkClass.MAIN_ARBITER.getName();
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
             if (tournamentEntity.getCommissionRTSArbiter() != null) {
                 if (tournamentEntity.getCommissionRTSArbiter().equals(memberEntity)) {
                     return ResponseEntity.badRequest().body("Sędzia już jest przypisany");
@@ -342,7 +331,7 @@ public class TournamentService {
                 tournamentEntity.setOtherCommissionRTSArbiter(null);
             }
             String function = ArbiterWorkClass.RTS_ARBITER.getName();
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
 
             if (tournamentEntity.getMainArbiter() != null) {
                 if (tournamentEntity.getMainArbiter().equals(memberEntity)) {
@@ -425,10 +414,10 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
             String function = ArbiterWorkClass.HELP.getName();
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
 
             if (tournamentEntity.getMainArbiter() != null) {
                 if (tournamentEntity.getMainArbiter().equals(memberEntity)) {
@@ -514,7 +503,7 @@ public class TournamentService {
     }
 
     public String addNewCompetitionListToTournament(String tournamentUUID, String competitionUUID) {
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
 
         if (!tournamentEntity.isOpen() || competitionUUID == null) {
             return "Nie udało się dodać konkurencji";
@@ -522,7 +511,7 @@ public class TournamentService {
 
         CompetitionEntity competition = competitionRepository.getOne(competitionUUID);
         if (!tournamentEntity.getCompetitionsList().isEmpty() && tournamentEntity.getCompetitionsList().stream().anyMatch(e -> e.getName().equals(competition.getName()))) {
-            LOG.info("konkurencja " + competition.getName() + " jest już dodana");
+            LOG.info("konkurencja {} jest już dodana", competition.getName());
             return "konkurencja " + competition.getName() + " jest już dodana";
         }
 
@@ -546,7 +535,7 @@ public class TournamentService {
         competitionsList.add(competitionMembersList);
         competitionsList.sort(Comparator.comparing(CompetitionMembersListEntity::getOrdering));
         tournamentRepository.save(tournamentEntity);
-        LOG.info("Dodano konkurencję " + competition.getName() + " do zawodów");
+        LOG.info("Dodano konkurencję {} do zawodów", competition.getName());
         return "Dodano konkurencję " + competition.getName() + " do zawodów";
 
 
@@ -562,11 +551,11 @@ public class TournamentService {
     }
     @Transactional
     @RecordHistory(action = "Tournament.delete", entity = HistoryEntityType.TOURNAMENT, entityArgIndex = 0)
-    public ResponseEntity<?> deleteTournament(String tournamentUUID, String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> deleteTournament(String tournamentUUID) {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (!tournamentEntity.isOpen()) {
             return ResponseEntity.badRequest().body("Nie udało się usunąć zawodów");
         }
@@ -574,7 +563,7 @@ public class TournamentService {
             tournamentEntity.getCompetitionsList()
                     .forEach(e -> e.getScoreList()
                             .stream().filter(f -> f.getMember() != null)
-                            .forEach(a -> historyService.removeCompetitionRecord(a.getMember().getUuid(), competitionMembersListRepository.getOne(a.getCompetitionMembersListEntityUUID()))));
+                            .forEach(a -> historyService.removeCompetitionRecord(a.getMember().getUuid(), competitionMembersListRepository.findById(a.getCompetitionMembersListEntityUUID()).orElseThrow(EntityNotFoundException::new))));
         }
         if (tournamentEntity.getMainArbiter() != null) {
             historyService.removeJudgingRecord(tournamentEntity.getMainArbiter().getUuid(), tournamentEntity.getUuid());
@@ -592,7 +581,7 @@ public class TournamentService {
     }
 
     public List<CompetitionMembersListEntity> getCompetitionsListInTournament(String tournamentUUID) {
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
 
         List<CompetitionMembersListEntity> competitionsList = tournamentEntity.getCompetitionsList();
         competitionsList.sort(Comparator.comparing(CompetitionMembersListEntity::getOrdering));
@@ -609,7 +598,7 @@ public class TournamentService {
                 .name(m.getName())
                 .numberOfShots(m.getNumberOfShots())
                 .practiceShots(m.getPracticeShots())
-                .caliberUUID(m.getCaliberUUID() != null ? caliberRepository.getOne(m.getCaliberUUID()).getUuid() : null)
+                .caliberUUID(m.getCaliberUUID() != null ? caliberRepository.findById(m.getCaliberUUID()).orElseThrow(EntityNotFoundException::new).getUuid() : null)
                 .build()).collect(Collectors.toList());
     }
 
@@ -617,10 +606,10 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
             String function = ArbiterWorkClass.RTS_HELP.getName();
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
 
             if (tournamentEntity.getMainArbiter() != null) {
                 if (tournamentEntity.getMainArbiter().equals(memberEntity)) {
@@ -661,7 +650,7 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
 
             OtherPersonEntity otherPersonEntity = otherPersonRepository
@@ -709,9 +698,9 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
-            MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
 
             List<MemberEntity> list = tournamentEntity.getArbitersRTSList();
             if (!list.contains(memberEntity)) {
@@ -731,7 +720,7 @@ public class TournamentService {
         if (!tournamentRepository.existsById(tournamentUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono zawodów z tym identyfikatorem");
         }
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         if (tournamentEntity.isOpen()) {
 
             OtherPersonEntity otherPersonEntity = otherPersonRepository
@@ -756,7 +745,7 @@ public class TournamentService {
 
     public List<String> getStatistics(String tournamentUUID) {
 
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
 
         List<String> list = new ArrayList<>();
         List<String> list1 = new ArrayList<>();
@@ -791,11 +780,11 @@ public class TournamentService {
     }
     @Transactional
     @RecordHistory(action = "Tournament.openTournament", entity = HistoryEntityType.TOURNAMENT, entityArgIndex = 0)
-    public ResponseEntity<?> openTournament(String tournamentUUID, String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> openTournament(String tournamentUUID) {
         if (tournamentRepository.findAll().stream().anyMatch(TournamentEntity::isOpen)) {
             return ResponseEntity.badRequest().body("Nie można otworzyć zawodów gdy inne są otwarte");
         } else {
-            TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+            TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
                 tournamentEntity.setOpen(true);
                 tournamentRepository.save(tournamentEntity);
             LOG.info("Zawody {} zostały otwarte", tournamentEntity.getName());
@@ -818,7 +807,7 @@ public class TournamentService {
         LocalDate firstDate1 = LocalDate.parse(firstDate);
         LocalDate secondDate1 = LocalDate.parse(secondDate);
         List<JudgingHistoryEntity> judgingHistoryEntityList = judgingHistoryRepository.findAllByDateBetween(firstDate1, secondDate1);
-        List<MemberEntity> collect = memberRepository.findAll().stream().filter(f -> f.getMemberPermissions().getArbiterNumber() != null).collect(Collectors.toList());
+        List<MemberEntity> collect = memberRepository.findAll().stream().filter(f -> f.getMemberPermissions().getArbiterNumber() != null).toList();
         List<JudgingHistoryDTO> list = new ArrayList<>();
         for (MemberEntity memberEntity : collect) {
             List<JudgingHistoryEntity> judgingHistory = memberEntity.getHistory().getJudgingHistory();
@@ -844,7 +833,7 @@ public class TournamentService {
 
     public List<ScoreDTO> getShootersNamesList(String tournamentUUID) {
         List<ScoreDTO> list = new ArrayList<>();
-        tournamentRepository.getOne(tournamentUUID)
+        tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new)
                 .getCompetitionsList()
                 .forEach(e -> e.getScoreList()
                         .forEach(el -> {

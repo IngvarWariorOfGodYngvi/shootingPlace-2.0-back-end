@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 public interface EmailStrategy {
 
-    Logger LOG = LogManager.getLogger(ContributionStrategy.class);
+    Logger LOG = LogManager.getLogger(EmailStrategy.class);
 
     default String getBcc() {
         String email = "automat@smartstrzelnica.pl";
@@ -21,6 +21,6 @@ public interface EmailStrategy {
     }
 
     default void logBcc(String email) {
-        LOG.info("ukryta kopia do: " + email);
+        LOG.info("ukryta kopia do: {}", email);
     }
 }

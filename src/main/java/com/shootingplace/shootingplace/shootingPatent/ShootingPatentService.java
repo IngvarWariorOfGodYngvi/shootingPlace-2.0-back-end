@@ -5,6 +5,7 @@ import com.shootingplace.shootingplace.member.MemberDTO;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class ShootingPatentService {
         if (!memberRepository.existsById(memberUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono klubowicza");
         }
-        MemberEntity memberEntity = memberRepository.getOne(memberUUID);
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         ShootingPatentEntity shootingPatentEntity = memberEntity.getShootingPatent();
         if (shootingPatent.getPatentNumber() != null && !shootingPatent.getPatentNumber().isEmpty()) {
 
@@ -72,7 +73,7 @@ public class ShootingPatentService {
             }
         }
         if (shootingPatent.getDateOfPosting() != null) {
-            LOG.info("ustawiono datę przyznania patentu na : " + shootingPatent.getDateOfPosting());
+            LOG.info("ustawiono datę przyznania patentu na : {}", shootingPatent.getDateOfPosting());
             shootingPatentEntity.setDateOfPosting(shootingPatent.getDateOfPosting());
 
         }

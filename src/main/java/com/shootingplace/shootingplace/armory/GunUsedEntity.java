@@ -4,12 +4,14 @@ import com.shootingplace.shootingplace.armory.gunRepresentation.GunRepresentatio
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Getter
 @Entity
 @Builder
 @AllArgsConstructor
@@ -17,7 +19,6 @@ import java.time.LocalTime;
 public class GunUsedEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
     private String gunUUID;
@@ -39,37 +40,13 @@ public class GunUsedEntity {
     private String acceptanceBy;
     private String acceptanceSign;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getGunUUID() {
-        return gunUUID;
-    }
-
     public void setGunUUID(String gunUUID) {
         this.gunUUID = gunUUID;
     }
 
-    public LocalDate getUsedDate() {
-        return usedDate;
-    }
-
-
-    public LocalTime getUsedTime() {
-        return usedTime;
-    }
-
-    public LocalDate getIssuanceDate() {
-        return issuanceDate;
-    }
 
     public void setIssuanceDate(LocalDate issuanceDate) {
         this.issuanceDate = issuanceDate;
-    }
-
-    public LocalTime getIssuanceTime() {
-        return issuanceTime;
     }
 
     public void setIssuanceTime(LocalTime issuanceTime) {
@@ -84,32 +61,16 @@ public class GunUsedEntity {
         this.acceptanceTime = acceptanceTime;
     }
 
-    public String getIssuanceBy() {
-        return issuanceBy;
-    }
-
     public void setIssuanceBy(String issuanceBy) {
         this.issuanceBy = issuanceBy;
-    }
-
-    public String getGunTakerSign() {
-        return gunTakerSign;
     }
 
     public void setGunTakerSign(String gunTakerSign) {
         this.gunTakerSign = gunTakerSign;
     }
 
-    public String getGunTakerName() {
-        return gunTakerName;
-    }
-
     public void setGunTakerName(String gunTakerName) {
         this.gunTakerName = gunTakerName;
-    }
-
-    public String getIssuanceSign() {
-        return issuanceSign;
     }
 
     public void setIssuanceSign(String issuanceSign) {
@@ -124,56 +85,24 @@ public class GunUsedEntity {
         this.usedTime = usedTime;
     }
 
-    public String getGunReturnerName() {
-        return gunReturnerName;
-    }
-
     public void setGunReturnerName(String returnerName) {
         this.gunReturnerName = returnerName;
-    }
-
-    public String getGunReturnerSign() {
-        return gunReturnerSign;
     }
 
     public void setGunReturnerSign(String returnerSign) {
         this.gunReturnerSign = returnerSign;
     }
 
-    public LocalDate getAcceptanceDate() {
-        return acceptanceDate;
-    }
-
-    public LocalTime getAcceptanceTime() {
-        return acceptanceTime;
-    }
-
-    public String getAcceptanceBy() {
-        return acceptanceBy;
-    }
-
     public void setAcceptanceBy(String acceptanceBy) {
         this.acceptanceBy = acceptanceBy;
-    }
-
-    public String getAcceptanceSign() {
-        return acceptanceSign;
     }
 
     public void setAcceptanceSign(String acceptanceSign) {
         this.acceptanceSign = acceptanceSign;
     }
 
-    public String getAdnotation() {
-        return adnotation;
-    }
-
     public void setAdnotation(String adnotation) {
         this.adnotation = adnotation;
-    }
-
-    public GunRepresentationEntity getGunRepresentationEntity() {
-        return gunRepresentationEntity;
     }
 
     public void setGunRepresentationEntity(GunRepresentationEntity gunRepresentationEntity) {

@@ -33,7 +33,7 @@ public class LicensePaymentService {
             entity = HistoryEntityType.LICENSE_PAYMENT,
             entityArgIndex = 0
     )
-    public ResponseEntity<?> addLicenseHistoryPayment(String memberUUID, String pinCode) {
+    public ResponseEntity<?> addLicenseHistoryPayment(String memberUUID) {
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
         if (member == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
@@ -73,7 +73,7 @@ public class LicensePaymentService {
     @Transactional
     @RecordHistory(action = "License.togglePaymentInPZSS", entity = HistoryEntityType.LICENSE_PAYMENT, entityArgIndex = 0   // paymentUUID
     )
-    public ResponseEntity<?> toggleLicencePaymentInPZSS(String paymentUUID, boolean condition, String pinCode) {
+    public ResponseEntity<?> toggleLicencePaymentInPZSS(String paymentUUID, boolean condition) {
         LicensePaymentHistoryEntity payment = licensePaymentHistoryRepository.findById(paymentUUID).orElse(null);
         if (payment == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono płatności");
@@ -87,7 +87,7 @@ public class LicensePaymentService {
 
     @Transactional
     @RecordHistory(action = "LicensePayment.update", entity = HistoryEntityType.LICENSE_PAYMENT, entityArgIndex = 1)
-    public ResponseEntity<?> updateLicensePayment(String memberUUID, String paymentUUID, LocalDate date, Integer year, String pinCode) {
+    public ResponseEntity<?> updateLicensePayment(String memberUUID, String paymentUUID, LocalDate date, Integer year) {
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
 
         if (member == null) {
@@ -111,7 +111,7 @@ public class LicensePaymentService {
 
     @Transactional
     @RecordHistory(action = "LicensePayment.remove", entity = HistoryEntityType.LICENSE_PAYMENT, entityArgIndex = 0)
-    public ResponseEntity<?> removeLicensePaymentRecord(String paymentUUID, String pinCode) {
+    public ResponseEntity<?> removeLicensePaymentRecord(String paymentUUID) {
         LicensePaymentHistoryEntity payment = licensePaymentHistoryRepository.findById(paymentUUID).orElse(null);
         if (payment == null) {
             return ResponseEntity.badRequest().body("Nie znaleziono płatności");

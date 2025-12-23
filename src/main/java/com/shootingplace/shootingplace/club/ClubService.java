@@ -1,11 +1,11 @@
 package com.shootingplace.shootingplace.club;
 
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.HistoryService;
 import com.shootingplace.shootingplace.history.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -18,20 +18,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ClubService {
 
     private final ClubRepository clubRepository;
-    private final HistoryService historyService;
     private final MemberRepository memberRepository;
     private final OtherPersonRepository otherPersonRepository;
     private final Logger LOG = LogManager.getLogger();
-
-    public ClubService(ClubRepository clubRepository, HistoryService historyService, MemberRepository memberRepository, OtherPersonRepository otherPersonRepository) {
-        this.clubRepository = clubRepository;
-        this.historyService = historyService;
-        this.memberRepository = memberRepository;
-        this.otherPersonRepository = otherPersonRepository;
-    }
 
     public List<ClubEntity> getAllClubs() {
         return clubRepository.findAll().stream().filter(f -> !f.getId().equals(2)).collect(Collectors.toList());
@@ -46,7 +39,7 @@ public class ClubService {
 
     public ResponseEntity<String> updateClub(int id, Club club) {
         if (!clubRepository.existsById(id)) {
-            return ResponseEntity.badRequest().body("Nieznaleziono Klubu");
+            return ResponseEntity.badRequest().body("Nie znaleziono Klubu");
         }
         if (id == 2) {
             LOG.info("Forbidden");
@@ -137,7 +130,7 @@ public class ClubService {
             club.setId(1);
             ClubEntity clubEntity = buildCLub(club);
             clubRepository.save(clubEntity);
-            LOG.info("dodano Klub :" + club.getShortName());
+            LOG.info("dodano Klub :{}", club.getShortName());
             return ResponseEntity.ok("importowano Klub: " + club.getShortName());
 
         }
@@ -145,10 +138,10 @@ public class ClubService {
         if (!b) {
             ClubEntity clubEntity = buildCLub(club);
             clubRepository.save(clubEntity);
-            LOG.info("dodano Klub :" + club.getShortName());
+            LOG.info("dodano Klub :{}", club.getShortName());
             return ResponseEntity.ok("importowano Klub: " + club.getShortName());
         }
-        return ResponseEntity.ok("Klub " + club.getShortName() + " już istenije w bazie");
+        return ResponseEntity.ok("Klub " + club.getShortName() + " już istnieje w bazie");
 
 
     }
@@ -158,7 +151,7 @@ public class ClubService {
     }
 
     @RecordHistory(action = "Club.delete", entity = HistoryEntityType.CLUB)
-    public ResponseEntity<?> deleteClub(Integer id, String pinCode) {
+    public ResponseEntity<?> deleteClub(Integer id) {
         if (id == 1 || id == 2) {
             return ResponseEntity.badRequest().body("Nie można usunąć tego Klubu");
         }

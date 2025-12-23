@@ -2,7 +2,6 @@ package com.shootingplace.shootingplace.tournament;
 
 import com.shootingplace.shootingplace.score.ScoreEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -21,7 +21,6 @@ import java.util.List;
 public class CompetitionMembersListEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -55,9 +54,7 @@ public class CompetitionMembersListEntity {
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
-            for (String s : disciplineList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(disciplineList.split(";")));
         }
         return vals;
     }
@@ -73,9 +70,7 @@ public class CompetitionMembersListEntity {
     public List<String> getNumberOfManyShotsList() {
         List<String> vals = new ArrayList<>();
         if (numberOfManyShotsList != null) {
-            for (String s : numberOfManyShotsList.split(";")) {
-                vals.add(String.valueOf(s));
-            }
+            vals.addAll(Arrays.asList(numberOfManyShotsList.split(";")));
         }
         return vals;
     }

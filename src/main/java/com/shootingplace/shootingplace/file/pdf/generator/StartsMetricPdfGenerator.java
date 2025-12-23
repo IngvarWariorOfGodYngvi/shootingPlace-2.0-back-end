@@ -20,6 +20,7 @@ import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import com.shootingplace.shootingplace.utils.PageStamper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,7 @@ import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
 import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
 
 @Component
+@RequiredArgsConstructor
 public class StartsMetricPdfGenerator {
 
     private final MemberRepository memberRepository;
@@ -42,22 +44,6 @@ public class StartsMetricPdfGenerator {
     private final CompetitionRepository competitionRepository;
     private final ClubRepository clubRepository;
     private final Environment environment;
-
-    public StartsMetricPdfGenerator(
-            MemberRepository memberRepository,
-            OtherPersonRepository otherPersonRepository,
-            TournamentRepository tournamentRepository,
-            CompetitionRepository competitionRepository,
-            ClubRepository clubRepository,
-            Environment environment
-    ) {
-        this.memberRepository = memberRepository;
-        this.otherPersonRepository = otherPersonRepository;
-        this.tournamentRepository = tournamentRepository;
-        this.competitionRepository = competitionRepository;
-        this.clubRepository = clubRepository;
-        this.environment = environment;
-    }
 
     public PdfGenerationResults generate(
             String memberUUID,
@@ -83,7 +69,7 @@ public class StartsMetricPdfGenerator {
             club = memberEntity.getClub().getShortName();
         }
 
-        TournamentEntity tournamentEntity = tournamentRepository.getOne(tournamentUUID);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
         ClubEntity clubEntity = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
 
         String fileName = "metryki_" + name + ".pdf";
@@ -111,8 +97,6 @@ public class StartsMetricPdfGenerator {
                 .filter(competition -> competition.contains(" pneumatyczny ") || competition.contains(" pneumatyczna "))
                 .sorted()
                 .forEach(comp::add);
-
-        Paragraph newLine = new Paragraph("\n", font(9, 0));
 
         for (int j = 0; j < comp.size(); j++) {
             int d = Integer.parseInt(startNumber);
@@ -270,7 +254,7 @@ public class StartsMetricPdfGenerator {
 
             if (competitionEntity.getCountingMethod().equals(CountingMethod.POJEDYNEK.getName())) {
                 for (int i = 0; i < pointColumnWidths.length; i++) {
-                    Paragraph p = new Paragraph();
+                    Paragraph p;
                     if (i == 4 || i == 5) {
                         p = new Paragraph("UWAGI", font(12, 0));
                     } else {
@@ -401,16 +385,11 @@ public class StartsMetricPdfGenerator {
         return new PdfGenerationResults(fileName, baos.toByteArray());
     }
 
-    // --- pomocnicze metody, zakładam że masz je już w projekcie; jeśli nie, trzeba je dodać ---
-
     private static String arabicToRomanNumberConverter(int number) {
-        // prosta implementacja konwersji (jeśli masz własną, użyj jej)
-        // zwraca np. 1 -> I, 2 -> II, 3 -> III, etc.
         final String[] romans = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
                 "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
         if (number >= 0 && number < romans.length) return romans[number];
         return Integer.toString(number);
     }
 
-    // zakładam, że masz w projekcie metodę setAttToDoc(...) używaną wcześniej.
 }
