@@ -1,18 +1,16 @@
 package com.shootingplace.shootingplace.shootingPatent;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/patent")
 @CrossOrigin
+@RequiredArgsConstructor
 public class ShootingPatentController {
 
     private final ShootingPatentService shootingPatentService;
-
-    public ShootingPatentController(ShootingPatentService shootingPatentService) {
-        this.shootingPatentService = shootingPatentService;
-    }
 
     @GetMapping("/")
     public ResponseEntity<?> getMembersWithNoShootingPatent(){

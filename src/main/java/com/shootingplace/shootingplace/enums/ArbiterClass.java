@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ArbiterClass {
     CLASS_3("Klasa 3"),
     CLASS_2("Klasa 2"),
@@ -12,11 +15,6 @@ public enum ArbiterClass {
     ArbiterClass(String name) {
         this.name = name;
     }
-
-    public String getName() {
-        return name;
-    }
-
 
 
 }

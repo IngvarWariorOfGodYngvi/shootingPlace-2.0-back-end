@@ -7,12 +7,14 @@ import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
 import com.shootingplace.shootingplace.member.MemberService;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduledTasks {
 
     private final Environment environment;
@@ -23,21 +25,6 @@ public class ScheduledTasks {
     private final AmmoUsedService ammoUsedService;
     private final RegistrationRecordsService registrationRecordsService;
     private final EmailService emailService;
-
-    public ScheduledTasks(Environment environment, WorkingTimeEvidenceService workRepo,
-                          MemberService memberService,
-                          AmmoEvidenceService ammoEvidenceService,
-                          AmmoUsedService ammoUsedService,
-                          RegistrationRecordsService registrationRecordsService,
-                          EmailService emailService) {
-        this.environment = environment;
-        this.workingTimeEvidenceService = workRepo;
-        this.memberService = memberService;
-        this.ammoEvidenceService = ammoEvidenceService;
-        this.ammoUsedService = ammoUsedService;
-        this.registrationRecordsService = registrationRecordsService;
-        this.emailService = emailService;
-    }
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")

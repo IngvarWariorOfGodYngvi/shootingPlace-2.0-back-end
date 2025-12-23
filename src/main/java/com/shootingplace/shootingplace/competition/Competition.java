@@ -16,13 +16,9 @@ public class Competition {
     private String name;
     private String abbreviation;
 
-//    private String discipline;
-
-//    private String[] disciplines;
     private String disciplineList;
 
     private Integer numberOfShots;
-//    private Integer[] numberOfManyShots;
 
     private String type;
 

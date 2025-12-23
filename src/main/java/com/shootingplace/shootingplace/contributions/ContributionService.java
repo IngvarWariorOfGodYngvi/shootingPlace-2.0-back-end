@@ -12,10 +12,9 @@ import com.shootingplace.shootingplace.strategies.ContributionStrategy;
 import com.shootingplace.shootingplace.strategies.ProfileContext;
 import com.shootingplace.shootingplace.users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ContributionService {
 
     private final ContributionRepository contributionRepository;
@@ -35,17 +35,6 @@ public class ContributionService {
 
     private final Logger LOG = LogManager.getLogger(getClass());
     private final ProfileContext profileContext;
-
-
-    public ContributionService(ContributionRepository contributionRepository, MemberRepository memberRepository, HistoryService historyService, Environment environment, UserRepository userRepository, EmailService emailService, List<ProfileContext> contexts) {
-        this.contributionRepository = contributionRepository;
-        this.memberRepository = memberRepository;
-        this.historyService = historyService;
-        this.userRepository = userRepository;
-        this.emailService = emailService;
-        String profile = environment.getActiveProfiles()[0];
-        this.profileContext = contexts.stream().filter(ctx -> ctx.getClass().getAnnotation(Profile.class).value()[0].equals(profile)).findFirst().orElseThrow(() -> new IllegalStateException("Brak profilu"));
-    }
 
     @RecordHistory(action = "Cntribution.add", entity = HistoryEntityType.CONTRIBUTION)
     public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, Integer contributionCount) {

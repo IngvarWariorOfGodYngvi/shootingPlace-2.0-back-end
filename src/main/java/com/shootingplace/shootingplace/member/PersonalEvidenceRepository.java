@@ -1,9 +1,6 @@
 package com.shootingplace.shootingplace.member;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PersonalEvidenceRepository  {
-    PersonalEvidenceEntity save(PersonalEvidenceEntity entity);
-
-    List<PersonalEvidenceEntity> findAll();
+public interface PersonalEvidenceRepository extends JpaRepository<PersonalEvidenceEntity, String> {
 }

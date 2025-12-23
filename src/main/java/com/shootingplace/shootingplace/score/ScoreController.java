@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.score;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,13 +11,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/score")
 @CrossOrigin
+@RequiredArgsConstructor
 public class ScoreController {
 
     private final ScoreService scoreService;
-
-    public ScoreController(ScoreService scoreService) {
-        this.scoreService = scoreService;
-    }
 
     @Transactional
     @PutMapping("/set")

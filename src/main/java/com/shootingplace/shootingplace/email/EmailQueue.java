@@ -2,7 +2,9 @@ package com.shootingplace.shootingplace.email;
 
 import com.shootingplace.shootingplace.member.MemberEntity;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class EmailQueue {
 
@@ -14,18 +16,6 @@ public class EmailQueue {
         this.request = request;
         this.mailType = mailType;
         this.memberEntity = memberEntity;
-    }
-
-    public EmailRequest getRequest() {
-        return request;
-    }
-
-    public String getMailType() {
-        return mailType;
-    }
-
-    public MemberEntity getMemberEntity() {
-        return memberEntity;
     }
 
 }

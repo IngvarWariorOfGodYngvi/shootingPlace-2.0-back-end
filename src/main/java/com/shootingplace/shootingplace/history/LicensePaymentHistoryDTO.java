@@ -3,12 +3,10 @@ package com.shootingplace.shootingplace.history;
 import lombok.*;
 
 import java.time.LocalDate;
-
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Getter
-@Setter
 public class LicensePaymentHistoryDTO {
 
     private String paymentUuid;

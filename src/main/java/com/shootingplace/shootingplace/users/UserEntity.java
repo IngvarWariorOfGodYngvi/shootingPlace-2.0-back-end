@@ -22,7 +22,6 @@ import java.util.List;
 public class UserEntity extends Person {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
     @OneToOne

@@ -5,23 +5,18 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.*;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
-
+@RequiredArgsConstructor
 public class PageStamper extends PdfPageEventHelper {
     private final Environment environment;
     private final Boolean isPageNumberStamp;
     private final Boolean isFooterImage;
     int pages;
-
-    public PageStamper(Environment environment, Boolean isPageNumberStamp, Boolean isFooterImage) {
-        this.environment = environment;
-        this.isPageNumberStamp = isPageNumberStamp;
-        this.isFooterImage = isFooterImage;
-    }
 
     @Override
     public void onOpenDocument(PdfWriter writer, Document document) {

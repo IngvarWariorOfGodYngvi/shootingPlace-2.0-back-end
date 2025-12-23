@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ErasedType {
     RESIGNATION("Rezygnacja z członkostwa"),
     CHANGE_BELONGING("Zmiana barw klubowych"),
@@ -10,10 +13,6 @@ public enum ErasedType {
 
     ErasedType(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
 

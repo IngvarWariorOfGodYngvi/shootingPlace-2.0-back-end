@@ -64,20 +64,12 @@ public class Mapping {
                 .history(map(e.getHistory()))
                 .memberPermissions(map(e.getMemberPermissions()))
                 .personalEvidence(map(e.getPersonalEvidence()))
-                .pzss(checkBool(e.isPZSS()))
+                .pzss(e.isPZSS())
                 .erasedEntity(e.getErasedEntity())
                 .image(e.getImageUUID())
                 .note(e.getNote())
                 .build();
     }
-
-    private static Boolean checkBool(Boolean b) {
-        if (b == null) {
-            return false;
-        } else return b;
-
-    }
-
 
     public static MemberEntity map(Member e) {
         return MemberEntity.builder()

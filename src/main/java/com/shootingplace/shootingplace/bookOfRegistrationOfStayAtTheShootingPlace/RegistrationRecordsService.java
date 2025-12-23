@@ -9,6 +9,7 @@ import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceService;
 import com.shootingplace.shootingplace.wrappers.ImageOtherPersonWrapper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
+@RequiredArgsConstructor
 public class RegistrationRecordsService {
 
     private final Logger LOG = LogManager.getLogger(getClass());
@@ -31,14 +33,6 @@ public class RegistrationRecordsService {
     private final OtherPersonRepository otherPersonRepository;
     private final WorkingTimeEvidenceService workingTimeEvidenceService;
     private final UserRepository userRepository;
-
-    public RegistrationRecordsService(MemberRepository memberRepo, RegistrationRecordRepository registrationRepo, OtherPersonRepository otherPersonRepository, WorkingTimeEvidenceService workingTimeEvidenceService, UserRepository userRepository) {
-        this.memberRepo = memberRepo;
-        this.registrationRepo = registrationRepo;
-        this.otherPersonRepository = otherPersonRepository;
-        this.workingTimeEvidenceService = workingTimeEvidenceService;
-        this.userRepository = userRepository;
-    }
 
     public ResponseEntity<?> createRecordInBook(String pesel, String imageUUID) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();

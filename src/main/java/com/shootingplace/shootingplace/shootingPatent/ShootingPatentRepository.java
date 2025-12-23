@@ -1,12 +1,6 @@
 package com.shootingplace.shootingplace.shootingPatent;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ShootingPatentRepository{
-    Optional<ShootingPatentEntity> findByPatentNumber(String number);
-
-    List<ShootingPatentEntity> findByPatentNumberIsNotNull();
-
-    ShootingPatentEntity save(ShootingPatentEntity entity);
+public interface ShootingPatentRepository extends JpaRepository<ShootingPatentEntity, String> {
 }

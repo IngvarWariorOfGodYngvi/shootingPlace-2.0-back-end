@@ -1,17 +1,14 @@
 package com.shootingplace.shootingplace.barCodeCards;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 
-public interface BarCodeCardRepository {
-    BarCodeCardEntity save(BarCodeCardEntity entity);
+public interface BarCodeCardRepository extends JpaRepository<BarCodeCardEntity,String> {
 
     boolean existsByBarCode(String barCode);
 
     BarCodeCardEntity findByBarCode(String number);
 
     List<BarCodeCardEntity> findAllByBelongsTo(String uuid);
-
-    List<BarCodeCardEntity> findAll();
-
-//    boolean existsByBelongsTo(String belongsTo);
 }

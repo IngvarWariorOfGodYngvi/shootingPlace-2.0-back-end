@@ -1,22 +1,22 @@
 package com.shootingplace.shootingplace.contributions;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ContributionEntity {
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -27,44 +27,20 @@ public class ContributionEntity {
     private String acceptedBy;
     private boolean edited;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public LocalDate getPaymentDay() {
-        return paymentDay;
-    }
-
     public void setPaymentDay(LocalDate paymentDay) {
         this.paymentDay = paymentDay;
-    }
-
-    public LocalDate getValidThru() {
-        return validThru;
     }
 
     public void setValidThru(LocalDate validThru) {
         this.validThru = validThru;
     }
 
-    public String getHistoryUUID() {
-        return historyUUID;
-    }
-
     public void setHistoryUUID(String historyUUID) {
         this.historyUUID = historyUUID;
     }
 
-    public String getAcceptedBy() {
-        return acceptedBy;
-    }
-
     public void setAcceptedBy(String acceptedBy) {
         this.acceptedBy = acceptedBy;
-    }
-
-    public boolean isEdited() {
-        return edited;
     }
 
     public void setEdited(boolean edited) {

@@ -1,16 +1,7 @@
 package com.shootingplace.shootingplace.history;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface HistoryRepository{
-    HistoryEntity save(HistoryEntity entity);
+public interface HistoryRepository extends JpaRepository<HistoryEntity, String> {
 
-    Optional<HistoryEntity> findById(String uuid);
-
-    List<HistoryEntity> findAll();
-
-    void delete(HistoryEntity e);
-
-    HistoryEntity getByUuid(String uuid);
 }

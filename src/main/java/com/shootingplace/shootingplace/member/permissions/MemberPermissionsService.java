@@ -4,6 +4,7 @@ import com.shootingplace.shootingplace.enums.ArbiterClass;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MemberPermissionsService {
 
     private final MemberPermissionsRepository memberPermissionsRepository;
     private final MemberRepository memberRepository;
     private final Logger LOG = LogManager.getLogger(getClass());
-
-
-    public MemberPermissionsService(MemberPermissionsRepository memberPermissionsRepository, MemberRepository memberRepository) {
-        this.memberPermissionsRepository = memberPermissionsRepository;
-        this.memberRepository = memberRepository;
-    }
 
     public ResponseEntity<?> updateMemberPermissions(String memberUUID, MemberPermissions memberPermissions, String ordinal) {
         if (!memberRepository.existsById(memberUUID)) {

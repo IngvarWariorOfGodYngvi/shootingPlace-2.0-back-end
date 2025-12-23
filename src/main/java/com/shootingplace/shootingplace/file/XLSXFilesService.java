@@ -22,6 +22,7 @@ import com.shootingplace.shootingplace.utils.Mapping;
 import com.shootingplace.shootingplace.wrappers.MemberWithContributionWrapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -48,6 +49,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class XLSXFilesService {
 
 
@@ -61,18 +63,6 @@ public class XLSXFilesService {
     private final StatisticsService statisticsService;
 
     private final Logger LOG = LogManager.getLogger(getClass());
-
-
-    public XLSXFilesService(TournamentRepository tournamentRepository, ClubRepository clubRepository, FilesRepository filesRepository, MemberRepository memberRepository, GunStoreRepository gunStoreRepository, GunRepository gunRepository, Environment environment, StatisticsService statisticsService) {
-        this.tournamentRepository = tournamentRepository;
-        this.clubRepository = clubRepository;
-        this.filesRepository = filesRepository;
-        this.memberRepository = memberRepository;
-        this.gunStoreRepository = gunStoreRepository;
-        this.gunRepository = gunRepository;
-        this.environment = environment;
-        this.statisticsService = statisticsService;
-    }
 
     // rezultaty z zawodów
     public FilesEntity createAnnouncementInXLSXType(String tournamentUUID) throws IOException {

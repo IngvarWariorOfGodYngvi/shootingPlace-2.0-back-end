@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum MailType {
     TEST("Test"),
     SUBSCRIPTION_REMINDER("Przypomnienie o składkach"),
@@ -13,10 +16,6 @@ public enum MailType {
 
     MailType(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
 

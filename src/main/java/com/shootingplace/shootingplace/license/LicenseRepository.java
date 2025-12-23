@@ -1,10 +1,6 @@
 package com.shootingplace.shootingplace.license;
 
-public interface LicenseRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    LicenseEntity save(LicenseEntity entity);
-
-    LicenseEntity getOne(String uuid);
-
-    boolean existsById(String uuid);
+public interface LicenseRepository extends JpaRepository<LicenseEntity, String> {
 }

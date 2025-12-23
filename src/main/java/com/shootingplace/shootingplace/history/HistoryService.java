@@ -32,7 +32,6 @@ public class HistoryService {
     private final TournamentRepository tournamentRepository;
     private final JudgingHistoryRepository judgingHistoryRepository;
     private final ContributionRepository contributionRepository;
-    private final ChangeHistoryService changeHistoryService;
 
     private final Logger LOG = LogManager.getLogger(getClass());
 

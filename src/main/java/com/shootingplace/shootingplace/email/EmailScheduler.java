@@ -3,6 +3,7 @@ package com.shootingplace.shootingplace.email;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class EmailScheduler {
 
     private final EmailQueueService emailQueueService;
@@ -20,12 +22,6 @@ public class EmailScheduler {
 
     private final Logger LOG = LogManager.getLogger(getClass());
 
-    public EmailScheduler(EmailQueueService emailQueueService, EmailService emailService, ScheduledEmailRepository scheduledEmailRepository, MemberRepository memberRepository) {
-        this.emailQueueService = emailQueueService;
-        this.emailService = emailService;
-        this.scheduledEmailRepository = scheduledEmailRepository;
-        this.memberRepository = memberRepository;
-    }
     @Scheduled(fixedDelay = 6000)
     public void processQueue() {
         if (!emailQueueService.isEmpty()) {

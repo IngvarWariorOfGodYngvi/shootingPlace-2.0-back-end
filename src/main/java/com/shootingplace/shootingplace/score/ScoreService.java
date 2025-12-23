@@ -9,6 +9,7 @@ import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListRepository;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ScoreService {
 
     private final ScoreRepository scoreRepository;
@@ -31,13 +33,6 @@ public class ScoreService {
     private final Environment environment;
 
     private final Logger LOG = LogManager.getLogger(getClass());
-
-    public ScoreService(ScoreRepository scoreRepository, CompetitionMembersListRepository competitionMembersListRepository, TournamentRepository tournamentRepository, Environment environment) {
-        this.scoreRepository = scoreRepository;
-        this.competitionMembersListRepository = competitionMembersListRepository;
-        this.tournamentRepository = tournamentRepository;
-        this.environment = environment;
-    }
 
     public ScoreEntity createScore(float score, float innerTen, float outerTen, int procedures, String competitionMembersListEntityUUID, MemberEntity memberEntity, OtherPersonEntity otherPersonEntity) {
         String name = memberEntity != null ? memberEntity.getFullName() : otherPersonEntity.getFullName();

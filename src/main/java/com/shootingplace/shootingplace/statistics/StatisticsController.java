@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.statistics;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,14 +9,10 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/statistics")
 @CrossOrigin
+@RequiredArgsConstructor
 public class StatisticsController {
 
     private final StatisticsService statisticsService;
-
-    public StatisticsController(StatisticsService statisticsService) {
-        this.statisticsService = statisticsService;
-    }
-
 
     @GetMapping("/contributionSum")
     public ResponseEntity<?> getContributionSum(@RequestParam String firstDate, @RequestParam String secondDate) {

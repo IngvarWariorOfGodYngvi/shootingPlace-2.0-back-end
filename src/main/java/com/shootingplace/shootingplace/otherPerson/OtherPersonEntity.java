@@ -6,16 +6,17 @@ import com.shootingplace.shootingplace.member.permissions.MemberPermissionsEntit
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class OtherPersonEntity {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,76 +38,36 @@ public class OtherPersonEntity {
 
     private LocalDateTime creationDate;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
-    }
-
-    public String getSecondName() {
-        return secondName;
     }
 
     public void setSecondName(String secondName) {
         this.secondName = secondName.toUpperCase();
     }
 
-    public ClubEntity getClub() {
-        return club;
-    }
-
     public void setClub(ClubEntity club) {
         this.club = club;
-    }
-
-    public MemberPermissionsEntity getPermissionsEntity() {
-        return permissionsEntity;
     }
 
     public void setPermissionsEntity(MemberPermissionsEntity permissionsEntity) {
         this.permissionsEntity = permissionsEntity;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
     public void setActive(boolean active) {
         this.active = active;
     }
 
-    public String getWeaponPermissionNumber() {
-        return weaponPermissionNumber;
-    }
-
     public void setWeaponPermissionNumber(String weaponPermissionNumber) {
         this.weaponPermissionNumber = weaponPermissionNumber;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
     }
 
     public void setCreationDate(LocalDateTime creationDate) {
@@ -116,16 +77,8 @@ public class OtherPersonEntity {
         this.creationDate = LocalDateTime.now();
     }
 
-    public AddressEntity getAddress() {
-        return address;
-    }
-
     public void setAddress(AddressEntity address) {
         this.address = address;
-    }
-
-    public String getLicenseNumber() {
-        return licenseNumber;
     }
 
     public void setLicenseNumber(String licenseNumber) {

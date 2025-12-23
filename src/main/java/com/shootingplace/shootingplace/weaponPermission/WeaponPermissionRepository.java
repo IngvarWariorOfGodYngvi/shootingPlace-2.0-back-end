@@ -1,6 +1,6 @@
 package com.shootingplace.shootingplace.weaponPermission;
 
-public interface WeaponPermissionRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    WeaponPermissionEntity save(WeaponPermissionEntity weaponPermissionEntity);
+public interface WeaponPermissionRepository extends JpaRepository<WeaponPermissionEntity, String> {
 }

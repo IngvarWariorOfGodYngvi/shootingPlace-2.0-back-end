@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.shootingPatent;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,6 @@ import java.time.LocalDate;
 public class ShootingPatentEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
     private String patentNumber;

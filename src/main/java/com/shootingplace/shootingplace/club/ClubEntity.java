@@ -6,8 +6,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,96 +32,44 @@ public class ClubEntity {
     private String appartmentNumber; // tak jest w SOZ
     private String url;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getShortName() {
-        return shortName;
-    }
-
     public void setShortName(String name) {
         this.shortName = name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
     }
 
-    public String getLicenseNumber() {
-        return licenseNumber;
-    }
-
     public void setLicenseNumber(String licenseNumber) {
         this.licenseNumber = licenseNumber;
-    }
-
-    public String getFullName() {
-        return fullName;
     }
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
-    public String getWzss() {
-        return wzss;
-    }
-
     public void setWzss(String wzss) {
         this.wzss = wzss;
-    }
-
-    public String getVovoidership() {
-        return vovoidership;
     }
 
     public void setVovoidership(String voivodeship) {
         this.vovoidership = voivodeship;
     }
 
-    public String getCity() {
-        return city;
-    }
-
     public void setCity(String city) {
         this.city = city;
     }
 
-    public String getHouseNumber() {
-        return houseNumber;
-    }
-
     public void setHouseNumber(String houseNumber) {
         this.houseNumber = houseNumber;
-    }
-
-    public String getAppartmentNumber() {
-        return appartmentNumber;
-    }
-
-    public String getStreet() {
-        return street;
     }
 
     public void setStreet(String street) {

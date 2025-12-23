@@ -8,12 +8,11 @@ import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
 import lombok.*;
 
 import java.time.LocalDate;
-
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class MemberDTO extends Person {
     private String uuid;
     private LocalDate joinDate;

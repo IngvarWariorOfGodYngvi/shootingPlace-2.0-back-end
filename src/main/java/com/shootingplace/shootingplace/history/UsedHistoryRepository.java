@@ -1,14 +1,6 @@
 package com.shootingplace.shootingplace.history;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UsedHistoryRepository{
-    List<UsedHistoryEntity> findAll();
-
-    List<UsedHistoryEntity> findAllByEvidenceUUID(String evidenceUUID);
-    List<UsedHistoryEntity> findAllByUsedType(String type);
-    UsedHistoryEntity findByGunUUIDAndReturnToStoreFalse(String gunUUID);
-    List<UsedHistoryEntity> findAllByUsedTypeAndReturnToStoreFalse(String type);
-
-    UsedHistoryEntity save(UsedHistoryEntity entity);
+public interface UsedHistoryRepository extends JpaRepository<UsedHistoryEntity, String> {
 }

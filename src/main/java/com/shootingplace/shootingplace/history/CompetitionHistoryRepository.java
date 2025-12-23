@@ -1,11 +1,7 @@
 package com.shootingplace.shootingplace.history;
 
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CompetitionHistoryRepository{
-    CompetitionHistoryEntity save(CompetitionHistoryEntity entity);
+public interface CompetitionHistoryRepository extends JpaRepository<CompetitionHistoryEntity, String> {
 
-    Optional<CompetitionHistoryEntity> findById(String uuid);
-
-    void delete(CompetitionHistoryEntity competitionHistoryEntity);
 }

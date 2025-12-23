@@ -4,11 +4,13 @@ import com.shootingplace.shootingplace.ammoEvidence.AmmoUsedEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,21 +18,12 @@ import java.util.List;
 public class PersonalEvidenceEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
     @OneToMany
     @OrderBy("caliberName ASC")
     private List<AmmoUsedEntity> ammoList;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public List<AmmoUsedEntity> getAmmoList() {
-        return ammoList;
-    }
 
     public void setAmmoList(List<AmmoUsedEntity> ammoList) {
         this.ammoList = ammoList;

@@ -6,6 +6,7 @@ import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.security.RequirePermissions;
 import com.shootingplace.shootingplace.wrappers.MemberWithAddressWrapper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +19,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/member")
 @CrossOrigin
+@RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
-
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @GetMapping("/{number}")
     public ResponseEntity<?> getMember(@PathVariable int number) {

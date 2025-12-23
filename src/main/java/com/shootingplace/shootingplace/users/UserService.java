@@ -35,6 +35,7 @@ public class UserService {
     private final TournamentRepository tournamentRepository;
     private final ClubRepository clubRepository;
     private final UserAuthService userAuthService;
+    private final UserPinPolicy userPinPolicy;
     private final Logger LOG = LogManager.getLogger(getClass());
 
     public List<UserDTO> getListOfUser() {
@@ -74,39 +75,10 @@ public class UserService {
         if (memberUUID != null && !memberUUID.isEmpty() && !memberRepository.existsById(memberUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza o podanym identyfikatorze - nie można utworzyć użytkownika");
         }
-
-        String trim2 = pinCode.trim();
-        char[] pinNumbers = trim2.toCharArray();
-        if (pinNumbers.length < 4) {
-            ResponseEntity.status(409).body("Kod jest za krótki. Musi posiadać 4 cyfry.");
-        }
-        int p1 = Integer.parseInt(String.valueOf(pinNumbers[0]));
-        int p2 = Integer.parseInt(String.valueOf(pinNumbers[1]));
-        int p3 = Integer.parseInt(String.valueOf(pinNumbers[2]));
-        int p4 = Integer.parseInt(String.valueOf(pinNumbers[3]));
-        boolean c = p1 == p2 && p2 == p3 && p3 == p4;
-        for (int i = 0; i < pinNumbers.length; i++) {
-            if (c) {
-                LOG.info("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                return ResponseEntity.status(409).body("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-            }
-        }
-        if (p4 == 0) {
-            p4 = 10;
-        }
-        if (p1 + 1 == p2 && p2 + 1 == p3 && p3 + 1 == p4) {
-            LOG.info("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-            return ResponseEntity.status(409).body("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-        }
-        if (p4 == 10) {
-            p4 = 0;
-        }
-        if (p1 == 0) {
-            p1 = 10;
-        }
-        if (p1 - 1 == p2 && p2 - 1 == p3 && p3 - 1 == p4) {
-            LOG.info("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-            return ResponseEntity.status(409).body("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
+        try {
+            userPinPolicy.validate(pinCode);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
         }
         if (otherID == null) {
             otherID = 0;
@@ -159,46 +131,21 @@ public class UserService {
             }
         }
         if (pinCode != null) {
-            String trim2 = pinCode.trim();
-            String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-            if (userRepository.existsByPinCode(pin)) {
-                return ResponseEntity.badRequest().body("Taki kod już istnieje. Wymyśl coś innego");
-            } else {
-
-                char[] pinNumbers = trim2.toCharArray();
-                if (pinNumbers.length < 4) {
-                    ResponseEntity.status(409).body("Kod jest za krótki. Musi posiadać 4 cyfry.");
-                }
-                int p1 = Integer.parseInt(String.valueOf(pinNumbers[0]));
-                int p2 = Integer.parseInt(String.valueOf(pinNumbers[1]));
-                int p3 = Integer.parseInt(String.valueOf(pinNumbers[2]));
-                int p4 = Integer.parseInt(String.valueOf(pinNumbers[3]));
-                boolean b = p1 == p2 && p2 == p3 && p3 == p4;
-                for (int i = 0; i < pinNumbers.length; i++) {
-                    if (b) {
-                        LOG.info("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                        return ResponseEntity.status(409).body("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                    }
-                }
-                if (p4 == 0) {
-                    p4 = 10;
-                }
-                if (p1 + 1 == p2 && p2 + 1 == p3 && p3 + 1 == p4) {
-                    LOG.info("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                    return ResponseEntity.status(409).body("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                }
-                if (p4 == 10) {
-                    p4 = 0;
-                }
-                if (p1 == 0) {
-                    p1 = 10;
-                }
-                if (p1 - 1 == p2 && p2 - 1 == p3 && p3 - 1 == p4) {
-                    LOG.info("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                    return ResponseEntity.status(409).body("Kod jest zbyt prosty - wymyśl coś trudniejszego.");
-                }
-                entity.setPinCode(pin);
+            try {
+                userPinPolicy.validate(pinCode);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(409).body(e.getMessage());
             }
+
+            String pin = Hashing.sha256()
+                    .hashString(pinCode, StandardCharsets.UTF_8)
+                    .toString();
+
+            if (userRepository.existsByPinCode(pin)) {
+                return ResponseEntity.badRequest().body("Taki kod już istnieje");
+            }
+
+            entity.setPinCode(pin);
         }
         if (userPermissionsList != null && !userPermissionsList.isEmpty()) {
             entity.setUserPermissionsList(userPermissionsList);
@@ -268,7 +215,7 @@ public class UserService {
 
     // Minimalne wymagania, aby zwróciło false:
     // minimum 1 Klub
-    // minimum 1 SuperUser
+    // minimum 1 superuser
     // minimum 1 User
     // nie wolno brać pod uwagę Admina
     public ResponseEntity<?> checkFirstStart() {

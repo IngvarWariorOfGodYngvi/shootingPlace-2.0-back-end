@@ -4,6 +4,7 @@ import com.shootingplace.shootingplace.armory.AmmoUsedService;
 import com.shootingplace.shootingplace.armory.ShootingPacketEntity;
 import com.shootingplace.shootingplace.armory.ShootingPacketService;
 import com.shootingplace.shootingplace.exceptions.NoPersonToAmmunitionException;
+import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.score.ScoreService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -103,12 +104,17 @@ public class CompetitionMembersListController {
             } catch (NoPersonToAmmunitionException ex) {
                 ex.printStackTrace();
             }
-            String uuid;
-            if (legitimationNumber > 0) {
-                uuid = one.getScoreList().stream().filter(f -> f.getMember() != null && f.getMember().getLegitimationNumber().equals(legitimationNumber)).findFirst().get().getUuid();
-            } else {
-                uuid = one.getScoreList().stream().filter(f -> f.getOtherPersonEntity() != null && f.getOtherPersonEntity().getId().equals(otherPerson)).findFirst().get().getUuid();
-            }
+            String uuid = one.getScoreList().stream()
+                    .filter(score ->
+                            legitimationNumber > 0
+                                    ? score.getMember() != null
+                                    && score.getMember().getLegitimationNumber().equals(legitimationNumber)
+                                    : score.getOtherPersonEntity() != null
+                                    && score.getOtherPersonEntity().getId().equals(otherPerson)
+                    )
+                    .map(ScoreEntity::getUuid)
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Nie znaleziono wyniku"));
 
             scoreService.toggleAmmunitionInScore(uuid);
         });

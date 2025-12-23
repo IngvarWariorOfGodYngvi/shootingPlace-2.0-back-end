@@ -1,9 +1,6 @@
 package com.shootingplace.shootingplace.email;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EmailSendListRepository {
-    List<EmailSendList> findAll();
-
-    EmailSendList save(EmailSendList emailSendList);
+public interface EmailSendListRepository extends JpaRepository<EmailSendList, String> {
 }

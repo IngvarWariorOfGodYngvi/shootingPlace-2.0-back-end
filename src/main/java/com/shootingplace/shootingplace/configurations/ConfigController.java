@@ -1,6 +1,7 @@
 package com.shootingplace.shootingplace.configurations;
 
 import com.shootingplace.shootingplace.users.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,15 +16,11 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/conf")
 @CrossOrigin
+@RequiredArgsConstructor
 public class ConfigController {
 
     private final Environment environment;
     private final UserService userService;
-
-    public ConfigController(Environment environment, UserService userService) {
-        this.environment = environment;
-        this.userService = userService;
-    }
 
     @GetMapping("/ping")
     public ResponseEntity<?> ping() {

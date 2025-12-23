@@ -1,6 +1,7 @@
 package com.shootingplace.shootingplace.enums;
 
 import com.shootingplace.shootingplace.email.EmailSendList;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -15,6 +16,7 @@ public enum MailToggleOptions {
     SEND_LICENSE_PAYMENT_CONFIRMATION("Potwierdzenie opłacenia licencji", EmailSendList::isSendLicensePaymentConfirmation),
     SEND_INDIVIDUAL("Indywidualne wiadomości", EmailSendList::isSendIndividual);
 
+    @Getter
     private final String name;
 
     private final Function<EmailSendList, Boolean> extractor;
@@ -22,10 +24,6 @@ public enum MailToggleOptions {
     MailToggleOptions(String name, Function<EmailSendList, Boolean> extractor) {
         this.name = name;
         this.extractor = extractor;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Boolean extract(EmailSendList list) {

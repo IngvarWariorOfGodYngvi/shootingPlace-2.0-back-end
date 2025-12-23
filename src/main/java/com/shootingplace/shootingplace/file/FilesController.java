@@ -3,6 +3,7 @@ package com.shootingplace.shootingplace.file;
 import com.lowagie.text.DocumentException;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -24,20 +25,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/files")
 @CrossOrigin
+@RequiredArgsConstructor
 public class FilesController {
 
     private final FilesService filesService;
     private final XLSXFilesService xlsxFiles;
     private final MemberService memberService;
     private final Environment environment;
-
-
-    public FilesController(FilesService filesService, XLSXFilesService xlsxFiles, MemberService memberService, Environment environment) {
-        this.filesService = filesService;
-        this.xlsxFiles = xlsxFiles;
-        this.memberService = memberService;
-        this.environment = environment;
-    }
 
     @GetMapping("/countPages")
     public ResponseEntity<?> countPages() {

@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.weaponPermission;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,6 @@ import org.hibernate.annotations.UuidGenerator;
 public class WeaponPermissionEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 

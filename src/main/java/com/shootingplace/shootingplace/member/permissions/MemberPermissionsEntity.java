@@ -1,15 +1,16 @@
 package com.shootingplace.shootingplace.member.permissions;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,6 @@ import java.time.LocalDate;
 public class MemberPermissionsEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -30,44 +30,20 @@ public class MemberPermissionsEntity {
     private String arbiterClass;
     private LocalDate arbiterPermissionValidThru;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getInstructorNumber() {
-        return instructorNumber;
-    }
-
     public void setInstructorNumber(String instructorNumber) {
         this.instructorNumber = instructorNumber;
-    }
-
-    public String getShootingLeaderNumber() {
-        return shootingLeaderNumber;
     }
 
     public void setShootingLeaderNumber(String shootingLeaderNumber) {
         this.shootingLeaderNumber = shootingLeaderNumber;
     }
 
-    public String getArbiterNumber() {
-        return arbiterNumber;
-    }
-
     public void setArbiterNumber(String arbiterNumber) {
         this.arbiterNumber = arbiterNumber;
     }
 
-    public String getArbiterClass() {
-        return arbiterClass;
-    }
-
     public void setArbiterClass(String arbiterClass) {
         this.arbiterClass = arbiterClass;
-    }
-
-    public LocalDate getArbiterPermissionValidThru() {
-        return arbiterPermissionValidThru;
     }
 
     public void setArbiterPermissionValidThru(LocalDate arbiterPermissionValidThru) {

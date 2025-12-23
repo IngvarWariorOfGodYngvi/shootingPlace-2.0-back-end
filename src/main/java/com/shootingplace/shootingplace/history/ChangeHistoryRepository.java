@@ -1,9 +1,6 @@
 package com.shootingplace.shootingplace.history;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ChangeHistoryRepository{
-    ChangeHistoryEntity save(ChangeHistoryEntity entity);
-
-    List<ChangeHistoryEntity> findAll();
+public interface ChangeHistoryRepository extends JpaRepository<ChangeHistoryEntity, String> {
 }

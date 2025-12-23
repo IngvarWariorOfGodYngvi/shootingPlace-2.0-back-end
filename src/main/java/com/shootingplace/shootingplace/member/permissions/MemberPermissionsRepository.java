@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.member.permissions;
 
-public interface MemberPermissionsRepository{
-    MemberPermissionsEntity save(MemberPermissionsEntity entity);
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MemberPermissionsRepository extends JpaRepository<MemberPermissionsEntity, String> {
 }

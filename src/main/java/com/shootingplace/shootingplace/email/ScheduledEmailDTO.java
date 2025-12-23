@@ -3,12 +3,10 @@ package com.shootingplace.shootingplace.email;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class ScheduledEmailDTO {
 
     private String uuid;

@@ -6,6 +6,7 @@ import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +19,13 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ShootingPatentService {
 
     private final ShootingPatentRepository shootingPatentRepository;
     private final MemberRepository memberRepository;
     private final HistoryService historyService;
     private final Logger LOG = LogManager.getLogger(getClass());
-
-
-    public ShootingPatentService(ShootingPatentRepository shootingPatentRepository,
-                                 MemberRepository memberRepository, HistoryService historyService) {
-        this.shootingPatentRepository = shootingPatentRepository;
-        this.memberRepository = memberRepository;
-        this.historyService = historyService;
-    }
 
     public ResponseEntity<?> updatePatent(String memberUUID, ShootingPatent shootingPatent) {
         if (!memberRepository.existsById(memberUUID)) {

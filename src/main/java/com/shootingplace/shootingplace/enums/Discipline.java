@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Discipline {
     PISTOL("Pistolet"),
     RIFLE("Karabin"),
@@ -9,10 +12,6 @@ public enum Discipline {
 
     Discipline(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
 

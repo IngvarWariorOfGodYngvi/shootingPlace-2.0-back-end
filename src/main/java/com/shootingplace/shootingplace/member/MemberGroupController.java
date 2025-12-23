@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.member;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,13 +9,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/memberGroups")
 @CrossOrigin
+@RequiredArgsConstructor
 public class MemberGroupController {
 
     private final MemberGroupRepository memberGroupRepository;
-
-    public MemberGroupController(MemberGroupRepository memberGroupRepository) {
-        this.memberGroupRepository = memberGroupRepository;
-    }
 
     @PostMapping
     public ResponseEntity<?> createGroup(@RequestBody MemberGroupEntity group) {

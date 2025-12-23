@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum CompetitionType {
     OPEN("OPEN"),
     STANDARD("STANDARD"),
@@ -11,10 +14,6 @@ public enum CompetitionType {
 
     CompetitionType(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
 }

@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ArbiterWorkClass {
     MAIN_ARBITER("Sędzia Główny Zawodów"),
     RTS_ARBITER("Przewodniczący Komisji RTS"),
@@ -11,11 +14,6 @@ public enum ArbiterWorkClass {
     ArbiterWorkClass(String name) {
         this.name = name;
     }
-
-    public String getName() {
-        return name;
-    }
-
 
 
 }

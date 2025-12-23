@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum CountingMethod {
     NORMAL("NORMAL"),
     COMSTOCK("COMSTOCK"),
@@ -14,7 +17,4 @@ public enum CountingMethod {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
 }

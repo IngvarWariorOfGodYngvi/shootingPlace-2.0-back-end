@@ -3,23 +3,19 @@ package com.shootingplace.shootingplace.weaponPermission;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class WeaponPermissionService {
 
     private final MemberRepository memberRepository;
     private final WeaponPermissionRepository weaponPermissionRepository;
     private final Logger LOG = LogManager.getLogger(getClass());
-
-
-    public WeaponPermissionService(MemberRepository memberRepository, WeaponPermissionRepository weaponPermissionRepository) {
-        this.memberRepository = memberRepository;
-        this.weaponPermissionRepository = weaponPermissionRepository;
-    }
 
     public ResponseEntity<?> updateWeaponPermission(String memberUUID, WeaponPermission weaponPermission) {
         if(!memberRepository.existsById(memberUUID)){

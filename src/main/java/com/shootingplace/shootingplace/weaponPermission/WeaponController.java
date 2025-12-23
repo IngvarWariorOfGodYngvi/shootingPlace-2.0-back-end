@@ -1,18 +1,16 @@
 package com.shootingplace.shootingplace.weaponPermission;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/weapon")
 @CrossOrigin
+@RequiredArgsConstructor
 public class WeaponController {
 
     private final WeaponPermissionService weaponPermissionService;
-
-    public WeaponController(WeaponPermissionService weaponPermissionService) {
-        this.weaponPermissionService = weaponPermissionService;
-    }
 
     @PutMapping("/weapon/{memberUUID}")
     public ResponseEntity<?> changeWeaponPermission(@PathVariable String memberUUID, @RequestBody WeaponPermission weaponPermission) {

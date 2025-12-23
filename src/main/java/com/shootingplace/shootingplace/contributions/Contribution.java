@@ -1,11 +1,11 @@
 package com.shootingplace.shootingplace.contributions;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -15,27 +15,4 @@ public class Contribution {
     private LocalDate validThru;
     private String historyUUID;
 
-    public LocalDate getPaymentDay() {
-        return paymentDay;
-    }
-
-    public void setPaymentDay(LocalDate paymentDay) {
-        this.paymentDay = paymentDay;
-    }
-
-    public LocalDate getValidThru() {
-        return validThru;
-    }
-
-    public void setValidThru(LocalDate validThru) {
-        this.validThru = validThru;
-    }
-
-    public String getHistoryUUID() {
-        return historyUUID;
-    }
-
-    public void setHistoryUUID(String historyUUID) {
-        this.historyUUID = historyUUID;
-    }
 }

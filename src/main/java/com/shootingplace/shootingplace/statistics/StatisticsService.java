@@ -20,6 +20,7 @@ import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import com.shootingplace.shootingplace.wrappers.MemberWithContributionWrapper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StatisticsService {
 
     private final MemberRepository memberRepository;
@@ -42,17 +44,6 @@ public class StatisticsService {
     private final TournamentRepository tournamentRepository;
     private final CompetitionMembersListRepository competitionMembersListRepository;
     private final LicensePaymentHistoryRepository licensePaymentHistoryRepository;
-
-    public StatisticsService(MemberRepository memberRepository, ContributionRepository contributionRepository, AmmoEvidenceRepository ammoEvidenceRepository, AmmoUsedToEvidenceEntityRepository used, RegistrationRecordRepository rrrepo, TournamentRepository tournamentRepository, CompetitionMembersListRepository competitionMembersListRepository, LicensePaymentHistoryRepository licensePaymentHistoryRepository) {
-        this.memberRepository = memberRepository;
-        this.contributionRepository = contributionRepository;
-        this.ammoEvidenceRepository = ammoEvidenceRepository;
-        this.used = used;
-        this.rrrepo = rrrepo;
-        this.tournamentRepository = tournamentRepository;
-        this.competitionMembersListRepository = competitionMembersListRepository;
-        this.licensePaymentHistoryRepository = licensePaymentHistoryRepository;
-    }
 
     public List<LicensePaymentHistoryDTO> getLicenseSum(LocalDate firstDate, LocalDate secondDate) {
         List<LicensePaymentHistoryDTO> list1 = new ArrayList<>();

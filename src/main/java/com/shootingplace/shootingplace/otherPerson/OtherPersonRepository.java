@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OtherPersonRepository
-        extends JpaRepository<OtherPersonEntity, Integer> {
+public interface OtherPersonRepository extends JpaRepository<OtherPersonEntity, Integer> {
 
     List<OtherPersonEntity> findAllByActiveTrue();
 

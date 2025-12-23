@@ -1,5 +1,8 @@
 package com.shootingplace.shootingplace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ProfilesEnum {
     DZIESIATKA("prod"),
     TEST("test"),
@@ -13,7 +16,4 @@ public enum ProfilesEnum {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
 }

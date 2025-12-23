@@ -1,7 +1,5 @@
 package com.shootingplace.shootingplace.email;
 
-import com.shootingplace.shootingplace.strategies.EmailStrategy;
-import com.shootingplace.shootingplace.strategies.ProfileContext;
 import com.shootingplace.shootingplace.contributions.ContributionEntity;
 import com.shootingplace.shootingplace.enums.MailToggleOptions;
 import com.shootingplace.shootingplace.enums.MailType;
@@ -10,6 +8,8 @@ import com.shootingplace.shootingplace.history.HistoryRepository;
 import com.shootingplace.shootingplace.history.LicensePaymentHistoryEntity;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.strategies.EmailStrategy;
+import com.shootingplace.shootingplace.strategies.ProfileContext;
 import com.shootingplace.shootingplace.utils.CryptoUtil;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.mail.MessagingException;
@@ -131,7 +131,7 @@ public class EmailService {
             }
             SentEmail save = sentEmailRepository.save(log);
             if (memberEntity != null) {
-                HistoryEntity history = historyRepository.getByUuid(memberEntity.getHistory().getUuid());
+                HistoryEntity history = historyRepository.findById(memberEntity.getHistory().getUuid()).orElseThrow(EntityNotFoundException::new);
                 Set<SentEmail> sentEmailsHistory = history.getSentEmailsHistory();
                 sentEmailsHistory.add(save);
                 history.setSentEmailsHistory(sentEmailsHistory);
@@ -146,7 +146,7 @@ public class EmailService {
             LOG.error(e.getMessage());
             SentEmail save = sentEmailRepository.save(log);
             if (memberEntity != null) {
-                HistoryEntity history = historyRepository.getByUuid(memberEntity.getHistory().getUuid());
+                HistoryEntity history = historyRepository.findById(memberEntity.getHistory().getUuid()).orElseThrow(EntityNotFoundException::new);
                 Set<SentEmail> sentEmailsHistory = history.getSentEmailsHistory();
                 sentEmailsHistory.add(save);
                 history.setSentEmailsHistory(sentEmailsHistory);

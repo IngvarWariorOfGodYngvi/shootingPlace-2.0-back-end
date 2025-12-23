@@ -1,13 +1,7 @@
 package com.shootingplace.shootingplace.score;
 
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ScoreRepository{
-    ScoreEntity save(ScoreEntity entity);
+public interface ScoreRepository extends JpaRepository<ScoreEntity, String> {
 
-    boolean existsById(String scoreUUID);
-
-    ScoreEntity getOne(String scoreUUID);
-
-    Optional<ScoreEntity> findById(String scoreUUID);
 }

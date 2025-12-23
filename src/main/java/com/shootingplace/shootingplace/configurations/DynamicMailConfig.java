@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.configurations;
 
 import com.shootingplace.shootingplace.email.EmailConfig;
 import com.shootingplace.shootingplace.email.EmailConfigRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,13 +13,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 @Configuration
+@RequiredArgsConstructor
 public class DynamicMailConfig {
 
     private final EmailConfigRepository repository;
-
-    public DynamicMailConfig(EmailConfigRepository repository) {
-        this.repository = repository;
-    }
 
     @Bean
     @ConditionalOnMissingBean(JavaMailSender.class)

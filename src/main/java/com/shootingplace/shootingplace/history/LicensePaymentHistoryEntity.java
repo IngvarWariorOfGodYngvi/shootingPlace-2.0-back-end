@@ -1,15 +1,16 @@
 package com.shootingplace.shootingplace.history;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,6 @@ import java.time.LocalDate;
 public class LicensePaymentHistoryEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -33,52 +33,24 @@ public class LicensePaymentHistoryEntity {
 
     private boolean isNew;
 
-    public boolean isNew() {
-        return isNew;
-    }
-
     public void setNew(boolean aNew) {
         isNew = aNew;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public LocalDate getDate() {
-        return date;
     }
 
     public void setDate(LocalDate date) {
         this.date = date;
     }
 
-    public String getMemberUUID() {
-        return memberUUID;
-    }
-
     public void setMemberUUID(String memberUUID) {
         this.memberUUID = memberUUID;
-    }
-
-    public Integer getValidForYear() {
-        return validForYear;
     }
 
     public void setValidForYear(Integer validForYear) {
         this.validForYear = validForYear;
     }
 
-    public String getAcceptedBy() {
-        return acceptedBy;
-    }
-
     public void setAcceptedBy(String acceptedBy) {
         this.acceptedBy = acceptedBy;
-    }
-
-    public boolean isPayInPZSSPortal() {
-        return isPayInPZSSPortal;
     }
 
     public void setPayInPZSSPortal(boolean payInPZSSPortal) {

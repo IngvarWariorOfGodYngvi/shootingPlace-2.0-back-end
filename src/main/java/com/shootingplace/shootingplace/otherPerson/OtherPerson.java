@@ -4,12 +4,10 @@ import com.shootingplace.shootingplace.address.Address;
 import com.shootingplace.shootingplace.club.Club;
 import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
 import lombok.*;
-
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Getter
-@Setter
 public class OtherPerson {
 
     private String id;

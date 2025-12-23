@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.competition;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,20 +17,16 @@ import java.util.List;
 @Builder
 public class CompetitionEntity {
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
     private String name;
     private String abbreviation;
 
-//    private String discipline;
     private Integer numberOfShots;
 
-//    private String[] disciplines;
     private String disciplineList;
 
-//    private Integer[] numberOfManyShots;
     private String numberOfManyShotsList;
 
     private String type;
