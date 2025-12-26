@@ -122,7 +122,7 @@ public class Mapping {
                 .legitimationNumber(e.getLegitimationNumber())
                 .isAdult(e.isAdult())
                 .note(e.getNote())
-                .arbiterClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterClass() : null)
+                .arbiterClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterStaticClass() : null)
                 .declarationLOK(e.getDeclarationLOK()).build();
     }
 
@@ -325,9 +325,9 @@ public class Mapping {
     static MemberPermissions map(MemberPermissionsEntity m) {
         return Optional.ofNullable(m).map(e -> MemberPermissions.builder()
                 .instructorNumber(e.getInstructorNumber())
-                .arbiterNumber(e.getArbiterNumber())
-                .arbiterClass(e.getArbiterClass())
-                .arbiterPermissionValidThru(e.getArbiterPermissionValidThru())
+                .arbiterStaticNumber(e.getArbiterStaticNumber())
+                .arbiterStaticClass(e.getArbiterStaticClass())
+                .arbiterStaticPermissionValidThru(e.getArbiterStaticPermissionValidThru())
                 .shootingLeaderNumber(e.getShootingLeaderNumber())
                 .build()).orElse(null);
     }
@@ -335,9 +335,9 @@ public class Mapping {
     public static MemberPermissionsEntity map(MemberPermissions m) {
         return Optional.ofNullable(m).map(e -> MemberPermissionsEntity.builder()
                 .instructorNumber(e.getInstructorNumber())
-                .arbiterNumber(e.getArbiterNumber())
-                .arbiterClass(e.getArbiterClass())
-                .arbiterPermissionValidThru(e.getArbiterPermissionValidThru())
+                .arbiterStaticNumber(e.getArbiterStaticNumber())
+                .arbiterStaticClass(e.getArbiterStaticClass())
+                .arbiterStaticPermissionValidThru(e.getArbiterStaticPermissionValidThru())
                 .shootingLeaderNumber(e.getShootingLeaderNumber())
                 .build()).orElse(null);
     }

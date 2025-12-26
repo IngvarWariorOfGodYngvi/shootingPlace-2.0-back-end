@@ -8,6 +8,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -17,21 +18,17 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.*;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
-public class MembersListByAdultPdfGenerator implements PdfGenerator<Boolean> {
+@RequiredArgsConstructor
+public class MembersListByAdultPdfGenerator {
 
     private static final float[] COLUMN_WIDTHS = {4F, 58F, 10F, 12F, 12F, 12F};
 
     private final MemberRepository memberRepository;
 
-    public MembersListByAdultPdfGenerator(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
-
-    @Override
-    public PdfGenerationResults generate(Boolean adult) throws DocumentException, IOException {
+    public PdfGenerationResults generate() throws DocumentException, IOException {
 
         String fileName = "Lista_klubowiczów_na_dzień_" + LocalDate.now().format(dateFormat()) + ".pdf";
 
@@ -43,7 +40,7 @@ public class MembersListByAdultPdfGenerator implements PdfGenerator<Boolean> {
         document.addTitle(fileName);
         document.addCreationDate();
 
-        List<MemberEntity> members = memberRepository.findAll().stream().filter(m -> !m.isErased()).filter(m -> m.isAdult() == adult).sorted(Comparator.comparing(MemberEntity::getSecondName, pl()).thenComparing(MemberEntity::getFirstName, pl())).toList();
+        List<MemberEntity> members = memberRepository.findAll().stream().filter(m -> !m.isErased()).sorted(Comparator.comparing(MemberEntity::getSecondName, pl()).thenComparing(MemberEntity::getFirstName, pl()).thenComparing(MemberEntity::isAdult)).toList();
 
         document.add(new Paragraph("Lista klubowiczów na dzień " + LocalDate.now().format(dateFormat()), font(14, Font.BOLD)));
         document.add(new Paragraph("\n", font(14, Font.NORMAL)));

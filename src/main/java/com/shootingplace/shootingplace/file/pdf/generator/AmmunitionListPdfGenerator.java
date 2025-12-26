@@ -9,10 +9,11 @@ import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoUsedToEvidenceEntity;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
+import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
-import com.shootingplace.shootingplace.utils.PageStamper;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -24,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor
@@ -34,11 +34,9 @@ public class AmmunitionListPdfGenerator {
     private final ClubRepository clubRepository;
     private final Environment environment;
 
-    public PdfGenerationResults generate(AmmoEvidenceEntity ammoEvidenceEntity)
-            throws DocumentException, IOException {
+    public PdfGenerationResults generate(AmmoEvidenceEntity ammoEvidenceEntity) throws DocumentException, IOException {
 
-        ClubEntity club = clubRepository.findById(1)
-                .orElseThrow(EntityNotFoundException::new);
+        ClubEntity club = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
 
         List<AmmoInEvidenceEntity> a = ammoEvidenceEntity.getAmmoInEvidenceEntityList();
 
@@ -46,34 +44,25 @@ public class AmmunitionListPdfGenerator {
         List<AmmoInEvidenceEntity> ordered = new ArrayList<>();
 
         for (String s : sort) {
-            a.stream()
-                    .filter(f -> f.getCaliberName().equals(s))
-                    .findFirst()
-                    .ifPresent(ordered::add);
+            a.stream().filter(f -> f.getCaliberName().equals(s)).findFirst().ifPresent(ordered::add);
         }
 
-        List<AmmoInEvidenceEntity> rest = a.stream()
-                .filter(f -> Arrays.stream(sort).noneMatch(s -> s.equals(f.getCaliberName())))
-                .toList();
+        List<AmmoInEvidenceEntity> rest = a.stream().filter(f -> Arrays.stream(sort).noneMatch(s -> s.equals(f.getCaliberName()))).toList();
 
         ordered.addAll(rest);
 
-        String fileName = "Lista_Amunicyjna_"
-                + ammoEvidenceEntity.getDate().format(dateFormat()) + ".pdf";
+        String fileName = "Lista_Amunicyjna_" + ammoEvidenceEntity.getDate().format(dateFormat()) + ".pdf";
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
         PdfWriter writer = PdfWriter.getInstance(document, baos);
-        writer.setPageEvent(new PageStamper(environment, true, true));
+        writer.setPageEvent(new PageStamper(environment, true, true, PageStampMode.A4));
 
         document.open();
 
         Paragraph number = new Paragraph(ammoEvidenceEntity.getNumber(), font(10, 4));
         Paragraph p = new Paragraph(club.getFullName() + "\n", font(14, 1));
-        Paragraph p1 = new Paragraph(
-                "Lista rozliczenia amunicji " + ammoEvidenceEntity.getDate().format(dateFormat()),
-                font(12, 2)
-        );
+        Paragraph p1 = new Paragraph("Lista rozliczenia amunicji " + ammoEvidenceEntity.getDate().format(dateFormat()), font(12, 2));
 
         number.setIndentationLeft(450);
         p.setAlignment(Element.ALIGN_CENTER);
@@ -114,9 +103,7 @@ public class AmmunitionListPdfGenerator {
                 PdfPTable table = new PdfPTable(widths);
                 table.addCell(new PdfPCell(new Paragraph(String.valueOf(j + 1), font(10, 2))));
                 table.addCell(new PdfPCell(new Paragraph(name, font(10, 2))));
-                table.addCell(new PdfPCell(new Paragraph(
-                        used.getCounter().toString(), font(10, 2)
-                )));
+                table.addCell(new PdfPCell(new Paragraph(used.getCounter().toString(), font(10, 2))));
                 document.add(table);
             }
 
@@ -124,9 +111,7 @@ public class AmmunitionListPdfGenerator {
 
             PdfPCell sumEmpty = new PdfPCell(new Paragraph(""));
             PdfPCell sumLabel = new PdfPCell(new Paragraph("Suma", font(10, 2)));
-            PdfPCell sumValue = new PdfPCell(new Paragraph(
-                    ammo.getQuantity().toString(), font(10, 2)
-            ));
+            PdfPCell sumValue = new PdfPCell(new Paragraph(ammo.getQuantity().toString(), font(10, 2)));
 
             sumEmpty.setBorder(0);
             sumLabel.setBorder(0);

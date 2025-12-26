@@ -10,6 +10,7 @@ import com.shootingplace.shootingplace.competition.CompetitionEntity;
 import com.shootingplace.shootingplace.competition.CompetitionRepository;
 import com.shootingplace.shootingplace.enums.CountingMethod;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
+import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
@@ -18,7 +19,7 @@ import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
-import com.shootingplace.shootingplace.utils.PageStamper;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -31,8 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor
@@ -45,26 +45,17 @@ public class StartsMetricPdfGenerator {
     private final ClubRepository clubRepository;
     private final Environment environment;
 
-    public PdfGenerationResults generate(
-            String memberUUID,
-            String otherID,
-            String tournamentUUID,
-            List<String> competitions,
-            String startNumber,
-            Boolean a5rotate
-    ) throws IOException, DocumentException {
+    public PdfGenerationResults generate(String memberUUID, String otherID, String tournamentUUID, List<String> competitions, String startNumber, Boolean a5rotate) throws IOException, DocumentException {
 
         String name;
         String club;
 
         if (otherID != null && !otherID.isEmpty()) {
-            OtherPersonEntity otherPersonEntity = otherPersonRepository.findById(Integer.parseInt(otherID))
-                    .orElseThrow(EntityNotFoundException::new);
+            OtherPersonEntity otherPersonEntity = otherPersonRepository.findById(Integer.parseInt(otherID)).orElseThrow(EntityNotFoundException::new);
             name = otherPersonEntity.getSecondName().toUpperCase(Locale.ROOT) + " " + otherPersonEntity.getFirstName();
             club = otherPersonEntity.getClub().getShortName();
         } else {
-            MemberEntity memberEntity = memberRepository.findById(memberUUID)
-                    .orElseThrow(EntityNotFoundException::new);
+            MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
             name = memberEntity.getSecondName().toUpperCase(Locale.ROOT) + " " + memberEntity.getFirstName();
             club = memberEntity.getClub().getShortName();
         }
@@ -75,44 +66,27 @@ public class StartsMetricPdfGenerator {
         String fileName = "metryki_" + name + ".pdf";
 
         a5rotate = a5rotate != null && a5rotate;
-        Document document = a5rotate ? new Document(PageSize.A5.rotate()) : new Document(PageSize.A4);
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Document document = new Document(a5rotate ? PageSize.A5.rotate() : PageSize.A4);
         PdfWriter writer = PdfWriter.getInstance(document, baos);
-        writer.setPageEvent(new PageStamper(environment, true, true));
+        writer.setPageEvent(new PageStamper(environment, true, true, a5rotate ? PageStampMode.A5_LANDSCAPE : PageStampMode.A4));
 
         document.open();
         document.addTitle(fileName);
         document.addCreationDate();
 
-        List<String> comp = competitions.stream()
-                .map(m -> competitionRepository.getOne(m).getName())
-                .filter(value -> !value.contains(" pneumatyczny ") && !value.contains(" pneumatyczna "))
-                .sorted()
-                .collect(Collectors.toList());
+        List<String> comp = competitions.stream().map(m -> competitionRepository.getOne(m).getName()).filter(value -> !value.contains(" pneumatyczny ") && !value.contains(" pneumatyczna ")).sorted().collect(Collectors.toList());
 
         // dopisz pneumatyczne na końcu
-        competitions.stream()
-                .map(m -> competitionRepository.getOne(m).getName())
-                .filter(competition -> competition.contains(" pneumatyczny ") || competition.contains(" pneumatyczna "))
-                .sorted()
-                .forEach(comp::add);
+        competitions.stream().map(m -> competitionRepository.getOne(m).getName()).filter(competition -> competition.contains(" pneumatyczny ") || competition.contains(" pneumatyczna ")).sorted().forEach(comp::add);
 
         for (int j = 0; j < comp.size(); j++) {
             int d = Integer.parseInt(startNumber);
             int finalJ = j;
 
-            ScoreEntity score = tournamentEntity.getCompetitionsList().stream()
-                    .filter(f -> f.getName().equals(comp.get(finalJ)))
-                    .findFirst()
-                    .orElseThrow(EntityNotFoundException::new)
-                    .getScoreList().stream()
-                    .filter(f -> f.getMetricNumber() == d)
-                    .findFirst()
-                    .orElseThrow(EntityNotFoundException::new);
+            ScoreEntity score = tournamentEntity.getCompetitionsList().stream().filter(f -> f.getName().equals(comp.get(finalJ))).findFirst().orElseThrow(EntityNotFoundException::new).getScoreList().stream().filter(f -> f.getMetricNumber() == d).findFirst().orElseThrow(EntityNotFoundException::new);
 
-            CompetitionEntity competitionEntity = competitionRepository.findByNameEquals(comp.get(finalJ))
-                    .orElseThrow(EntityNotFoundException::new);
+            CompetitionEntity competitionEntity = competitionRepository.findByNameEquals(comp.get(finalJ)).orElseThrow(EntityNotFoundException::new);
 
             int numberOfShots;
             if (competitionEntity.getNumberOfShots() > 10) {
@@ -122,10 +96,7 @@ public class StartsMetricPdfGenerator {
             }
 
             // nazwa zawodów, tytuł i data
-            Paragraph par1 = new Paragraph(
-                    tournamentEntity.getName().toUpperCase() + "    " + clubEntity.getShortName() + " " + tournamentEntity.getDate().format(dateFormat()),
-                    font(11, 1)
-            );
+            Paragraph par1 = new Paragraph(tournamentEntity.getName().toUpperCase() + "    " + clubEntity.getShortName() + " " + tournamentEntity.getDate().format(dateFormat()), font(11, 1));
             par1.setAlignment(1);
 
             String a = "";
@@ -338,10 +309,7 @@ public class StartsMetricPdfGenerator {
                 document.add(table1);
             }
 
-            if (competitionEntity.getCountingMethod().equals(CountingMethod.DYNAMIKADZIESIATKA.getName())
-                    || competitionEntity.getCountingMethod().equals(CountingMethod.COMSTOCK.getName())
-                    || competitionEntity.getCountingMethod().equals(CountingMethod.IPSC.getName())
-                    || competitionEntity.getCountingMethod().equals(CountingMethod.TIME.getName())) {
+            if (competitionEntity.getCountingMethod().equals(CountingMethod.DYNAMIKADZIESIATKA.getName()) || competitionEntity.getCountingMethod().equals(CountingMethod.COMSTOCK.getName()) || competitionEntity.getCountingMethod().equals(CountingMethod.IPSC.getName()) || competitionEntity.getCountingMethod().equals(CountingMethod.TIME.getName())) {
 
                 for (int i = 0; i < pointColumnWidths.length; i++) {
                     Paragraph p = new Paragraph();
@@ -386,8 +354,7 @@ public class StartsMetricPdfGenerator {
     }
 
     private static String arabicToRomanNumberConverter(int number) {
-        final String[] romans = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
-                "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
+        final String[] romans = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
         if (number >= 0 && number < romans.length) return romans[number];
         return Integer.toString(number);
     }

@@ -2,9 +2,10 @@ package com.shootingplace.shootingplace.file.pdf.generator;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
+import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
-import com.shootingplace.shootingplace.utils.PageStamper;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class CertificateOfClubMembershipPanaszewPdfGenerator {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
         PdfWriter writer = PdfWriter.getInstance(document, baos);
-        writer.setPageEvent(new PageStamper(environment, true, true));
+        writer.setPageEvent(new PageStamper(environment, true, true, PageStampMode.A4));
 
         document.open();
         document.addTitle(fileName);

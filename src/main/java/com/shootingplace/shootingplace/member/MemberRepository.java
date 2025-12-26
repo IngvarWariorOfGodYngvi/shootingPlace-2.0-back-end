@@ -26,8 +26,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     boolean existsByLegitimationNumber(Integer legitimationNumber);
 
-    List<MemberEntity> findAllByJoinDate(LocalDate localDate);
-
     List<MemberEntity> findAllByErasedFalse();
 
     List<MemberEntity> findAllByErasedFalseAndActiveFalse();
@@ -38,29 +36,16 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     List<MemberEntity> findAllByErasedTrue();
 
-    List<MemberEntity> findAllByErasedFalseAndMemberPermissions_ArbiterNumberIsNotNull();
+    List<MemberEntity> findAllByErasedFalseAndMemberPermissions_ArbiterStaticNumberIsNotNull();
 
-    MemberEntity findByHistoryUuid(String historyUUID);
+    @Query(value ="SELECT m .* FROM shootingplace.member_entity m JOIN shootingplace.license_entity l ON m.license_uuid = l.uuid WHERE m.club_id = 1 AND m.erased =false AND m.pzss =true AND l.number >0 AND l.valid = true",nativeQuery =true)
 
-    MemberEntity findByLicenseUuid(String licenseUUID);
-
-    @Query(value = """
-                SELECT m.*
-                FROM shootingplace.member_entity m
-                JOIN shootingplace.license_entity l 
-                  ON m.license_uuid = l.uuid
-                WHERE m.club_id = 1
-                  AND m.erased = false
-                  AND m.pzss = true
-                  AND l.number > 0
-                  AND l.valid = true
-            """, nativeQuery = true)
     List<MemberEntity> findAllWhereCLubEquals1ErasedFalsePzssTrueLicenseValidTrue();
 
     @Query(value = """
                 SELECT m.*
                 FROM shootingplace.member_entity m
-                JOIN shootingplace.license_entity l 
+                JOIN shootingplace.license_entity l
                   ON m.license_uuid = l.uuid
                 WHERE m.club_id = 1
                   AND m.erased = false
@@ -78,7 +63,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
     int countActualYearMemberCounts(@Param("start") LocalDate start, @Param("stop") LocalDate stop);
 
     @Query(value = """
-                SELECT 
+                SELECT
                   uuid, first_name, second_name, imageuuid,
                   active, adult, erased, pzss,
                   legitimation_number, join_date, note, email
@@ -89,7 +74,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
     List<IMemberDTO> getMemberBetweenJoinDate(@Param("firstDate") LocalDate firstDate, @Param("secondDate") LocalDate secondDate);
 
     @Query(value = """
-                SELECT 
+                SELECT
                   uuid, first_name, second_name, imageuuid,
                   active, adult, erased, pzss,
                   legitimation_number, join_date, note, email
@@ -100,14 +85,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     @Query(value = "SELECT MAX(legitimation_number) FROM shootingplace.member_entity", nativeQuery = true)
     int getMaxLegitimationNumber();
-
-    @Query(value = """
-                SELECT m.*
-                FROM shootingplace.member_entity m
-                WHERE m.adult = false
-                  AND m.erased = false
-            """, nativeQuery = true)
-    List<MemberEntity> findAllByAdultFalseAndErasedFalse();
 
     @Query(value = "SELECT m.* FROM shootingplace.member_entity m WHERE m.club_id = 1 AND m.erased = false AND m.pzss = true", nativeQuery = true)
     List<MemberEntity> findAllWhereClubEquals1ErasedFalsePzssTrue();

@@ -109,7 +109,7 @@ public class OtherPersonService {
     }
 
     public List<MemberInfo> getAllOthersArbiters() {
-        return otherPersonRepository.findAll().stream().filter(f -> f.getPermissionsEntity() != null && f.getPermissionsEntity().getArbiterNumber() != null).map(m -> MemberInfo.builder().id(m.getId()).arbiterClass(m.getPermissionsEntity().getArbiterClass()).firstName(m.getFirstName()).secondName(m.getSecondName()).name(m.getFullName()).build()).collect(Collectors.toList());
+        return otherPersonRepository.findAll().stream().filter(f -> f.getPermissionsEntity() != null && f.getPermissionsEntity().getArbiterStaticNumber() != null).map(m -> MemberInfo.builder().id(m.getId()).arbiterClass(m.getPermissionsEntity().getArbiterStaticClass()).firstName(m.getFirstName()).secondName(m.getSecondName()).name(m.getFullName()).build()).collect(Collectors.toList());
     }
 
     public List<?> getAll() {
@@ -184,9 +184,9 @@ public class OtherPersonService {
         MemberPermissions m1 = oP.getMemberPermissions();
         MemberPermissionsEntity m2 = one.getPermissionsEntity() != null ? one.getPermissionsEntity() : new MemberPermissionsEntity();
 
-        m2.setArbiterClass(m1.getArbiterClass() != null ? m1.getArbiterClass() : m2.getArbiterClass() != null ? m2.getArbiterClass() : null);
-        m2.setArbiterNumber(m1.getArbiterNumber() != null ? m1.getArbiterNumber() : m2.getArbiterNumber() != null ? m2.getArbiterNumber() : null);
-        m2.setArbiterPermissionValidThru(m1.getArbiterPermissionValidThru() != null ? m1.getArbiterPermissionValidThru() : m2.getArbiterPermissionValidThru() != null ? m2.getArbiterPermissionValidThru() : null);
+        m2.setArbiterStaticClass(m1.getArbiterStaticClass() != null ? m1.getArbiterStaticClass() : m2.getArbiterStaticClass() != null ? m2.getArbiterStaticClass() : null);
+        m2.setArbiterStaticNumber(m1.getArbiterStaticNumber() != null ? m1.getArbiterStaticNumber() : m2.getArbiterStaticNumber() != null ? m2.getArbiterStaticNumber() : null);
+        m2.setArbiterStaticPermissionValidThru(m1.getArbiterStaticPermissionValidThru() != null ? m1.getArbiterStaticPermissionValidThru() : m2.getArbiterStaticPermissionValidThru() != null ? m2.getArbiterStaticPermissionValidThru() : null);
         MemberPermissionsEntity save2 = memberPermissionsRepository.save(m2);
         one.setPermissionsEntity(save2);
         otherPersonRepository.save(one);

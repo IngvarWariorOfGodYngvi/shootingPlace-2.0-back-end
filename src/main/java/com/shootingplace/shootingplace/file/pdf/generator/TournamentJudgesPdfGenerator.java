@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.*;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor
@@ -42,7 +42,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         document.add(new Paragraph(tournament.getName().toUpperCase(), font(13, Font.BOLD)));
 
-        document.add(new Paragraph(resolveCity() + ", " + monthFormat(tournament.getDate()), font(10, Font.ITALIC)));
+        document.add(new Paragraph(resolveCity() + ", " + dateFormat(tournament.getDate()), font(10, Font.ITALIC)));
 
         document.add(new Paragraph("\n", font(13, Font.NORMAL)));
         document.add(new Paragraph("WYKAZ SĘDZIÓW", font(13, Font.NORMAL)));
@@ -124,21 +124,21 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
 
     private void addArbiter(Document document, MemberEntity m) throws IOException {
-        String cls = getArbiterClass(m.getMemberPermissions().getArbiterClass());
+        String cls = getArbiterClass(m.getMemberPermissions().getArbiterStaticClass());
         document.add(new Paragraph(m.getFirstName() + " " + m.getSecondName() + " " + cls, font(12, Font.NORMAL)));
     }
 
     private void addArbiter(Document document, OtherPersonEntity p) throws IOException {
-        String cls = getArbiterClass(p.getPermissionsEntity().getArbiterClass());
+        String cls = getArbiterClass(p.getPermissionsEntity().getArbiterStaticClass());
         document.add(new Paragraph(p.getFirstName() + " " + p.getSecondName() + " " + cls, font(12, Font.NORMAL)));
     }
 
     private String resolveArbiter(MemberEntity member, OtherPersonEntity other) {
         if (member != null) {
-            return member.getFirstName() + " " + member.getSecondName() + " " + getArbiterClass(member.getMemberPermissions().getArbiterClass());
+            return member.getFirstName() + " " + member.getSecondName() + " " + getArbiterClass(member.getMemberPermissions().getArbiterStaticClass());
         }
         if (other != null) {
-            return other.getFirstName() + " " + other.getSecondName() + " " + getArbiterClass(other.getPermissionsEntity().getArbiterClass());
+            return other.getFirstName() + " " + other.getSecondName() + " " + getArbiterClass(other.getPermissionsEntity().getArbiterStaticClass());
         }
         return "Nie Wskazano";
     }

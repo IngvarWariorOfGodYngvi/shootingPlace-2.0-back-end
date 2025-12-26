@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.*;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 public class MembersToPoliceReportPdfGenerator {

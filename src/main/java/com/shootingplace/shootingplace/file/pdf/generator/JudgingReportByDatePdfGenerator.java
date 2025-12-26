@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 public class JudgingReportByDatePdfGenerator {
@@ -24,6 +23,7 @@ public class JudgingReportByDatePdfGenerator {
     public JudgingReportByDatePdfGenerator(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
+
     public PdfGenerationResults generate(LocalDate firstDate, LocalDate secondDate) throws DocumentException, IOException {
         String fileName = "raport_sędziowania.pdf";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -37,7 +37,7 @@ public class JudgingReportByDatePdfGenerator {
         document.add(new Paragraph("Raport sędziowania", font(13, 1)));
         document.add(new Paragraph("\n", font(10, 0)));
 
-        List<MemberEntity> arbiters = memberRepository.findAll().stream().filter(m -> !m.isErased()).filter(m -> m.getMemberPermissions().getArbiterNumber() != null).toList();
+        List<MemberEntity> arbiters = memberRepository.findAll().stream().filter(m -> !m.isErased()).filter(m -> m.getMemberPermissions().getArbiterStaticNumber() != null).toList();
 
         for (MemberEntity arbiter : arbiters) {
             if (arbiter.getHistory().getJudgingHistory().isEmpty()) {

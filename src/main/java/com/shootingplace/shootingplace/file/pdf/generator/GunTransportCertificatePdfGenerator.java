@@ -17,8 +17,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor

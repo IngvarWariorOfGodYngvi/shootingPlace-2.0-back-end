@@ -12,24 +12,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 public class ApplicationForFirearmsLicensePdfGenerator {
 
-    public PdfGenerationResults generate(
-            MemberEntity member,
-            String thirdName,
-            String birthPlace,
-            String fatherName,
-            String motherName,
-            String motherMaidenName,
-            String issuingAuthority,
-            LocalDate parseIDDate,
-            LocalDate parselicenseDate,
-            String city
-    ) throws DocumentException, IOException {
+    public PdfGenerationResults generate(MemberEntity member, String thirdName, String birthPlace, String fatherName, String motherName, String motherMaidenName, String issuingAuthority, LocalDate parseIDDate, LocalDate parselicenseDate, String city) throws DocumentException, IOException {
 
         String fileName = "Wiosek o pozwolenie na broń " + member.getFullName() + ".pdf";
 
@@ -63,35 +51,20 @@ public class ApplicationForFirearmsLicensePdfGenerator {
 
         Paragraph newLine = new Paragraph("\n", font(10, 0));
 
-        Paragraph date = new Paragraph(
-                "Łódź, " + LocalDate.now().format(dateFormat()),
-                font(10, 0)
-        );
+        Paragraph date = new Paragraph("Łódź, " + LocalDate.now().format(dateFormat()), font(10, 0));
         date.setAlignment(2);
         document.add(date);
 
-        Paragraph memberNames = new Paragraph(
-                member.getFirstName() + ' ' + thirdName + ' ' + member.getSecondName(),
-                font(10, 0)
-        );
+        Paragraph memberNames = new Paragraph(member.getFirstName() + ' ' + thirdName + ' ' + member.getSecondName(), font(10, 0));
         memberNames.setAlignment(0);
 
-        Paragraph parentsNames = new Paragraph(
-                fatherName + ' ' + motherName + ' ' + motherMaidenName,
-                font(10, 0)
-        );
+        Paragraph parentsNames = new Paragraph(fatherName + ' ' + motherName + ' ' + motherMaidenName, font(10, 0));
         parentsNames.setAlignment(0);
 
-        Paragraph birthDateAndPlace = new Paragraph(
-                (member.getBirthDate().format(dateFormat())) + ' ' + birthPlace,
-                font(10, 0)
-        );
+        Paragraph birthDateAndPlace = new Paragraph((member.getBirthDate().format(dateFormat())) + ' ' + birthPlace, font(10, 0));
         parentsNames.setAlignment(0);
 
-        Paragraph zipCodeAndCity = new Paragraph(
-                member.getAddress().getZipCode() + ' ' + member.getAddress().getPostOfficeCity(),
-                font(10, 0)
-        );
+        Paragraph zipCodeAndCity = new Paragraph(member.getAddress().getZipCode() + ' ' + member.getAddress().getPostOfficeCity(), font(10, 0));
         zipCodeAndCity.setAlignment(0);
 
         Paragraph phoneNumber = new Paragraph(member.getPhoneNumber(), font(10, 0));
@@ -144,12 +117,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par2.setFirstLineIndent(20);
         document.add(par2);
 
-        Paragraph par21 = new Paragraph(
-                "a. bocznego zapłonu z lufami gwintowanymi, o kalibrze do 6 mm,\n" +
-                        "b. centralnego zapłonu z lufami gwintowanymi, o kalibrze do 12mm,\n" +
-                        "c. gładko lufowej,\n",
-                font(10, 0)
-        );
+        Paragraph par21 = new Paragraph("a. bocznego zapłonu z lufami gwintowanymi, o kalibrze do 6 mm,\n" + "b. centralnego zapłonu z lufami gwintowanymi, o kalibrze do 12mm,\n" + "c. gładko lufowej,\n", font(10, 0));
         par21.setIndentationLeft(50);
         document.add(par21);
 
@@ -175,17 +143,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par6.setFirstLineIndent(20);
         document.add(par6);
 
-        Paragraph par61 = new Paragraph(
-                "a. członkostwo w stowarzyszeniu o charakterze strzeleckim tj. w Stowarzyszenie Strzelecko-Kolekcjonerskie RCS Panaszew 99-200 Poddębice Panaszew 4A NIP:8281419076 REGON:388545546 KRS:0000907099\n" +
-                        "b. posiadanie kwalifikacji sportowych o których mowa w art. 10b UoBiA tj. patentu strzeleckiego \n" +
-                        member.getShootingPatent().getPatentNumber() +
-                        " w dyscyplinach: " + getDisciplinesFromShootingPatentOrLicense(member.getShootingPatent(), null) + "\n" +
-                        "c. posiadanie ważnej licencji zawodniczej Polskiego Związku Strzelectwa Sportowego NR L-" +
-                        member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) +
-                        " Z dnia " + parselicenseDate.format(dateFormat()) +
-                        "r. w dyscyplinach: " + getDisciplinesFromShootingPatentOrLicense(null, member.getLicense()) + ",\n",
-                font(10, 0)
-        );
+        Paragraph par61 = new Paragraph("a. członkostwo w stowarzyszeniu o charakterze strzeleckim tj. w Stowarzyszenie Strzelecko-Kolekcjonerskie RCS Panaszew 99-200 Poddębice Panaszew 4A NIP:8281419076 REGON:388545546 KRS:0000907099\n" + "b. posiadanie kwalifikacji sportowych o których mowa w art. 10b UoBiA tj. patentu strzeleckiego \n" + member.getShootingPatent().getPatentNumber() + " w dyscyplinach: " + getDisciplinesFromShootingPatentOrLicense(member.getShootingPatent(), null) + "\n" + "c. posiadanie ważnej licencji zawodniczej Polskiego Związku Strzelectwa Sportowego NR L-" + member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) + " Z dnia " + parselicenseDate.format(dateFormat()) + "r. w dyscyplinach: " + getDisciplinesFromShootingPatentOrLicense(null, member.getLicense()) + ",\n", font(10, 0));
         par61.setIndentationLeft(50);
         document.add(par61);
 
@@ -193,18 +151,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par7.setFirstLineIndent(20);
         document.add(par7);
 
-        Paragraph par71 = new Paragraph(
-                "a. członkostwo w stowarzyszeniu o charakterze kolekcjonerskim tj. w Stowarzyszenie Strzelecko-Kolekcjonerskie RCS Panaszew 99-200 Poddębice Panaszew 4A NIP:8281419076 REGON:388545546 KRS:0000907099\n" +
-                        "b. posiadanie kwalifikacji sportowych o których mowa w art. 10b UoBiA tj. patentu strzeleckiego NR " +
-                        member.getShootingPatent().getPatentNumber() +
-                        " z dnia " + member.getShootingPatent().getDateOfPosting().format(dateFormat()) +
-                        " r. w dyscyplinach: " + getDisciplinesFromShootingPatentOrLicense(member.getShootingPatent(), null) + "\n" +
-                        "c. posiadanie ważnej licencji zawodniczej Polskiego Związku Strzelectwa Sportowego L-" +
-                        member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) +
-                        " z dnia " + parselicenseDate.format(dateFormat()) +
-                        "r. w dyscyplinach: pistolet, karabin, strzelba gładkolufowa,\n",
-                font(10, 0)
-        );
+        Paragraph par71 = new Paragraph("a. członkostwo w stowarzyszeniu o charakterze kolekcjonerskim tj. w Stowarzyszenie Strzelecko-Kolekcjonerskie RCS Panaszew 99-200 Poddębice Panaszew 4A NIP:8281419076 REGON:388545546 KRS:0000907099\n" + "b. posiadanie kwalifikacji sportowych o których mowa w art. 10b UoBiA tj. patentu strzeleckiego NR " + member.getShootingPatent().getPatentNumber() + " z dnia " + member.getShootingPatent().getDateOfPosting().format(dateFormat()) + " r. w dyscyplinach: " + getDisciplinesFromShootingPatentOrLicense(member.getShootingPatent(), null) + "\n" + "c. posiadanie ważnej licencji zawodniczej Polskiego Związku Strzelectwa Sportowego L-" + member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) + " z dnia " + parselicenseDate.format(dateFormat()) + "r. w dyscyplinach: pistolet, karabin, strzelba gładkolufowa,\n", font(10, 0));
         par71.setIndentationLeft(50);
         document.add(par71);
 
@@ -212,13 +159,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par8.setFirstLineIndent(20);
         document.add(par8);
 
-        Paragraph par81 = new Paragraph(
-                "spełnienie kryteriów, o których mowa w art. 30 ust. 1a ustawy o broni i amunicji, tj.  posiadanie ważnej licencji zawodnika strzelectwa sportowego nadanej przez Polski Związek Strzelectwa Sportowego nr L-" +
-                        member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) +
-                        " Z dnia " + parselicenseDate.format(dateFormat()) +
-                        "r.  w dyscyplinach: pistolet, karabin, strzelba gładkolufowa,",
-                font(10, 0)
-        );
+        Paragraph par81 = new Paragraph("spełnienie kryteriów, o których mowa w art. 30 ust. 1a ustawy o broni i amunicji, tj.  posiadanie ważnej licencji zawodnika strzelectwa sportowego nadanej przez Polski Związek Strzelectwa Sportowego nr L-" + member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) + " Z dnia " + parselicenseDate.format(dateFormat()) + "r.  w dyscyplinach: pistolet, karabin, strzelba gładkolufowa,", font(10, 0));
         par81.setIndentationLeft(50);
         document.add(par81);
 
@@ -237,43 +178,19 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par11.setFirstLineIndent(20);
         document.add(par11);
 
-        Paragraph par12 = new Paragraph(
-                "1. Karabin centralnego zapłonu, 50m, kategoria MANUAL\n" +
-                        "2. Karabin centralnego zapłonu, 50m, kategoria OPEN\n" +
-                        "3. Pistolet centralnego zapłonu, 25m, 10 strzałów stojąc, tarcza TS/2\n" +
-                        "4. Strzelba dynamiczna, kategoria STANDARD\n" +
-                        "5. Strzelba dynamiczna, kategoria SEMI-AUTO\n" +
-                        "6. Strzelba dynamiczna IPSC\n" +
-                        "7. Pistolet dynamiczny (IPSC), kategoria PRODUCTION\n" +
-                        "8. Pistolet dynamiczny (IPSC), kategoria STANDARD/MINOR\n" +
-                        "9. Pistolet dynamiczny (IPSC), kategoria STANDARD/MAJOR\n",
-                font(10, 0)
-        );
+        Paragraph par12 = new Paragraph("1. Karabin centralnego zapłonu, 50m, kategoria MANUAL\n" + "2. Karabin centralnego zapłonu, 50m, kategoria OPEN\n" + "3. Pistolet centralnego zapłonu, 25m, 10 strzałów stojąc, tarcza TS/2\n" + "4. Strzelba dynamiczna, kategoria STANDARD\n" + "5. Strzelba dynamiczna, kategoria SEMI-AUTO\n" + "6. Strzelba dynamiczna IPSC\n" + "7. Pistolet dynamiczny (IPSC), kategoria PRODUCTION\n" + "8. Pistolet dynamiczny (IPSC), kategoria STANDARD/MINOR\n" + "9. Pistolet dynamiczny (IPSC), kategoria STANDARD/MAJOR\n", font(10, 0));
         par12.setIndentationLeft(20);
         document.add(par12);
 
-        Paragraph par13 = new Paragraph(
-                "Zdecydowałem się pominąć konkurencje podobne lub takie, w których mógłbym na początku używać broni zakupionej też do innej konkurencji.  Niemniej jednak, interesują mnie także pozostałe typy strzelectwa sportowego (np. długodystansowe, dynamiczne, czarnoprochowe) i w przyszłości planuję brać udział w zawodach i konkurencjach je obejmujących. W szczególności interesuje mnie strzelectwo dynamiczno-praktyczne takie jak: IPSC, Liga Sportera czy 3 Gun.\n" +
-                        "Oferta stowarzyszenia o charakterze strzeleckim do którego należę jest stale poszerzana i umożliwia mi szerokie eksplorowanie pasji strzeleckiej. Specyfika konkurencji, w których już startuje oraz będę startował sprawia, że wnioskowana ilość jednostek broni jest mi niezbędna do startu w nich, treningu oraz poszerzania swoich umiejętności sportowych. Mając bogatą ofertę zawodów sportowych potrzebuję dużej dozy elastyczności w wyborze zakupionej broni. Zamierzam nabywać kolejne egzemplarze, w miarę jak moje plany uprawiania sportu strzeleckiego będą tego wymagały.\n",
-                font(10, 0)
-        );
+        Paragraph par13 = new Paragraph("Zdecydowałem się pominąć konkurencje podobne lub takie, w których mógłbym na początku używać broni zakupionej też do innej konkurencji.  Niemniej jednak, interesują mnie także pozostałe typy strzelectwa sportowego (np. długodystansowe, dynamiczne, czarnoprochowe) i w przyszłości planuję brać udział w zawodach i konkurencjach je obejmujących. W szczególności interesuje mnie strzelectwo dynamiczno-praktyczne takie jak: IPSC, Liga Sportera czy 3 Gun.\n" + "Oferta stowarzyszenia o charakterze strzeleckim do którego należę jest stale poszerzana i umożliwia mi szerokie eksplorowanie pasji strzeleckiej. Specyfika konkurencji, w których już startuje oraz będę startował sprawia, że wnioskowana ilość jednostek broni jest mi niezbędna do startu w nich, treningu oraz poszerzania swoich umiejętności sportowych. Mając bogatą ofertę zawodów sportowych potrzebuję dużej dozy elastyczności w wyborze zakupionej broni. Zamierzam nabywać kolejne egzemplarze, w miarę jak moje plany uprawiania sportu strzeleckiego będą tego wymagały.\n", font(10, 0));
         par13.setFirstLineIndent(20);
         document.add(par13);
 
-        Paragraph par14 = new Paragraph(
-                "Zamierzam kolekcjonować broń palną sportową różnych rodzajów, typów i modeli. W chwili obecnej nie jestem w stanie określić po ile egzemplarzy broni każdego rodzaju będę mieć w swojej kolekcji. Dopiero zaczynam realizację pasji kolekcjonerskiej i nie jestem w stanie powiedzieć, w którą stronę będę chciał się rozwinąć w najbliższej przyszłości.\n" +
-                        "Chcę mieć dużą kolekcję stanowiącą przekrój najpopularniejszych modeli broni palnej. Na początek wielkość kolekcji, która \n" +
-                        "z natury rzeczy nie jest i nie może być zbiorem zamkniętym, oceniam szacunkowo na liczbę 10 sztuk. I dlatego wnoszę o wydanie pozwolenia na taką właśnie ilość broni.\n",
-                font(10, 0)
-        );
+        Paragraph par14 = new Paragraph("Zamierzam kolekcjonować broń palną sportową różnych rodzajów, typów i modeli. W chwili obecnej nie jestem w stanie określić po ile egzemplarzy broni każdego rodzaju będę mieć w swojej kolekcji. Dopiero zaczynam realizację pasji kolekcjonerskiej i nie jestem w stanie powiedzieć, w którą stronę będę chciał się rozwinąć w najbliższej przyszłości.\n" + "Chcę mieć dużą kolekcję stanowiącą przekrój najpopularniejszych modeli broni palnej. Na początek wielkość kolekcji, która \n" + "z natury rzeczy nie jest i nie może być zbiorem zamkniętym, oceniam szacunkowo na liczbę 10 sztuk. I dlatego wnoszę o wydanie pozwolenia na taką właśnie ilość broni.\n", font(10, 0));
         par14.setFirstLineIndent(20);
         document.add(par14);
 
-        Paragraph par15 = new Paragraph(
-                "Rezygnuję niniejszym z prawa zapoznania się z aktami przed wydaniem decyzji, jeśli organ Policji dojdzie do wniosku, \n" +
-                        "że należy wydać decyzję zgodną z moim żądaniem.\n",
-                font(10, 0)
-        );
+        Paragraph par15 = new Paragraph("Rezygnuję niniejszym z prawa zapoznania się z aktami przed wydaniem decyzji, jeśli organ Policji dojdzie do wniosku, \n" + "że należy wydać decyzję zgodną z moim żądaniem.\n", font(10, 0));
         par15.setFirstLineIndent(20);
         document.add(par15);
 
@@ -291,19 +208,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par18.setFirstLineIndent(20);
         document.add(par18);
 
-        Paragraph par19 = new Paragraph(
-                "1) dowód wniesienia opłaty 242 zł za wydanie pozwolenia na broń do celów sportowych (oryginał),\n" +
-                        "2) dowód wniesienia opłaty 242 zł za wydanie pozwolenia na broń do celów kolekcjonerskich (oryginał),\n" +
-                        "3) dowód wniesienia opłaty skarbowej 10 zł za dopuszczenie do broni (oryginał),\n" +
-                        "4) orzeczenie lekarskie  (oryginał),\n" +
-                        "5) orzeczenie psychologiczne  (oryginał),\n" +
-                        "6) zaświadczenie o członkostwie w strzeleckim klubie sportowym: RCS Panaszew 99-200 Poddębice Panaszew 4A NIP:8281419076 REGON:388545546 KRS:0000907099 (oryginał)\n" +
-                        "7) decyzja nadania patentu strzeleckiego PZSS NR " + member.getShootingPatent().getPatentNumber() + " z dnia " + member.getShootingPatent().getDateOfPosting().format(dateFormat()) + "r. (wydruk)\n" +
-                        "8) ważna licencja zawodnika L-" + member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) + " Z dnia " + parselicenseDate.format(dateFormat()) + "r. (wydruk)\n" +
-                        "9) zdjęcia – 4szt. (zdjęcia podpisane na odwrocie) \n" +
-                        "10) Kserokopia dowodu osobistego (oryginał do wglądu)\n",
-                font(8, 0)
-        );
+        Paragraph par19 = new Paragraph("1) dowód wniesienia opłaty 242 zł za wydanie pozwolenia na broń do celów sportowych (oryginał),\n" + "2) dowód wniesienia opłaty 242 zł za wydanie pozwolenia na broń do celów kolekcjonerskich (oryginał),\n" + "3) dowód wniesienia opłaty skarbowej 10 zł za dopuszczenie do broni (oryginał),\n" + "4) orzeczenie lekarskie  (oryginał),\n" + "5) orzeczenie psychologiczne  (oryginał),\n" + "6) zaświadczenie o członkostwie w strzeleckim klubie sportowym: RCS Panaszew 99-200 Poddębice Panaszew 4A NIP:8281419076 REGON:388545546 KRS:0000907099 (oryginał)\n" + "7) decyzja nadania patentu strzeleckiego PZSS NR " + member.getShootingPatent().getPatentNumber() + " z dnia " + member.getShootingPatent().getDateOfPosting().format(dateFormat()) + "r. (wydruk)\n" + "8) ważna licencja zawodnika L-" + member.getLicense().getNumber() + "/" + getPartOfDate(parselicenseDate) + " Z dnia " + parselicenseDate.format(dateFormat()) + "r. (wydruk)\n" + "9) zdjęcia – 4szt. (zdjęcia podpisane na odwrocie) \n" + "10) Kserokopia dowodu osobistego (oryginał do wglądu)\n", font(8, 0));
         par19.setIndentationLeft(20);
         document.add(par19);
 
@@ -326,6 +231,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         }
         return pistol + " " + rifle + " " + shotgun;
     }
+
     private String getPartOfDate(LocalDate date) {
         String month, year;
         month = date.getMonthValue() < 10 ? "0" + date.getMonthValue() : String.valueOf(date.getMonthValue());

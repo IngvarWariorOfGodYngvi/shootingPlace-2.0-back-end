@@ -109,35 +109,36 @@ public class ScoreService {
 
     }
 
-    public ResponseEntity<?> setScore(String scoreUUID, float score, float innerTen, float outerTen, Float alfa, Float charlie, Float delta, int procedures, float miss, List<Float> series) {
+    public ResponseEntity<?> setScore(String scoreUUID, Float score, Float innerTen, Float outerTen, Float alfa, Float charlie, Float delta, Integer procedures, Float miss, List<Float> series) {
         if (!scoreRepository.existsById(scoreUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono wyniku. Sprawdź identyfikator rekordu");
         }
-        ScoreEntity scoreEntity = scoreRepository.getOne(scoreUUID);
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
         scoreEntity.setName(scoreEntity.getOtherPersonEntity() != null ? scoreEntity.getOtherPersonEntity().getFullName() : scoreEntity.getMember().getFullName());
+        scoreEntity.setEdited(true);
         String competitionMembersListEntityUUID = scoreEntity.getCompetitionMembersListEntityUUID();
         CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID).orElseThrow(EntityNotFoundException::new);
         // Metoda COMSTOCK
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.COMSTOCK.getName())) {
-            if (innerTen == -1) {
+            if (innerTen == null) {
                 //czas
                 innerTen = scoreEntity.getInnerTen();
             }
-            if (outerTen == -1) {
+            if (outerTen == null) {
                 //trafienia
                 outerTen = scoreEntity.getOuterTen();
             }
-            if (procedures == -1) {
+            if (procedures == null) {
                 //procedury
                 procedures = scoreEntity.getProcedures();
             }
-            if (alfa == -1) {
+            if (alfa == null) {
                 alfa = (float) 0;
             }
-            if (charlie == -1) {
+            if (charlie == null) {
                 charlie = (float) 0;
             }
-            if (delta == -1) {
+            if (delta == null) {
                 delta = (float) 0;
             }
             List<ScoreEntity> scoreList = competitionMembersListEntity
@@ -221,10 +222,10 @@ public class ScoreService {
         }
         // Metoda NORMAL
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.NORMAL.getName())) {
-            if (innerTen == -1) {
+            if (innerTen == null) {
                 innerTen = scoreEntity.getInnerTen();
             }
-            if (outerTen == -1) {
+            if (outerTen == null) {
                 outerTen = scoreEntity.getOuterTen();
             }
             List<Float> series1 = scoreEntity.getSeries();
@@ -260,7 +261,7 @@ public class ScoreService {
         }
         // Metoda CZAS
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.TIME.getName())) {
-            if (procedures == -1) {
+            if (procedures == null) {
                 //procedury
                 procedures = scoreEntity.getProcedures();
             } else {
@@ -298,19 +299,19 @@ public class ScoreService {
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.IPSC.getName())) {
 
             // czas
-            innerTen = innerTen == -1 ? scoreEntity.getInnerTen() : innerTen;
+            innerTen = innerTen == null ? scoreEntity.getInnerTen() : innerTen;
             // trafienia
-            outerTen = outerTen == -1 ? scoreEntity.getOuterTen() : outerTen;
+            outerTen = outerTen == null ? scoreEntity.getOuterTen() : outerTen;
             // procedury
-            procedures = procedures == -1 ? scoreEntity.getProcedures() : procedures;
+            procedures = procedures == null ? scoreEntity.getProcedures() : procedures;
             // alfa
-            alfa = alfa == -1 ? scoreEntity.getAlfa() : alfa;
+            alfa = alfa == null ? scoreEntity.getAlfa() : alfa;
             // charlie
-            charlie = charlie == -1 ? scoreEntity.getCharlie() : charlie;
+            charlie = charlie == null ? scoreEntity.getCharlie() : charlie;
             // delta
-            delta = delta == -1 ? scoreEntity.getDelta() : delta;
+            delta = delta == null ? scoreEntity.getDelta() : delta;
             // miss
-            miss = miss == -1 ? scoreEntity.getMiss() : miss;
+            miss = miss == null ? scoreEntity.getMiss() : miss;
 
             List<ScoreEntity> scoreList = competitionMembersListEntity
                     .getScoreList()
@@ -337,7 +338,7 @@ public class ScoreService {
             if (points < 0) {
                 points = 0;
             }
-            outerTen = points;
+            outerTen = (float) points;
             float hf;
             // hf punkty / czas
             hf = points / (innerTen);
@@ -393,19 +394,19 @@ public class ScoreService {
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.DYNAMIKADZIESIATKA.getName())) {
 
             // czas
-            innerTen = innerTen == -1 ? scoreEntity.getInnerTen() : innerTen;
+            innerTen = innerTen == null ? scoreEntity.getInnerTen() : innerTen;
             // trafienia
-            outerTen = outerTen == -1 ? scoreEntity.getOuterTen() : outerTen;
+            outerTen = outerTen == null ? scoreEntity.getOuterTen() : outerTen;
             // procedury
-            procedures = procedures == -1 ? scoreEntity.getProcedures() : procedures;
+            procedures = procedures == null ? scoreEntity.getProcedures() : procedures;
             // alfa
-            alfa = alfa == -1 ? scoreEntity.getAlfa() : alfa;
+            alfa = alfa == null ? scoreEntity.getAlfa() : alfa;
             // charlie
-            charlie = charlie == -1 ? scoreEntity.getCharlie() : charlie;
+            charlie = charlie == null ? scoreEntity.getCharlie() : charlie;
             // delta
-            delta = delta == -1 ? scoreEntity.getDelta() : delta;
+            delta = delta == null ? scoreEntity.getDelta() : delta;
             // miss
-            miss = miss == -1 ? scoreEntity.getMiss() : miss;
+            miss = miss == null ? scoreEntity.getMiss() : miss;
 
             List<ScoreEntity> scoreList = competitionMembersListEntity
                     .getScoreList()
@@ -426,7 +427,7 @@ public class ScoreService {
             if (points < 0) {
                 points = 0;
             }
-            outerTen = points;
+            outerTen = (float) points;
             float hf;
             // hf punkty / czas
             hf = points / (innerTen + (procedures * 3));
@@ -480,10 +481,10 @@ public class ScoreService {
         // Metoda Pojedynek
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.POJEDYNEK.getName())) {
 
-            if (innerTen == -1) {
+            if (innerTen == null) {
                 innerTen = scoreEntity.getInnerTen();
             }
-            if (outerTen == -1) {
+            if (outerTen == null) {
                 outerTen = scoreEntity.getOuterTen();
             }
             List<Float> series1 = scoreEntity.getSeries();
@@ -597,13 +598,13 @@ public class ScoreService {
     }
 
     public void reorganizeCompetitionMemberList(String scoreUUID) {
-        ScoreEntity one = scoreRepository.getOne(scoreUUID);
-        setScore(scoreUUID, one.getScore(), -1, -1, -1f, -1f, -1f, -1, -1, null);
+        ScoreEntity one = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
+        setScore(scoreUUID, one.getScore(), null, null, null, null, null, null, null, null);
     }
 
     public ResponseEntity<?> forceSetScore(String scoreUUID, float score) {
         ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
-
+        scoreEntity.setEdited(true);
         String competitionMembersListEntityUUID = scoreEntity.getCompetitionMembersListEntityUUID();
         CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID).orElseThrow(EntityNotFoundException::new);
 

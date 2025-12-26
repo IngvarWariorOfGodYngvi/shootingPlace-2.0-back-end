@@ -56,7 +56,7 @@ public class MemberService {
     private static final Collator PL_COLLATOR = Collator.getInstance(Locale.forLanguageTag("pl"));
 
     public List<MemberInfo> getArbiters() {
-        return memberRepository.findAllByErasedFalseAndMemberPermissions_ArbiterNumberIsNotNull().stream().map(Mapping::map2).sorted(Comparator.comparing(MemberInfo::getSecondName, PL_COLLATOR).thenComparing(MemberInfo::getFirstName, PL_COLLATOR)).toList();
+        return memberRepository.findAllByErasedFalseAndMemberPermissions_ArbiterStaticNumberIsNotNull().stream().map(Mapping::map2).sorted(Comparator.comparing(MemberInfo::getSecondName, PL_COLLATOR).thenComparing(MemberInfo::getFirstName, PL_COLLATOR)).toList();
     }
 
     @Transactional

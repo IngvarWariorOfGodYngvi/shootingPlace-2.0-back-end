@@ -18,7 +18,7 @@ public class ScoreController {
 
     @Transactional
     @PutMapping("/set")
-    public ResponseEntity<?> setScore(@RequestParam String scoreUUID, @RequestParam float score, @RequestParam float innerTen, @RequestParam float outerTen, @RequestParam int procedures, @RequestParam float miss, @RequestParam float alfa, @RequestParam float charlie, @RequestParam float delta, @Nullable @RequestParam List<Float> series) {
+    public ResponseEntity<?> setScore(@RequestParam String scoreUUID, @RequestParam(required = false) Float score, @RequestParam(required = false) Float innerTen, @RequestParam(required = false) Float outerTen, @RequestParam(required = false) Integer procedures, @RequestParam(required = false) Float miss, @RequestParam(required = false) Float alfa, @RequestParam(required = false) Float charlie, @RequestParam(required = false) Float delta, @Nullable @RequestParam(required = false) List<Float> series) {
         return scoreService.setScore(scoreUUID, score, innerTen, outerTen, alfa, charlie, delta, procedures, miss, series);
     }
 

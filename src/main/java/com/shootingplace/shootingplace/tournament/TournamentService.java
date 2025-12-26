@@ -243,7 +243,7 @@ public class TournamentService {
                 }
             }
 
-            if (!memberEntity.getMemberPermissions().getArbiterNumber().isEmpty()) {
+            if (!memberEntity.getMemberPermissions().getArbiterStaticNumber().isEmpty()) {
                 if (tournamentEntity.getMainArbiter() == null || tournamentEntity.getMainArbiter() != memberEntity) {
                     if (tournamentEntity.getMainArbiter() == null) {
                         tournamentEntity.setMainArbiter(memberEntity);
@@ -294,7 +294,7 @@ public class TournamentService {
                 }
             }
 
-            if (!otherPersonEntity.getPermissionsEntity().getArbiterNumber().isEmpty()) {
+            if (!otherPersonEntity.getPermissionsEntity().getArbiterStaticNumber().isEmpty()) {
                 if (tournamentEntity.getOtherMainArbiter() == null || tournamentEntity.getOtherMainArbiter() != otherPersonEntity) {
                     if (tournamentEntity.getOtherMainArbiter() == null) {
                         if (tournamentEntity.getMainArbiter() != null) {
@@ -344,7 +344,7 @@ public class TournamentService {
                 }
             }
 
-            if (!memberEntity.getMemberPermissions().getArbiterNumber().isEmpty()) {
+            if (!memberEntity.getMemberPermissions().getArbiterStaticNumber().isEmpty()) {
                 if (tournamentEntity.getCommissionRTSArbiter() == null || tournamentEntity.getCommissionRTSArbiter() != memberEntity) {
                     if (tournamentEntity.getCommissionRTSArbiter() != null) {
                         historyService.removeJudgingRecord(tournamentEntity.getCommissionRTSArbiter().getUuid(), tournamentUUID);
@@ -387,7 +387,7 @@ public class TournamentService {
                 }
             }
 
-            if (!otherPersonEntity.getPermissionsEntity().getArbiterNumber().isEmpty()) {
+            if (!otherPersonEntity.getPermissionsEntity().getArbiterStaticNumber().isEmpty()) {
                 if (tournamentEntity.getOtherCommissionRTSArbiter() == null || tournamentEntity.getOtherCommissionRTSArbiter() != otherPersonEntity) {
                     if (tournamentEntity.getOtherCommissionRTSArbiter() == null) {
                         if (tournamentEntity.getCommissionRTSArbiter() != null) {
@@ -439,7 +439,7 @@ public class TournamentService {
                     return ResponseEntity.badRequest().body("Sędzia już jest przypisany");
                 }
             }
-            if (!memberEntity.getMemberPermissions().getArbiterNumber().isEmpty()) {
+            if (!memberEntity.getMemberPermissions().getArbiterStaticNumber().isEmpty()) {
                 List<MemberEntity> list = tournamentEntity.getArbitersList();
                 list.add(memberEntity);
                 list.sort(Comparator.comparing(MemberEntity::getSecondName));
@@ -488,7 +488,7 @@ public class TournamentService {
                     return ResponseEntity.badRequest().body("Sędzia już jest przypisany");
                 }
             }
-            if (!otherPersonEntity.getPermissionsEntity().getArbiterNumber().isEmpty()) {
+            if (!otherPersonEntity.getPermissionsEntity().getArbiterStaticNumber().isEmpty()) {
                 List<OtherPersonEntity> list = tournamentEntity.getOtherArbitersList();
                 list.add(otherPersonEntity);
                 list.sort(Comparator.comparing(OtherPersonEntity::getSecondName));
@@ -631,7 +631,7 @@ public class TournamentService {
                     return ResponseEntity.badRequest().body("Sędzia już jest przypisany");
                 }
             }
-            if (!memberEntity.getMemberPermissions().getArbiterNumber().isEmpty()) {
+            if (!memberEntity.getMemberPermissions().getArbiterStaticNumber().isEmpty()) {
                 List<MemberEntity> list = tournamentEntity.getArbitersRTSList();
                 list.add(memberEntity);
                 list.sort(Comparator.comparing(MemberEntity::getSecondName));
@@ -680,7 +680,7 @@ public class TournamentService {
                     return ResponseEntity.badRequest().body("Sędzia już jest przypisany");
                 }
             }
-            if (!otherPersonEntity.getPermissionsEntity().getArbiterNumber().isEmpty()) {
+            if (!otherPersonEntity.getPermissionsEntity().getArbiterStaticNumber().isEmpty()) {
                 List<OtherPersonEntity> list = tournamentEntity.getOtherArbitersRTSList();
                 list.add(otherPersonEntity);
                 list.sort(Comparator.comparing(OtherPersonEntity::getSecondName));
@@ -807,7 +807,7 @@ public class TournamentService {
         LocalDate firstDate1 = LocalDate.parse(firstDate);
         LocalDate secondDate1 = LocalDate.parse(secondDate);
         List<JudgingHistoryEntity> judgingHistoryEntityList = judgingHistoryRepository.findAllByDateBetween(firstDate1, secondDate1);
-        List<MemberEntity> collect = memberRepository.findAll().stream().filter(f -> f.getMemberPermissions().getArbiterNumber() != null).toList();
+        List<MemberEntity> collect = memberRepository.findAll().stream().filter(f -> f.getMemberPermissions().getArbiterStaticNumber() != null).toList();
         List<JudgingHistoryDTO> list = new ArrayList<>();
         for (MemberEntity memberEntity : collect) {
             List<JudgingHistoryEntity> judgingHistory = memberEntity.getHistory().getJudgingHistory();

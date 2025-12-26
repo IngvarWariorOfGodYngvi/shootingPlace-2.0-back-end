@@ -51,9 +51,9 @@ public class OtherPersonController {
                 }
             }
             memberPermissions = MemberPermissions.builder()
-                    .arbiterNumber(arbiterNumber)
-                    .arbiterClass(arbiterClass)
-                    .arbiterPermissionValidThru(parse)
+                    .arbiterStaticNumber(arbiterNumber)
+                    .arbiterStaticClass(arbiterClass)
+                    .arbiterStaticPermissionValidThru(parse)
                     .shootingLeaderNumber(null)
                     .instructorNumber(null)
                     .build();

@@ -35,6 +35,7 @@ public class StartConfiguration {
     private final JdbcTemplate jdbcTemplate;
     private final Logger LOG = LogManager.getLogger(getClass());
 
+    @Transactional
     @PostConstruct
     public void init() {
         setProperties();
@@ -82,7 +83,6 @@ public class StartConfiguration {
         LOG.info("sendMail property: {}", environment.getProperty("sendMail"));
     }
 
-    @Transactional
     public void createAdmin() {
         if (!userRepository.existsBySecondName("Admin")) {
             UserEntity admin = UserEntity.builder()
@@ -103,7 +103,6 @@ public class StartConfiguration {
         }
     }
 
-    @Transactional
     public void createEmptyClub() {
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM shootingplace.club_entity WHERE id = 1",
@@ -112,10 +111,10 @@ public class StartConfiguration {
 
         if (count == 0) {
             jdbcTemplate.update("""
-            INSERT INTO shootingplace.club_entity (id,full_name,short_name, city, wzss, vovoidership,url,
-            phone_number,appartment_number,house_number,license_number, email)
-            VALUES (1, '', 'firstStart', '', '', '', '', '', '', '', '', '')
-        """);
+                        INSERT INTO shootingplace.club_entity (id,full_name,short_name, city, wzss, vovoidership,url,
+                        phone_number,appartment_number,house_number,license_number, email)
+                        VALUES (1, '', 'firstStart', '', '', '', '', '', '', '', '', '')
+                    """);
         }
         Integer count1 = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM shootingplace.club_entity WHERE id = 2",
@@ -131,7 +130,6 @@ public class StartConfiguration {
         }
     }
 
-    @Transactional
     public void hashPinForAll() {
         userRepository.findAll().forEach(u -> {
             if (u != null && u.getPinCode() != null && u.getPinCode().length() == 4) {
@@ -153,7 +151,6 @@ public class StartConfiguration {
         }
     }
 
-    @Transactional
     public void function() {
         gunUsedRepository.findAll()
                 .forEach(gunRepresentationService::function);

@@ -77,7 +77,6 @@ public class ScoreEntity {
             value = value.concat(f + ";");
         }
         this.series = value;
-        this.edited = true;
     }
 
     public boolean isDnf() {
@@ -118,7 +117,6 @@ public class ScoreEntity {
 
     public void setScore(float score) {
         this.score = score;
-        this.edited = true;
     }
 
     public String getCompetitionMembersListEntityUUID() {

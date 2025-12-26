@@ -7,10 +7,11 @@ import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.contributions.ContributionEntity;
 import com.shootingplace.shootingplace.contributions.ContributionRepository;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
+import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.utils.PageStamper;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -21,8 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor
@@ -33,33 +33,24 @@ public class ContributionConfirmPdfGenerator {
     private final MemberRepository memberRepository;
     private final ContributionRepository contributionRepository;
 
-    public PdfGenerationResults generate(String memberUUID,
-                                         String contributionUUID,
-                                         boolean a5rotate)
-            throws DocumentException, IOException {
+    public PdfGenerationResults generate(String memberUUID, String contributionUUID, boolean a5rotate) throws DocumentException, IOException {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         ContributionEntity contributionEntity = contributionRepository.findById(contributionUUID).orElseThrow(EntityNotFoundException::new);
-        ClubEntity club = clubRepository.findById(1)
-                .orElseThrow(EntityNotFoundException::new);
+        ClubEntity club = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
 
-        int count = (int) member.getHistory()
-                .getContributionList()
-                .stream()
-                .filter(f -> f.getPaymentDay().equals(contributionEntity.getPaymentDay()))
-                .count();
+        int count = (int) member.getHistory().getContributionList().stream().filter(f -> f.getPaymentDay().equals(contributionEntity.getPaymentDay())).count();
 
         LocalDate contribution = contributionEntity.getPaymentDay();
         LocalDate validThru = contributionEntity.getValidThru();
 
-        String fileName = "Skladka " + member.getFullName() + " "
-                + LocalDate.now().format(dateFormat()) + ".pdf";
+        String fileName = "Skladka " + member.getFullName() + " " + LocalDate.now().format(dateFormat()) + ".pdf";
 
         String clubFullName = club.getFullName().toUpperCase();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(a5rotate ? PageSize.A5.rotate() : PageSize.A4);
         PdfWriter writer = PdfWriter.getInstance(document, baos);
-        writer.setPageEvent(new PageStamper(environment, true, true));
+        writer.setPageEvent(new PageStamper(environment, true, true, a5rotate ? PageStampMode.A5_LANDSCAPE : PageStampMode.A4));
 
         document.open();
 
@@ -110,12 +101,7 @@ public class ContributionConfirmPdfGenerator {
         Paragraph p8 = new Paragraph("Składka ważna do : ", font(11, 0));
         Phrase p9 = new Phrase(String.valueOf(validThru), font(11, 1));
 
-        Paragraph p10 = new Paragraph(
-                member.getSex() + " " + member.getFullName() + " dnia : "
-                        + contribution + " " + status + " "
-                        + counter + " w wysokości " + contributionLevel + " zł.",
-                font(11, 0)
-        );
+        Paragraph p10 = new Paragraph(member.getSex() + " " + member.getFullName() + " dnia : " + contribution + " " + status + " " + counter + " w wysokości " + contributionLevel + " zł.", font(11, 0));
 
         Paragraph p16 = new Paragraph("\n", font(15, 0));
         Paragraph p19 = new Paragraph("               pieczęć klubu", font(10, 0));
@@ -171,7 +157,6 @@ public class ContributionConfirmPdfGenerator {
 
     private boolean isDziesiatkaOrTest() {
         String profile = environment.getActiveProfiles()[0];
-        return profile.equals(ProfilesEnum.DZIESIATKA.getName())
-                || profile.equals(ProfilesEnum.TEST.getName());
+        return profile.equals(ProfilesEnum.DZIESIATKA.getName()) || profile.equals(ProfilesEnum.TEST.getName());
     }
 }

@@ -1,4 +1,4 @@
-package com.shootingplace.shootingplace.utils;
+package com.shootingplace.shootingplace.file.pageStamper;
 
 import com.lowagie.text.*;
 import com.lowagie.text.Image;
@@ -11,11 +11,13 @@ import org.springframework.core.env.Environment;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+
 @RequiredArgsConstructor
 public class PageStamper extends PdfPageEventHelper {
     private final Environment environment;
     private final Boolean isPageNumberStamp;
     private final Boolean isFooterImage;
+    private final PageStampMode mode;
     int pages;
 
     @Override
@@ -34,7 +36,7 @@ public class PageStamper extends PdfPageEventHelper {
     @Override
     public void onEndPage(PdfWriter writer, Document document) {
         try {
-            Rectangle pageSize = document.getPageSize();
+            Rectangle pageSize;
             PdfContentByte directContent = writer.getDirectContent();
             document.addAuthor("Igor Żebrowski");
             if (isFooterImage) {
@@ -52,12 +54,34 @@ public class PageStamper extends PdfPageEventHelper {
                     resource = getClass().getClassLoader().getResource("logo-guardians.jpg");
                 }
                 Image image = Image.getInstance(resource);
-                image.scaleToFit(1000, 75);
-                float pw = pageSize.getWidth() / 2;
-                float iw = image.getScaledWidth() / 2;
-                float[] position = {pw - iw, 0};
-                image.setAbsolutePosition(position[0], position[1]);
-                directContent.addImage(image);
+                Rectangle ps = document.getPageSize();
+
+                switch (mode) {
+                    case CARD -> {
+                        image.scaleToFit(ps.getWidth() * 0.6f, ps.getHeight() * 0.18f);
+                        image.setAbsolutePosition(((ps.getWidth() / 2) - (image.getScaledWidth()) / 2), 0);
+                        directContent.addImage(image);
+
+                    }
+
+                    case A5_LANDSCAPE -> {
+                        image.scaleToFit(700, 60);
+                        image.setAbsolutePosition(((ps.getWidth() / 2) - (image.getScaledWidth()) / 2), 0);
+                        directContent.addImage(image);
+                    }
+
+                    case A4_LANDSCAPE -> {
+                        image.scaleToFit(900, 60);
+                        image.setAbsolutePosition(((ps.getWidth() / 2) - (image.getScaledWidth()) / 2), 0);
+                        directContent.addImage(image);
+                    }
+
+                    case A4 -> {
+                        image.scaleToFit(1000, 65);
+                        image.setAbsolutePosition(((ps.getWidth() / 2) - (image.getScaledWidth()) / 2), 0);
+                        directContent.addImage(image);
+                    }
+                }
             }
             if (isPageNumberStamp) {
                 final int currentPageNumber = writer.getCurrentPageNumber();

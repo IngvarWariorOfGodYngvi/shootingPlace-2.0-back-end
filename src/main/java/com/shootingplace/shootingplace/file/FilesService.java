@@ -7,6 +7,7 @@ import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceRepository;
 import com.shootingplace.shootingplace.armory.GunEntity;
 import com.shootingplace.shootingplace.armory.GunRepository;
+import com.shootingplace.shootingplace.enums.ProfilesEnum;
 import com.shootingplace.shootingplace.file.csv.generator.MemberCsvGenerator;
 import com.shootingplace.shootingplace.file.csv.generator.MemberEmailCsvGenerator;
 import com.shootingplace.shootingplace.file.csv.model.CsvGenerationResults;
@@ -27,6 +28,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -57,6 +59,7 @@ public class FilesService {
     private final GunRepository gunRepository;
     private final OtherPersonService otherPersonService;
     private final UserRepository userRepository;
+    private final Environment environment;
     private final Logger LOG = LogManager.getLogger(getClass());
 
     private final LokMembershipPdfGenerator lokMembershipPdfGenerator;
@@ -83,16 +86,8 @@ public class FilesService {
     private final EvidenceBookByDatePdfGenerator evidenceBookByDatePdfGenerator;
     private final WorkTimeReportPdfGenerator workTimeReportPdfGenerator;
     private final MembersWithLicensePdfGenerator membersWithLicensePdfGenerator;
-
-
-    private FilesEntity createFileEntity(FilesModel filesModel) {
-        filesModel.setDate(LocalDate.now());
-        filesModel.setTime(LocalTime.now());
-        FilesEntity filesEntity = Mapping.map(filesModel);
-        LOG.info("{} Encja została zapisana", filesModel.getName().trim());
-        return filesRepository.save(filesEntity);
-
-    }
+    private final MemberLegitimationPdfGenerator memberLegitimationPdfGenerator;
+    private final DziesiatkaMembershipPdfGenerator dziesiatkaMembershipPdfGenerator;
 
     public void store(MultipartFile file) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
@@ -296,9 +291,16 @@ public class FilesService {
     }
 
     // karta członkowska dziesiątka
-    public FilesEntity personalCardFile(String memberUUID) throws DocumentException, IOException {
+    public FilesEntity getMembershipDeclaration(String memberUUID) throws DocumentException, IOException {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
-        PdfGenerationResults pdf = personalCardPdfGenerator.generate(member);
+        ProfilesEnum activeProfile = ProfilesEnum.fromName(environment.getActiveProfiles()[0]);
+
+        PdfGenerationResults pdf = switch (activeProfile) {
+            case ProfilesEnum.TEST, ProfilesEnum.DZIESIATKA -> dziesiatkaMembershipPdfGenerator.generate(member);
+            case ProfilesEnum.PANASZEW -> personalCardPdfGenerator.generate(member);
+            case ProfilesEnum.GUARDIANS -> guardiansMembershipPdfGenerator.generate(member);
+            case ProfilesEnum.MECHANIK -> personalCardPdfGenerator.generate(member);
+        };
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
 
@@ -366,8 +368,8 @@ public class FilesService {
     }
 
     // lista klubowiczów - grupa wiekowa
-    public FilesEntity generateMembersListByAdult(boolean adult) throws IOException, DocumentException {
-        PdfGenerationResults pdf = membersListByAdultPdfGenerator.generate(adult);
+    public FilesEntity generateMembersListByAdult() throws IOException, DocumentException {
+        PdfGenerationResults pdf = membersListByAdultPdfGenerator.generate();
         return createFile(pdf.fileName(), pdf.data(), null);
     }
 
@@ -449,14 +451,35 @@ public class FilesService {
         PdfGenerationResults pdf = lokMembershipPdfGenerator.generate(member);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
+    // Legitymacja klubowicza
+    public FilesEntity getMemberLegitimationPdfGenerator(String memberUUID) throws DocumentException, IOException {
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        PdfGenerationResults pdf = memberLegitimationPdfGenerator.generate(member);
+        return createFile(pdf.fileName(), pdf.data(), memberUUID);
+    }
 
     private FilesModel getFilesModelPNG(String fileName, byte[] data) {
         return FilesModel.builder().name(fileName).data(data).type(String.valueOf(MediaType.IMAGE_PNG)).size(data.length).build();
     }
 
     public FilesEntity createFile(String fileName, byte[] data, String memberUUID) {
-        FilesModel model = FilesModel.builder().name(fileName).belongToMemberUUID(memberUUID).data(data).type(String.valueOf(MediaType.APPLICATION_PDF)).size(data.length).build();
+        FilesModel model = FilesModel.builder()
+                .name(fileName)
+                .belongToMemberUUID(memberUUID)
+                .data(data)
+                .type(String.valueOf(MediaType.APPLICATION_PDF))
+                .date(LocalDate.now())
+                .time(LocalTime.now())
+                .size(data.length).build();
         return createFileEntity(model);
+    }
+    private FilesEntity createFileEntity(FilesModel filesModel) {
+        filesModel.setDate(LocalDate.now());
+        filesModel.setTime(LocalTime.now());
+        FilesEntity filesEntity = Mapping.map(filesModel);
+        LOG.info("{} Encja została zapisana", filesModel.getName().trim());
+        return filesRepository.save(filesEntity);
+
     }
 
 }

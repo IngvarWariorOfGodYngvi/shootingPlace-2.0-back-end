@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.pl;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 @RequiredArgsConstructor

@@ -6,6 +6,8 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
+import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,8 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
@@ -27,17 +28,13 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
     private final Environment environment;
 
 
-    public LokMembershipPdfGenerator(
-            ClubRepository clubRepository,
-            Environment environment
-    ) {
+    public LokMembershipPdfGenerator(ClubRepository clubRepository, Environment environment) {
         this.clubRepository = clubRepository;
         this.environment = environment;
     }
 
 
-    public PdfGenerationResults generate(MemberEntity member)
-            throws DocumentException, IOException {
+    public PdfGenerationResults generate(MemberEntity member) throws DocumentException, IOException {
 
         String fileName = "Deklaracja Członkowska LOK " + member.getFullName() + ".pdf";
 
@@ -51,9 +48,11 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
         int fs = 10;
         int ls = 11;
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
-        PdfWriter.getInstance(document, outputStream);
+        PdfWriter writer = PdfWriter.getInstance(document, baos);
+        writer.setPageEvent(new PageStamper(environment, true, false, PageStampMode.A4));
+
         document.open();
 
         Paragraph title = new Paragraph("     DEKLARACJA CZŁONKOWSKA", font(20, 1));
@@ -563,10 +562,7 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
 
         document.close();
 
-        return new PdfGenerationResults(
-                fileName,
-                outputStream.toByteArray()
-        );
+        return new PdfGenerationResults(fileName, baos.toByteArray());
     }
 }
 

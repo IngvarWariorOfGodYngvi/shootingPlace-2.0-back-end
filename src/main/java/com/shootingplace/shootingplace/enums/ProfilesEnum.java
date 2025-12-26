@@ -15,5 +15,12 @@ public enum ProfilesEnum {
     ProfilesEnum(String name) {
         this.name = name;
     }
-
+    public static ProfilesEnum fromName(String name) {
+        for (ProfilesEnum profile : values()) {
+            if (profile.name.equalsIgnoreCase(name)) {
+                return profile;
+            }
+        }
+        throw new IllegalArgumentException("Unknown profile: " + name);
+    }
 }

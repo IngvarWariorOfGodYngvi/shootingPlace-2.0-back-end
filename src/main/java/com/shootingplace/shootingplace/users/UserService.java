@@ -204,11 +204,11 @@ public class UserService {
             return ResponseEntity.badRequest().body("Żadne zawody nie są otwarte");
         }
         UserEntity user = userOpt.get();
-        if (user.getMember() != null && user.getMember().getMemberPermissions() != null && user.getMember().getMemberPermissions().getArbiterNumber() != null) {
-            return ResponseEntity.ok(user.getMember().getMemberPermissions().getArbiterNumber());
+        if (user.getMember() != null && user.getMember().getMemberPermissions() != null && user.getMember().getMemberPermissions().getArbiterStaticNumber() != null) {
+            return ResponseEntity.ok(user.getMember().getMemberPermissions().getArbiterStaticNumber());
         }
         if (user.getOtherID() != null) {
-            return otherPersonRepository.findById(user.getOtherID()).filter(op -> op.getPermissionsEntity() != null).filter(op -> op.getPermissionsEntity().getArbiterNumber() != null).map(op -> tournamentRepository.findByOpenIsTrue().getUuid()).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej"));
+            return otherPersonRepository.findById(user.getOtherID()).filter(op -> op.getPermissionsEntity() != null).filter(op -> op.getPermissionsEntity().getArbiterStaticNumber() != null).map(op -> tournamentRepository.findByOpenIsTrue().getUuid()).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej"));
         }
         return ResponseEntity.badRequest().body("użytkownik nie posiada licencji sędziowskiej");
     }

@@ -14,9 +14,9 @@ public class MemberPermissions {
 
     private String shootingLeaderNumber;
 
-    private String arbiterNumber;
+    private String arbiterStaticNumber;
 
-    private String arbiterClass;
-    private LocalDate arbiterPermissionValidThru;
+    private String arbiterStaticClass;
+    private LocalDate arbiterStaticPermissionValidThru;
 
 }

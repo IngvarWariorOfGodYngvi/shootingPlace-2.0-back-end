@@ -17,8 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.dateFormat;
-import static com.shootingplace.shootingplace.file.pdf.PdfUtils.font;
+import static com.shootingplace.shootingplace.file.utils.Utils.*;
 
 @Component
 public class MembersToErasedListPdfGenerator {
@@ -29,13 +28,9 @@ public class MembersToErasedListPdfGenerator {
         this.memberRepository = memberRepository;
     }
 
-    public PdfGenerationResults generate()
-            throws DocumentException, IOException {
+    public PdfGenerationResults generate() throws DocumentException, IOException {
 
-        String fileName =
-                "Lista osób do skreślenia na dzień " +
-                        LocalDate.now().format(dateFormat()) +
-                        ".pdf";
+        String fileName = "Lista osób do skreślenia na dzień " + LocalDate.now().format(dateFormat()) + ".pdf";
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4.rotate());
@@ -45,37 +40,12 @@ public class MembersToErasedListPdfGenerator {
         document.addTitle(fileName);
         document.addCreationDate();
 
-        document.add(new Paragraph(
-                "Lista osób do skreślenia na dzień " +
-                        LocalDate.now().format(dateFormat()),
-                font(14, 1)
-        ));
+        document.add(new Paragraph("Lista osób do skreślenia na dzień " + LocalDate.now().format(dateFormat()), font(14, 1)));
         document.add(new Paragraph("\n", font(14, 0)));
 
         LocalDate notValidDate = LocalDate.now().minusMonths(6);
 
-        List<MemberEntity> members =
-                memberRepository
-                        .findAllByErasedFalseAndActiveFalse()
-                        .stream()
-                        .filter(m ->
-                                m.getHistory().getContributionList().isEmpty()
-                                        || m.getHistory()
-                                        .getContributionList()
-                                        .getFirst()
-                                        .getValidThru()
-                                        .minusDays(1)
-                                        .isBefore(notValidDate)
-                        )
-                        .sorted(
-                                Comparator.comparing(
-                                        MemberEntity::getSecondName,
-                                        Collator.getInstance(
-                                                Locale.forLanguageTag("pl")
-                                        )
-                                )
-                        )
-                        .toList();
+        List<MemberEntity> members = memberRepository.findAllByErasedFalseAndActiveFalse().stream().filter(m -> m.getHistory().getContributionList().isEmpty() || m.getHistory().getContributionList().getFirst().getValidThru().minusDays(1).isBefore(notValidDate)).sorted(Comparator.comparing(MemberEntity::getSecondName, Collator.getInstance(Locale.forLanguageTag("pl")))).toList();
 
         float[] columnWidths = {4F, 42F, 14F, 14F, 14F, 14F};
 
@@ -102,28 +72,11 @@ public class MembersToErasedListPdfGenerator {
             row.addCell(cell(m.getSecondName() + " " + m.getFirstName()));
             row.addCell(cell(String.valueOf(m.getLegitimationNumber())));
 
-            row.addCell(cell(
-                    m.getLicense().getNumber() != null
-                            ? m.getLicense().getNumber()
-                            : ""
-            ));
+            row.addCell(cell(m.getLicense().getNumber() != null ? m.getLicense().getNumber() : ""));
 
-            row.addCell(cell(
-                    m.getLicense().getNumber() != null
-                            ? String.valueOf(m.getLicense().getValidThru())
-                            : ""
-            ));
+            row.addCell(cell(m.getLicense().getNumber() != null ? String.valueOf(m.getLicense().getValidThru()) : ""));
 
-            row.addCell(cell(
-                    !m.getHistory().getContributionList().isEmpty()
-                            ? String.valueOf(
-                            m.getHistory()
-                                    .getContributionList()
-                                    .getFirst()
-                                    .getValidThru()
-                    )
-                            : "BRAK SKŁADEK"
-            ));
+            row.addCell(cell(!m.getHistory().getContributionList().isEmpty() ? String.valueOf(m.getHistory().getContributionList().getFirst().getValidThru()) : "BRAK SKŁADEK"));
 
             document.add(row);
         }

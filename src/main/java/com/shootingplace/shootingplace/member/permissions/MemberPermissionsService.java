@@ -34,7 +34,7 @@ public class MemberPermissionsService {
                 .filter(f -> !f.isErased())
                 .filter(f -> f.getMemberPermissions().getInstructorNumber() != null)
                 .filter(f -> f.getMemberPermissions().getShootingLeaderNumber() != null)
-                .filter(f -> f.getMemberPermissions().getArbiterNumber() != null).toList();
+                .filter(f -> f.getMemberPermissions().getArbiterStaticNumber() != null).toList();
 //        Instruktor
         String instructor = "";
         if (memberPermissions.getInstructorNumber() != null) {
@@ -66,10 +66,10 @@ public class MemberPermissionsService {
         }
 //        Sędzia
         String arbiter = "";
-        if (memberPermissions.getArbiterNumber() != null) {
-            if (!memberPermissions.getArbiterNumber().isEmpty()) {
-                if (collect.stream().noneMatch(e -> e.getMemberPermissions().getArbiterNumber().equals(memberPermissions.getArbiterNumber()))) {
-                    memberPermissionsEntity.setArbiterNumber(memberPermissions.getArbiterNumber());
+        if (memberPermissions.getArbiterStaticNumber() != null) {
+            if (!memberPermissions.getArbiterStaticNumber().isEmpty()) {
+                if (collect.stream().noneMatch(e -> e.getMemberPermissions().getArbiterStaticNumber().equals(memberPermissions.getArbiterStaticNumber()))) {
+                    memberPermissionsEntity.setArbiterStaticNumber(memberPermissions.getArbiterStaticNumber());
                     LOG.info("Zmieniono numer sędziego");
                     arbiter = "sędziego";
                 } else {
@@ -79,25 +79,25 @@ public class MemberPermissionsService {
             }
             if (ordinal != null && !ordinal.isEmpty()) {
                 if (ordinal.equals("1")) {
-                    memberPermissionsEntity.setArbiterClass(ArbiterClass.CLASS_3.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_3.getName());
                 }
                 if (ordinal.equals("2")) {
-                    memberPermissionsEntity.setArbiterClass(ArbiterClass.CLASS_2.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_2.getName());
                 }
                 if (ordinal.equals("3")) {
-                    memberPermissionsEntity.setArbiterClass(ArbiterClass.CLASS_1.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_1.getName());
                 }
                 if (ordinal.equals("4")) {
-                    memberPermissionsEntity.setArbiterClass(ArbiterClass.CLASS_STATE.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_STATE.getName());
                 }
                 if (ordinal.equals("5")) {
-                    memberPermissionsEntity.setArbiterClass(ArbiterClass.CLASS_INTERNATIONAL.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_INTERNATIONAL.getName());
                 }
                 LOG.info("Klasa sędziego ustawiona na pole nr {}", ordinal);
             }
-            if (memberPermissions.getArbiterPermissionValidThru() != null) {
-                LocalDate date = LocalDate.of(memberPermissions.getArbiterPermissionValidThru().getYear(), 12, 31);
-                memberPermissionsEntity.setArbiterPermissionValidThru(date);
+            if (memberPermissions.getArbiterStaticPermissionValidThru() != null) {
+                LocalDate date = LocalDate.of(memberPermissions.getArbiterStaticPermissionValidThru().getYear(), 12, 31);
+                memberPermissionsEntity.setArbiterStaticPermissionValidThru(date);
                 LOG.info("Zmieniono datę ważności licencji sędziowskiej");
             }
         }
@@ -110,9 +110,9 @@ public class MemberPermissionsService {
     public ResponseEntity<?> updateMemberArbiterClass(String memberUUID) {
         MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         MemberPermissionsEntity memberPermissions = memberEntity.getMemberPermissions();
-        String arbiterClass = memberPermissions.getArbiterClass();
+        String arbiterClass = memberPermissions.getArbiterStaticClass();
 
-        if (memberPermissions.getArbiterNumber() == null || memberPermissions.getArbiterNumber().isEmpty()) {
+        if (memberPermissions.getArbiterStaticNumber() == null || memberPermissions.getArbiterStaticNumber().isEmpty()) {
             LOG.info("nie można zaktualizować");
             return ResponseEntity.badRequest().body("\"nie można zaktualizować\"");
         }
@@ -131,7 +131,7 @@ public class MemberPermissionsService {
         if (arbiterClass1.equals(ArbiterClass.CLASS_STATE)) {
             arbiterClass = ArbiterClass.CLASS_INTERNATIONAL.getName();
         }
-        memberPermissions.setArbiterClass(arbiterClass);
+        memberPermissions.setArbiterStaticClass(arbiterClass);
         memberPermissionsRepository.save(memberPermissions);
         return ResponseEntity.ok("\"Podniesiono klasę sędziego na " + arbiterClass + "\"");
 
@@ -142,9 +142,9 @@ public class MemberPermissionsService {
         return MemberPermissions.builder()
                 .instructorNumber(null)
                 .shootingLeaderNumber(null)
-                .arbiterClass(null)
-                .arbiterNumber(null)
-                .arbiterPermissionValidThru(null)
+                .arbiterStaticClass(null)
+                .arbiterStaticNumber(null)
+                .arbiterStaticPermissionValidThru(null)
                 .build();
     }
 
