@@ -3,10 +3,9 @@ package com.shootingplace.shootingplace.armory;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceRepository;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceRepository;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.RecordHistory;
-import com.shootingplace.shootingplace.security.UserAuthService;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.users.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -30,11 +29,8 @@ public class CaliberService {
     private final CalibersAddedRepository calibersAddedRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
     private final AmmoEvidenceRepository ammoEvidenceRepository;
-    private final ChangeHistoryService changeHistoryService;
-    private final UserAuthService userAuthService;
-
+    private final UserAuthContext userAuthContext;
     private final Logger LOG = LogManager.getLogger(getClass());
-
 
     public List<CaliberEntity> getCalibersEntityList() {
         List<CaliberEntity> caliberEntityList;
@@ -115,7 +111,12 @@ public class CaliberService {
     }
 
     @Transactional
-    public ResponseEntity<?> createNewCaliber(String caliber, String pinCode) {
+    @RecordHistory(action = "Caliber.create", entity = HistoryEntityType.CALIBER)
+    public ResponseEntity<?> createNewCaliber(String caliber) {
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
+        }
         String normalized = caliber.trim().toLowerCase();
         boolean exists = caliberRepository.findAll().stream().anyMatch(c -> c.getName().equals(normalized));
         if (exists) {
@@ -123,8 +124,6 @@ public class CaliberService {
         }
         CaliberEntity caliberEntity = CaliberEntity.builder().name(normalized).quantity(0).active(true).ammoAdded(null).ammoUsed(null).build();
         caliberRepository.save(caliberEntity);
-        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
-        changeHistoryService.record(user, "Caliber.create", caliberEntity.getUuid());
         LOG.info("Utworzono nowy kaliber {}", normalized);
         return ResponseEntity.ok("Utworzono nowy kaliber");
     }

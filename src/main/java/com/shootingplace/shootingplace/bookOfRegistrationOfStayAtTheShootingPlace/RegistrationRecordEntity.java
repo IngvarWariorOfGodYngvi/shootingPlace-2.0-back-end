@@ -2,15 +2,12 @@ package com.shootingplace.shootingplace.bookOfRegistrationOfStayAtTheShootingPla
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Getter @Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,51 +32,6 @@ public class RegistrationRecordEntity {
     private boolean dataProcessingAgreement;
     
     private String imageUUID;
-
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public void setDayIndex(int dayIndex) {
-        this.dayIndex = dayIndex;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setWeaponPermission(String weaponPermission) {
-        this.weaponPermission = weaponPermission;
-    }
-
-    public void setStatementOnReadingTheShootingPlaceRegulations(boolean statementOnReadingTheShootingPlaceRegulations) {
-        this.statementOnReadingTheShootingPlaceRegulations = statementOnReadingTheShootingPlaceRegulations;
-    }
-
-    public void setDataProcessingAgreement(boolean dataProcessingAgreement) {
-        this.dataProcessingAgreement = dataProcessingAgreement;
-    }
-
-    public void setImageUUID(String imageUUID) {
-        this.imageUUID = imageUUID;
-    }
-
-    public void setPeselOrID(String peselOrID) {
-        this.peselOrID = peselOrID;
-    }
 
     public String getNameOnRecord() {
         return this.secondName + " " + this.firstName;

@@ -17,12 +17,4 @@ public class PersonalStatistics {
     MemberAmmo ammo;
     int competitionHistoryCounter;
 
-    @Override
-    public String toString() {
-        return  "contributionCounter= " + contributionCounter +
-                "\n monthsFromFirstVisit= " + monthsFromFirstVisit +
-                "\n visitCounter= " + visitCounter +
-                "\n ammo= " + ammo +
-                "\n competitionHistoryCounter= " + competitionHistoryCounter;
-    }
 }

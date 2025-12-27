@@ -54,14 +54,14 @@ public class CompetitionController {
     @Transactional
     @PutMapping("/update")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> updateCompetition(@RequestParam String uuid, @RequestBody Competition competition, @RequestParam String pinCode) {
+    public ResponseEntity<?> updateCompetition(@RequestParam String uuid, @RequestBody Competition competition) {
         return competitionService.updateCompetition(uuid, competition);
     }
 
     @Transactional
     @DeleteMapping("/delete")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> deleteCompetition(@RequestParam String uuid, @RequestParam String pinCode) {
+    public ResponseEntity<?> deleteCompetition(@RequestParam String uuid) {
         return competitionService.deleteCompetition(uuid);
     }
 }

@@ -58,7 +58,7 @@ public class ClubController {
     @Transactional
     @DeleteMapping("/delete")
     @RequirePermissions(value = {UserSubType.MANAGEMENT})
-    public ResponseEntity<?> deleteClub(@RequestParam String id, String pinCode) {
+    public ResponseEntity<?> deleteClub(@RequestParam String id) {
         return clubService.deleteClub(Integer.parseInt(id));
     }
 }

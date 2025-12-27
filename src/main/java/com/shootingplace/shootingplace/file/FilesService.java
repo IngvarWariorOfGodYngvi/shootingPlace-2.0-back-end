@@ -1,6 +1,5 @@
 package com.shootingplace.shootingplace.file;
 
-import com.google.common.hash.Hashing;
 import com.lowagie.text.DocumentException;
 import com.shootingplace.shootingplace.address.Address;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceEntity;
@@ -20,8 +19,8 @@ import com.shootingplace.shootingplace.otherPerson.OtherPerson;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonService;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.users.UserEntity;
-import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import com.shootingplace.shootingplace.wrappers.ImageOtherPersonWrapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,7 +41,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -58,9 +56,9 @@ public class FilesService {
     private final OtherPersonRepository otherPersonRepository;
     private final GunRepository gunRepository;
     private final OtherPersonService otherPersonService;
-    private final UserRepository userRepository;
     private final Environment environment;
     private final Logger LOG = LogManager.getLogger(getClass());
+    private final UserAuthContext userAuthContext;
 
     private final LokMembershipPdfGenerator lokMembershipPdfGenerator;
     private final PersonalCardPdfGenerator personalCardPdfGenerator;
@@ -190,33 +188,31 @@ public class FilesService {
     }
 
     // podpis magazyniera - przyjmowanie amunicji na stan
-    public String storeImageAddedAmmo(String imageString, String pinCode) {
+    public String storeImageAddedAmmo(String imageString) {
         if (imageString == null || !imageString.contains(",")) {
             throw new IllegalArgumentException("Nieprawidłowy obraz");
         }
-        String base64Data = imageString.split(",")[1];
-        String hashedPin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity user = userRepository.findByPinCode(hashedPin).orElse(null);
+        UserEntity user = userAuthContext.get();
         if (user == null) {
-            throw new EntityNotFoundException("Nie znaleziono użytkownika");
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
-        String safeFileName = user.getFullName().replaceAll("\\s+", "_") + "_ammoAdded.png";
+        String base64Data = imageString.split(",")[1];
         byte[] imageBytes = Base64.getMimeDecoder().decode(base64Data);
+        String safeFileName = user.getFullName().replaceAll("\\s+", "_") + "_ammoAdded.png";
         FilesEntity fileEntity = createFileEntity(getFilesModelPNG(safeFileName, imageBytes));
         return fileEntity.getUuid();
     }
 
     // podpis magazyniera - wydawanie amunicji
-    public String storeImageUpkeepAmmo(String imageString, String pinCode) {
+    public String storeImageUpkeepAmmo(String imageString) {
         if (imageString == null || !imageString.contains(",")) {
             throw new IllegalArgumentException("Nieprawidłowy obraz");
         }
-        String base64Data = imageString.split(",")[1];
-        String hashedPin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity user = userRepository.findByPinCode(hashedPin).orElse(null);
+        UserEntity user = userAuthContext.get();
         if (user == null) {
-            throw new EntityNotFoundException("Nie znaleziono użytkownika");
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
+        String base64Data = imageString.split(",")[1];
         String safeFileName = user.getFullName().replaceAll("\\s+", "_") + "_upkeepAmmo.png";
         byte[] imageBytes = Base64.getMimeDecoder().decode(base64Data);
         FilesEntity fileEntity = createFileEntity(getFilesModelPNG(safeFileName, imageBytes));
@@ -224,16 +220,15 @@ public class FilesService {
     }
 
     // podpis magazyniera - wydawanie broni
-    public String storeImageIssuanceGun(String imageString, String pinCode) {
+    public String storeImageIssuanceGun(String imageString) {
         if (imageString == null || !imageString.contains(",")) {
             throw new IllegalArgumentException("Nieprawidłowy obraz");
         }
-        String base64Data = imageString.split(",")[1];
-        String hashedPin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity user = userRepository.findByPinCode(hashedPin).orElse(null);
+        UserEntity user = userAuthContext.get();
         if (user == null) {
-            throw new EntityNotFoundException("Nie znaleziono użytkownika");
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
+        String base64Data = imageString.split(",")[1];
         String safeFileName = user.getFullName().replaceAll("\\s+", "_") + "_IssuanceGun.png";
         byte[] imageBytes = Base64.getMimeDecoder().decode(base64Data);
         FilesEntity fileEntity = createFileEntity(getFilesModelPNG(safeFileName, imageBytes));
@@ -259,24 +254,27 @@ public class FilesService {
     }
 
     // podpis magazyniera - usuwanie broni
-    public String storeImageRemoveGun(String imageString, String takerName) {
+    public String storeImageRemoveGun(String imageString) {
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
+        }
         String s = imageString.split(",")[1];
-        String fileName = takerName + " RemoveGun.png";
+        String fileName = user.getFullName() + " RemoveGun.png";
         FilesEntity fileEntity = createFileEntity(getFilesModelPNG(fileName, Base64.getMimeDecoder().decode(s)));
         return fileEntity.getUuid();
     }
 
     // podpis magazyniera - wprowadzanie broni na stan
-    public String storeImageAddGun(String imageString, String pinCode) {
+    public String storeImageAddGun(String imageString) {
         if (imageString == null || !imageString.contains(",")) {
             throw new IllegalArgumentException("Nieprawidłowy obraz");
         }
-        String base64Data = imageString.split(",")[1];
-        String hashedPin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity user = userRepository.findByPinCode(hashedPin).orElse(null);
+        UserEntity user = userAuthContext.get();
         if (user == null) {
-            throw new EntityNotFoundException("Nie znaleziono użytkownika");
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
+        String base64Data = imageString.split(",")[1];
         String safeFileName = user.getFullName().replaceAll("\\s+", "_") + "_AddGun.png";
         byte[] imageBytes = Base64.getMimeDecoder().decode(base64Data);
         FilesEntity fileEntity = createFileEntity(getFilesModelPNG(safeFileName, imageBytes));
@@ -304,13 +302,6 @@ public class FilesService {
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
 
-    // karta członkowska guardians
-    public FilesEntity getGuardiansMembershipDeclaration(String memberUUID) throws Exception {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
-        PdfGenerationResults pdf = guardiansMembershipPdfGenerator.generate(member);
-        return createFile(pdf.fileName(), pdf.data(), memberUUID);
-    }
-
     // lista amunicyjna
     public FilesEntity createAmmunitionListDocument(String ammoEvidenceUUID) throws IOException, DocumentException {
         AmmoEvidenceEntity ammoEvidenceEntity = ammoEvidenceRepository.findById(ammoEvidenceUUID).orElseThrow(EntityNotFoundException::new);
@@ -335,10 +326,7 @@ public class FilesService {
     // wniosek o pozwolenie na broń
     public FilesEntity ApplicationForFirearmsLicense(String memberUUID, String thirdName, String birthPlace, String fatherName, String motherName, String motherMaidenName, String issuingAuthority, LocalDate parseIDDate, LocalDate parselicenseDate, String city) throws DocumentException, IOException {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
-        PdfGenerationResults pdf = applicationForFirearmsLicensePdfGenerator.generate(
-                member, thirdName, birthPlace, fatherName, motherName,
-                motherMaidenName, issuingAuthority, parseIDDate, parselicenseDate, city
-        );
+        PdfGenerationResults pdf = applicationForFirearmsLicensePdfGenerator.generate(member, thirdName, birthPlace, fatherName, motherName, motherMaidenName, issuingAuthority, parseIDDate, parselicenseDate, city);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
 
@@ -424,12 +412,8 @@ public class FilesService {
     // rejestr pobytu na strzelnicy - z zakresu dat
     public FilesEntity getEvidenceBookInChosenTime(LocalDate firstDate, LocalDate secondDate) throws IOException, DocumentException {
 
-        Map<String, byte[]> images = filesRepository.findAll().stream()
-                .collect(Collectors.toMap(
-                        FilesEntity::getUuid,
-                        FilesEntity::getData
-                ));
-        PdfGenerationResults pdf = evidenceBookByDatePdfGenerator.generate(firstDate, secondDate,images);
+        Map<String, byte[]> images = filesRepository.findAll().stream().collect(Collectors.toMap(FilesEntity::getUuid, FilesEntity::getData));
+        PdfGenerationResults pdf = evidenceBookByDatePdfGenerator.generate(firstDate, secondDate, images);
         return createFile(pdf.fileName(), pdf.data(), null);
     }
 
@@ -451,6 +435,7 @@ public class FilesService {
         PdfGenerationResults pdf = lokMembershipPdfGenerator.generate(member);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
+
     // Legitymacja klubowicza
     public FilesEntity getMemberLegitimationPdfGenerator(String memberUUID) throws DocumentException, IOException {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
@@ -463,16 +448,10 @@ public class FilesService {
     }
 
     public FilesEntity createFile(String fileName, byte[] data, String memberUUID) {
-        FilesModel model = FilesModel.builder()
-                .name(fileName)
-                .belongToMemberUUID(memberUUID)
-                .data(data)
-                .type(String.valueOf(MediaType.APPLICATION_PDF))
-                .date(LocalDate.now())
-                .time(LocalTime.now())
-                .size(data.length).build();
+        FilesModel model = FilesModel.builder().name(fileName).belongToMemberUUID(memberUUID).data(data).type(String.valueOf(MediaType.APPLICATION_PDF)).date(LocalDate.now()).time(LocalTime.now()).size(data.length).build();
         return createFileEntity(model);
     }
+
     private FilesEntity createFileEntity(FilesModel filesModel) {
         filesModel.setDate(LocalDate.now());
         filesModel.setTime(LocalTime.now());

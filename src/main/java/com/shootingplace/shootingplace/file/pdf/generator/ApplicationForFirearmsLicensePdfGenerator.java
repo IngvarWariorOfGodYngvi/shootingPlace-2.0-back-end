@@ -220,9 +220,9 @@ public class ApplicationForFirearmsLicensePdfGenerator {
     private String getDisciplinesFromShootingPatentOrLicense(ShootingPatentEntity patent, LicenseEntity license) {
         String pistol = null, rifle = null, shotgun = null;
         if (patent != null) {
-            pistol = patent.getPistolPermission() ? "pistolet" : "";
-            rifle = patent.getRiflePermission() ? "karabin" : "";
-            shotgun = patent.getShotgunPermission() ? "strzelba gładkolufowa" : "";
+            pistol = patent.isPistolPermission() ? "pistolet" : "";
+            rifle = patent.isRiflePermission() ? "karabin" : "";
+            shotgun = patent.isShotgunPermission() ? "strzelba gładkolufowa" : "";
         }
         if (license != null) {
             pistol = license.isPistolPermission() ? "pistolet" : "";

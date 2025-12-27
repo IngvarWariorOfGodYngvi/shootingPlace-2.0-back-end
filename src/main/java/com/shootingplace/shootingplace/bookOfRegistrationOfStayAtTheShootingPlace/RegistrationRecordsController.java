@@ -7,7 +7,6 @@ import com.shootingplace.shootingplace.wrappers.ImageOtherPersonWrapper;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +37,7 @@ public class RegistrationRecordsController {
     }
     @Transactional
     @PostMapping("/other")
-    public ResponseEntity<?> saveToEvidenceBookNonMember(@Nullable @RequestParam String phone, @NotNull @RequestBody ImageOtherPersonWrapper other, @RequestParam Boolean rememberMe) {
+    public ResponseEntity<?> saveToEvidenceBookNonMember(@NotNull @RequestBody ImageOtherPersonWrapper other, @RequestParam Boolean rememberMe) {
         // podpis
         String imageUUID = filesService.storeImageEvidenceBook(other,other.getImageString() );
         // tworzenie osoby spoza Klubu, bo wyrazi zgodę

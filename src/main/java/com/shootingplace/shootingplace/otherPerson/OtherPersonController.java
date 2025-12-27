@@ -1,6 +1,6 @@
 package com.shootingplace.shootingplace.otherPerson;
 
-import com.shootingplace.shootingplace.enums.ArbiterClass;
+import com.shootingplace.shootingplace.enums.ArbiterStaticClass;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.member.MemberInfo;
 import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
@@ -30,19 +30,19 @@ public class OtherPersonController {
         MemberPermissions memberPermissions = null;
         if (arbiterClass != null && !arbiterClass.isEmpty()) {
             if (arbiterClass.equals("1")) {
-                arbiterClass = (ArbiterClass.CLASS_3.getName());
+                arbiterClass = (ArbiterStaticClass.CLASS_3.getName());
             }
             if (arbiterClass.equals("2")) {
-                arbiterClass = (ArbiterClass.CLASS_2.getName());
+                arbiterClass = (ArbiterStaticClass.CLASS_2.getName());
             }
             if (arbiterClass.equals("3")) {
-                arbiterClass = (ArbiterClass.CLASS_1.getName());
+                arbiterClass = (ArbiterStaticClass.CLASS_1.getName());
             }
             if (arbiterClass.equals("4")) {
-                arbiterClass = (ArbiterClass.CLASS_STATE.getName());
+                arbiterClass = (ArbiterStaticClass.CLASS_STATE.getName());
             }
             if (arbiterClass.equals("5")) {
-                arbiterClass = (ArbiterClass.CLASS_INTERNATIONAL.getName());
+                arbiterClass = (ArbiterStaticClass.CLASS_INTERNATIONAL.getName());
             }
             LocalDate parse = null;
             if (!Objects.equals(arbiterPermissionValidThru, "")) {
@@ -86,7 +86,7 @@ public class OtherPersonController {
 
     @DeleteMapping ("/deactivatePerson")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> deactivatePerson(@RequestParam int id, @RequestParam String pinCode) {
+    public ResponseEntity<?> deactivatePerson(@RequestParam int id) {
             return otherPersonService.deactivatePerson(id);
     }
 

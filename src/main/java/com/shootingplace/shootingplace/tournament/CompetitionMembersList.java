@@ -179,25 +179,4 @@ public class CompetitionMembersList {
         }
         this.numberOfManyShotsList = value;
     }
-
-    @Override
-    public String toString() {
-        return "CompetitionMembersList{" +
-                "uuid='" + uuid + '\'' +
-                ", name='" + name + '\'' +
-                ", attachedToTournament='" + attachedToTournament + '\'' +
-                ", date=" + date +
-                ", disciplineList='" + disciplineList + '\'' +
-                ", numberOfShots=" + numberOfShots +
-                ", numberOfManyShotsList='" + numberOfManyShotsList + '\'' +
-                ", type='" + type + '\'' +
-                ", countingMethod='" + countingMethod + '\'' +
-                ", WZSS=" + WZSS +
-                ", ordering=" + ordering +
-                ", practiceShots=" + practiceShots +
-                ", caliberUUID='" + caliberUUID + '\'' +
-                ", scoreList=" + scoreList +
-                ", scoreListSize=" + scoreListSize +
-                '}';
-    }
 }

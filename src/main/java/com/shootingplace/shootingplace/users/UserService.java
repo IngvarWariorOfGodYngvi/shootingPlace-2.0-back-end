@@ -3,8 +3,10 @@ package com.shootingplace.shootingplace.users;
 import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
+import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryDTO;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryService;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.security.UserAuthService;
@@ -20,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -238,32 +243,14 @@ public class UserService {
         return Arrays.stream(UserSubType.values()).map(UserSubType::getName).filter(name -> !name.equals(UserSubType.ADMIN.getName())).collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> deleteUser(String userID, String code) throws NoUserPermissionException {
-        String pin = Hashing.sha256().hashString(code, StandardCharsets.UTF_8).toString();
-        UserEntity targetUser = userRepository.findById(userID).orElseThrow(NoUserPermissionException::new);
-        UserEntity authUser = userRepository.findByPinCode(pin).orElse(null);
-        if (authUser == null) {
-            throw new NoUserPermissionException();
-        }
-        if (authUser.getUserPermissionsList() == null || !authUser.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName())) {
-            throw new NoUserPermissionException();
-        }
+    @RecordHistory(action = "User.delete", entity = HistoryEntityType.USER, entityArgIndex = 0)
+    public ResponseEntity<?> deleteUser(String userID){
+        UserEntity targetUser = userRepository.findById(userID).orElseThrow(EntityNotFoundException::new);
         targetUser.setActive(false);
         userRepository.save(targetUser);
         LOG.info("Zmiana statusu na nieaktywny: {}", targetUser.getFullName());
         return ResponseEntity.ok("usunięto użytkownika " + targetUser.getFullName());
     }
 
-
-    public String permissionsByPin(String pinCode) {
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new);
-
-        Map<String, String> map = new HashMap<>();
-
-        map.put("Permissions", userEntity.getUserPermissionsList().toString());
-        map.put("Hash", pin);
-        return String.valueOf(map);
-    }
 
 }

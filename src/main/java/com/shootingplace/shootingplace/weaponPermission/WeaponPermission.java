@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WeaponPermission {
 
-
     private String number;
 
     private Boolean isExist;

@@ -1,20 +1,15 @@
 package com.shootingplace.shootingplace.settings;
 
-import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.club.Club;
 import com.shootingplace.shootingplace.club.ClubService;
 import com.shootingplace.shootingplace.configurations.UpdateService;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.security.RequirePermissions;
-import com.shootingplace.shootingplace.users.UserEntity;
-import com.shootingplace.shootingplace.users.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +21,6 @@ import java.util.Map;
 public class SettingsController {
 
     private final ClubService clubService;
-    private final UserRepository userRepository;
     private final ApplicationLicenseService applicationLicenseService;
     private final UpdateService updateService;
 
@@ -38,14 +32,9 @@ public class SettingsController {
 
     @Transactional
     @PostMapping("/changeMode")
-    public ResponseEntity<?> changeMode(@RequestParam String pinCode) {
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new);
-        if (userEntity.getUserPermissionsList().contains(UserSubType.ADMIN.getName()) || userEntity.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()) || userEntity.getUserPermissionsList().contains(UserSubType.CEO.getName())) {
-            return ResponseEntity.ok("Zmieniono tryb pracy");
-        }
-        return ResponseEntity.badRequest().body("Brak Uprawnień");
-
+    @RequirePermissions({UserSubType.MANAGEMENT, UserSubType.ADMIN, UserSubType.SUPER_USER})
+    public ResponseEntity<?> changeMode() {
+        return ResponseEntity.ok("Zmieniono tryb pracy");
     }
 
     @GetMapping("/termsAndLicense")
@@ -64,7 +53,7 @@ public class SettingsController {
 
     @PostMapping("/update")
     @RequirePermissions(value = {UserSubType.ADMIN, UserSubType.SUPER_USER, UserSubType.CEO})
-    public ResponseEntity<?> updateProgram(@RequestParam String pinCode) {
+    public ResponseEntity<?> updateProgram() {
         updateService.startUpdateAgent();
         return ResponseEntity.ok().build();
 

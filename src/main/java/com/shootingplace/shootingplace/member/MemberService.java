@@ -6,15 +6,14 @@ import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.contributions.ContributionService;
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.enums.ErasedType;
-import com.shootingplace.shootingplace.history.ChangeHistoryService;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.history.RecordHistory;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.license.LicenseRepository;
 import com.shootingplace.shootingplace.license.LicenseService;
 import com.shootingplace.shootingplace.member.permissions.MemberPermissionsService;
-import com.shootingplace.shootingplace.security.UserAuthService;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatentService;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.utils.Mapping;
@@ -50,8 +49,8 @@ public class MemberService {
     private final ErasedRepository erasedRepository;
     private final MemberGroupRepository memberGroupRepository;
     private final EmailService emailService;
-    private final ChangeHistoryService changeHistoryService;
-    private final UserAuthService userAuthService;
+    private final UserAuthContext userAuthContext;
+
     private static final Logger LOG = LogManager.getLogger(MemberService.class);
     private static final Collator PL_COLLATOR = Collator.getInstance(Locale.forLanguageTag("pl"));
 
@@ -85,9 +84,13 @@ public class MemberService {
 
 
     @Transactional
-    public ResponseEntity<?> addNewMember(Member member, Address address, boolean returningToClub, String pinCode) {
+    @RecordHistory(action = "Member.addNew", entity = HistoryEntityType.MEMBER)
+    public ResponseEntity<?> addNewMember(Member member, Address address, boolean returningToClub) {
 
-        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
+        }
 
         List<MemberEntity> allMembers = memberRepository.findAll();
 
@@ -149,10 +152,7 @@ public class MemberService {
         saved.setSignBy(user.getFullName());
         saved.setMemberEntityGroup(group);
         memberRepository.save(saved);
-
-        changeHistoryService.record(user, "Member.create", saved.getUuid());
-
-        historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), pinCode));
+        historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), user));
 
         emailService.sendRegistrationConfirmation(saved.getUuid());
 
@@ -469,11 +469,7 @@ public class MemberService {
     }
 
     @Transactional
-    @RecordHistory(
-            action = "Member.assignToGroup",
-            entity = HistoryEntityType.MEMBER,
-            entityArgIndex = 0
-    )
+    @RecordHistory(action = "Member.assignToGroup", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
     public ResponseEntity<?> assignMemberToGroup(String memberUUID, Long groupId) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElse(null);

@@ -1,7 +1,7 @@
 package com.shootingplace.shootingplace.club;
 
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.RecordHistory;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import jakarta.persistence.EntityNotFoundException;

@@ -13,6 +13,7 @@ import com.shootingplace.shootingplace.email.*;
 import com.shootingplace.shootingplace.file.FilesEntity;
 import com.shootingplace.shootingplace.file.FilesModel;
 import com.shootingplace.shootingplace.history.*;
+import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryEntity;
 import com.shootingplace.shootingplace.license.License;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.member.*;
@@ -29,7 +30,7 @@ import com.shootingplace.shootingplace.tournament.CompetitionMembersList;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
 import com.shootingplace.shootingplace.tournament.TournamentDTO;
 import com.shootingplace.shootingplace.tournament.TournamentEntity;
-import com.shootingplace.shootingplace.users.ChangeHistoryDTO;
+import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryDTO;
 import com.shootingplace.shootingplace.users.UserDTO;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.weaponPermission.WeaponPermission;
@@ -244,9 +245,9 @@ public class Mapping {
                 .map(e -> ShootingPatent.builder()
                         .patentNumber(e.getPatentNumber())
                         .dateOfPosting(e.getDateOfPosting())
-                        .pistolPermission(e.getPistolPermission())
-                        .riflePermission(e.getRiflePermission())
-                        .shotgunPermission(e.getShotgunPermission())
+                        .pistolPermission(e.isPistolPermission())
+                        .riflePermission(e.isRiflePermission())
+                        .shotgunPermission(e.isShotgunPermission())
                         .build()).orElse(null);
     }
 
@@ -267,7 +268,6 @@ public class Mapping {
     private static CompetitionHistory map(CompetitionHistoryEntity e) {
         CompetitionHistory build = CompetitionHistory.builder()
                 .date(e.getDate())
-                .discipline(e.getDiscipline())
                 .name(e.getName())
                 .build();
         build.setDisciplineList(e.getDisciplineList());
@@ -328,6 +328,9 @@ public class Mapping {
                 .arbiterStaticNumber(e.getArbiterStaticNumber())
                 .arbiterStaticClass(e.getArbiterStaticClass())
                 .arbiterStaticPermissionValidThru(e.getArbiterStaticPermissionValidThru())
+                .arbiterDynamicClass(e.getArbiterDynamicClass())
+                .arbiterDynamicNumber(e.getArbiterDynamicNumber())
+                .arbiterDynamicPermissionValidThru(e.getArbiterDynamicPermissionValidThru())
                 .shootingLeaderNumber(e.getShootingLeaderNumber())
                 .build()).orElse(null);
     }

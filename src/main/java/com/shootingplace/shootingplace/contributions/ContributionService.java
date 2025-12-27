@@ -1,16 +1,15 @@
 package com.shootingplace.shootingplace.contributions;
 
 
-import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.history.RecordHistory;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.strategies.ContributionStrategy;
 import com.shootingplace.shootingplace.strategies.ProfileContext;
-import com.shootingplace.shootingplace.users.UserRepository;
+import com.shootingplace.shootingplace.users.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,7 +27,6 @@ public class ContributionService {
     private final ContributionRepository contributionRepository;
     private final MemberRepository memberRepository;
     private final HistoryService historyService;
-    private final UserRepository userRepository;
 
     private final EmailService emailService;
 
@@ -64,22 +61,21 @@ public class ContributionService {
     }
 
 
-    public ContributionEntity addFirstContribution(LocalDate contributionPaymentDay, String pinCode) {
-        ContributionEntity contributionEntity = getContributionEntity(contributionPaymentDay, pinCode);
+    public ContributionEntity addFirstContribution(LocalDate contributionPaymentDay, UserEntity user) {
+        ContributionEntity contributionEntity = getContributionEntity(contributionPaymentDay, user);
         LOG.info("utworzono pierwszą składkę");
         return contributionRepository.save(contributionEntity);
     }
 
-    private ContributionEntity getContributionEntity(LocalDate contributionPaymentDay, String pinCode) {
+    private ContributionEntity getContributionEntity(LocalDate contributionPaymentDay, UserEntity user) {
 
         ContributionStrategy strategy = profileContext.getContributionStrategy();
         LocalDate validThru = strategy.calculateFirstValidThru(contributionPaymentDay);
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        return ContributionEntity.builder().paymentDay(contributionPaymentDay).validThru(validThru).acceptedBy(userRepository.findByPinCode(pin).orElseThrow(EntityNotFoundException::new).getFullName()).build();
+        return ContributionEntity.builder().paymentDay(contributionPaymentDay).validThru(validThru).acceptedBy(user.getFullName()).build();
     }
 
     @RecordHistory(action = "Contribution.remove", entity = HistoryEntityType.CONTRIBUTION, entityArgIndex = 1)
-    public ResponseEntity<?> removeContribution(String memberUUID, String contributionUUID, String pinCode) {
+    public ResponseEntity<?> removeContribution(String memberUUID, String contributionUUID) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
 

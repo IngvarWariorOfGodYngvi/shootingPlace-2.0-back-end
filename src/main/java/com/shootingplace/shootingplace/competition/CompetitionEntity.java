@@ -111,15 +111,6 @@ public class CompetitionEntity {
         this.name = name;
     }
 
-//    public String getDiscipline() {
-//        return discipline;
-//    }
-//
-//    public void setDiscipline(String discipline) {
-//        this.discipline = discipline;
-//    }
-
-
     public String getType() {
         return type;
     }
@@ -144,22 +135,6 @@ public class CompetitionEntity {
         this.ordering = ordering;
     }
 
-//    public String[] getDisciplines() {
-//        return disciplines;
-//    }
-//
-//    public void setDisciplines(String[] disciplines) {
-//        this.disciplines = disciplines;
-//    }
-//
-//    public Integer[] getNumberOfManyShots() {
-//        return numberOfManyShots;
-//    }
-//
-//    public void setNumberOfManyShots(Integer[] numberOfManyShots) {
-//        this.numberOfManyShots = numberOfManyShots;
-//    }
-
     public String getAbbreviation() {
         return abbreviation;
     }
@@ -168,20 +143,4 @@ public class CompetitionEntity {
         this.abbreviation = abbreviation;
     }
 
-    @Override
-    public String toString() {
-        return "CompetitionEntity{" +
-                "uuid='" + uuid + '\'' +
-                ", name='" + name + '\'' +
-                ", abbreviation='" + abbreviation + '\'' +
-                ", numberOfShots=" + numberOfShots +
-                ", disciplineList='" + disciplineList + '\'' +
-                ", numberOfManyShotsList='" + numberOfManyShotsList + '\'' +
-                ", type='" + type + '\'' +
-                ", countingMethod='" + countingMethod + '\'' +
-                ", ordering=" + ordering +
-                ", practiceShots=" + practiceShots +
-                ", caliberUUID='" + caliberUUID + '\'' +
-                '}';
-    }
 }

@@ -93,13 +93,13 @@ public class EmailController {
     @Transactional
     @PutMapping
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.ADMIN, UserSubType.SUPER_USER})
-    public ResponseEntity<?> saveConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode) {
+    public ResponseEntity<?> saveConnection(@RequestBody EmailConfig emailConfig) {
         return emailService.saveConnection(emailConfig);
     }
 
     @PutMapping("/edit")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.ADMIN, UserSubType.SUPER_USER})
-    public ResponseEntity<?> editConnection(@RequestBody EmailConfig emailConfig, @RequestParam String pinCode, @RequestParam String uuid) {
+    public ResponseEntity<?> editConnection(@RequestBody EmailConfig emailConfig, @RequestParam String uuid) {
         return emailService.editConnection(emailConfig, uuid);
     }
 

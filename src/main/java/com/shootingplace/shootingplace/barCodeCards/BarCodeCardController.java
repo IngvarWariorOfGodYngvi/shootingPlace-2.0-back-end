@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.barCodeCards;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.security.RequirePermissions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +20,13 @@ public class BarCodeCardController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addNewCardToPerson(@RequestParam String barCode, @RequestParam String uuid, @RequestParam String pinCode) throws NoUserPermissionException {
-        return barCodeCardService.createNewCard(barCode, uuid, pinCode);
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER,UserSubType.ADMIN, UserSubType.SUPER_USER})
+    public ResponseEntity<?> addNewCardToPerson(@RequestParam String barCode, @RequestParam String uuid) {
+        return barCodeCardService.createNewCard(barCode, uuid);
     }
     @PutMapping("/")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.SUPER_USER})
-    public ResponseEntity<?> deactivateCard(@RequestParam String barCode, @RequestParam String pinCode) {
+    public ResponseEntity<?> deactivateCard(@RequestParam String barCode) {
             return barCodeCardService.deactivateCard(barCode);
     }
 

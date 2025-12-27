@@ -17,14 +17,4 @@ public class MemberAmmo {
     private Integer legitimationNumber;
     private List<Caliber> caliber;
 
-    @Override
-    public String toString() {
-        return "MemberAmmo{" +
-                "uuid='" + uuid + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", legitimationNumber=" + legitimationNumber +
-                ", caliber=" + caliber +
-                '}';
-    }
 }

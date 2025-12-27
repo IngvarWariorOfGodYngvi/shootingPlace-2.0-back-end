@@ -20,14 +20,14 @@ public class ContributionController {
     @Transactional
     @PatchMapping("/{memberUUID}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> addContribution(@PathVariable String memberUUID, @RequestParam String pinCode, @RequestParam Integer contributionCount) {
+    public ResponseEntity<?> addContribution(@PathVariable String memberUUID, @RequestParam Integer contributionCount) {
         return contributionService.addContribution(memberUUID, LocalDate.now(), contributionCount);
     }
 
     @Transactional
     @PutMapping("/edit")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> editContribution(@RequestParam String memberUUID, @RequestParam String contributionUUID, @RequestParam String paymentDay, @RequestParam String validThru, @RequestParam String pinCode) {
+    public ResponseEntity<?> editContribution(@RequestParam String memberUUID, @RequestParam String contributionUUID, @RequestParam String paymentDay, @RequestParam String validThru) {
         LocalDate parsedPaymentDay = null;
         if (paymentDay != null && !paymentDay.isEmpty() && !paymentDay.equals("null")) {
             parsedPaymentDay = LocalDate.parse(paymentDay);
@@ -42,7 +42,7 @@ public class ContributionController {
     @Transactional
     @PatchMapping("/remove/{memberUUID}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> removeContribution(@PathVariable String memberUUID, @RequestParam String contributionUUID, @RequestParam String pinCode) {
-        return contributionService.removeContribution(memberUUID, contributionUUID, pinCode);
+    public ResponseEntity<?> removeContribution(@PathVariable String memberUUID, @RequestParam String contributionUUID) {
+        return contributionService.removeContribution(memberUUID, contributionUUID);
     }
 }

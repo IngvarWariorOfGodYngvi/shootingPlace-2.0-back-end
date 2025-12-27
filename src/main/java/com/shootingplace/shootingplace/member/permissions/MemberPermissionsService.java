@@ -1,6 +1,6 @@
 package com.shootingplace.shootingplace.member.permissions;
 
-import com.shootingplace.shootingplace.enums.ArbiterClass;
+import com.shootingplace.shootingplace.enums.ArbiterStaticClass;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -79,19 +79,19 @@ public class MemberPermissionsService {
             }
             if (ordinal != null && !ordinal.isEmpty()) {
                 if (ordinal.equals("1")) {
-                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_3.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterStaticClass.CLASS_3.getName());
                 }
                 if (ordinal.equals("2")) {
-                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_2.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterStaticClass.CLASS_2.getName());
                 }
                 if (ordinal.equals("3")) {
-                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_1.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterStaticClass.CLASS_1.getName());
                 }
                 if (ordinal.equals("4")) {
-                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_STATE.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterStaticClass.CLASS_STATE.getName());
                 }
                 if (ordinal.equals("5")) {
-                    memberPermissionsEntity.setArbiterStaticClass(ArbiterClass.CLASS_INTERNATIONAL.getName());
+                    memberPermissionsEntity.setArbiterStaticClass(ArbiterStaticClass.CLASS_INTERNATIONAL.getName());
                 }
                 LOG.info("Klasa sędziego ustawiona na pole nr {}", ordinal);
             }
@@ -118,18 +118,18 @@ public class MemberPermissionsService {
         }
 
         String finalArbiterClass = arbiterClass;
-        ArbiterClass arbiterClass1 = Arrays.stream(ArbiterClass.values()).filter(f -> f.getName().equals(finalArbiterClass)).findFirst().orElseThrow(EntityNotFoundException::new);
-        if (arbiterClass1.equals(ArbiterClass.CLASS_3)) {
-            arbiterClass = ArbiterClass.CLASS_2.getName();
+        ArbiterStaticClass arbiterStaticClass1 = Arrays.stream(ArbiterStaticClass.values()).filter(f -> f.getName().equals(finalArbiterClass)).findFirst().orElseThrow(EntityNotFoundException::new);
+        if (arbiterStaticClass1.equals(ArbiterStaticClass.CLASS_3)) {
+            arbiterClass = ArbiterStaticClass.CLASS_2.getName();
         }
-        if (arbiterClass1.equals(ArbiterClass.CLASS_2)) {
-            arbiterClass = ArbiterClass.CLASS_1.getName();
+        if (arbiterStaticClass1.equals(ArbiterStaticClass.CLASS_2)) {
+            arbiterClass = ArbiterStaticClass.CLASS_1.getName();
         }
-        if (arbiterClass1.equals(ArbiterClass.CLASS_1)) {
-            arbiterClass = ArbiterClass.CLASS_STATE.getName();
+        if (arbiterStaticClass1.equals(ArbiterStaticClass.CLASS_1)) {
+            arbiterClass = ArbiterStaticClass.CLASS_STATE.getName();
         }
-        if (arbiterClass1.equals(ArbiterClass.CLASS_STATE)) {
-            arbiterClass = ArbiterClass.CLASS_INTERNATIONAL.getName();
+        if (arbiterStaticClass1.equals(ArbiterStaticClass.CLASS_STATE)) {
+            arbiterClass = ArbiterStaticClass.CLASS_INTERNATIONAL.getName();
         }
         memberPermissions.setArbiterStaticClass(arbiterClass);
         memberPermissionsRepository.save(memberPermissions);
@@ -149,6 +149,6 @@ public class MemberPermissionsService {
     }
 
     public List<String> getArbiterClasses() {
-        return Arrays.stream(ArbiterClass.values()).map(ArbiterClass::getName).collect(Collectors.toList());
+        return Arrays.stream(ArbiterStaticClass.values()).map(ArbiterStaticClass::getName).collect(Collectors.toList());
     }
 }

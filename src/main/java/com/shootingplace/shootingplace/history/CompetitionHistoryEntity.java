@@ -25,10 +25,6 @@ public class CompetitionHistoryEntity {
 
     private String attachedToList;
 
-    private String discipline;
-
-    private String[] disciplines;
-
     private String disciplineList;
 
     private LocalDate date;
@@ -55,13 +51,6 @@ public class CompetitionHistoryEntity {
         this.attachedToList = attachedToList;
     }
 
-    public String getDiscipline() {
-        return discipline;
-    }
-
-    public void setDiscipline(String discipline) {
-        this.discipline = discipline;
-    }
     public List<String> getDisciplineList() {
         List<String> vals = new ArrayList<>();
         if (disciplineList != null) {
@@ -94,11 +83,4 @@ public class CompetitionHistoryEntity {
         this.WZSS = WZSS;
     }
 
-    public String[] getDisciplines() {
-        return disciplines;
-    }
-
-    public void setDisciplines(String[] disciplines) {
-        this.disciplines = disciplines;
-    }
 }

@@ -1,20 +1,20 @@
 package com.shootingplace.shootingplace.armory;
 
-import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceRepository;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoInEvidenceRepository;
 import com.shootingplace.shootingplace.armory.gunRepresentation.GunRepresentationRepository;
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.file.FilesRepository;
-import com.shootingplace.shootingplace.history.*;
+import com.shootingplace.shootingplace.history.HistoryEntityType;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.history.UsedHistoryEntity;
+import com.shootingplace.shootingplace.history.UsedHistoryRepository;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.security.UserAuthService;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.users.UserEntity;
-import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -46,11 +45,9 @@ public class ArmoryService {
     private final GunStoreRepository gunStoreRepository;
     private final FilesRepository filesRepository;
     private final UsedHistoryRepository usedHistoryRepository;
-    private final UserRepository userRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
     private final MemberRepository memberRepository;
-    private final UserAuthService userAuthService;
-
+    private final UserAuthContext userAuthContext;
     private final Logger LOG = LogManager.getLogger();
     private final GunUsedRepository gunUsedRepository;
     private final GunRepresentationRepository gunRepresentationRepository;
@@ -76,23 +73,16 @@ public class ArmoryService {
 
     @Transactional
     @RecordHistory(action = "AMMO.updateAmmo", entity = HistoryEntityType.AMMO, entityArgIndex = 0)
-    public ResponseEntity<?> updateAmmo(String caliberUUID, Integer count, LocalDate date, LocalTime time, String description, String imageUUID, String pinCode) {
-
-        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
-        CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new);
-
-        if (caliber.getQuantity() == null) {
-            caliber.setQuantity(0);
+    public ResponseEntity<?> updateAmmo(String caliberUUID, Integer count, LocalDate date, LocalTime time, String description, String imageUUID) {
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
-
+        CaliberEntity caliber = caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new);
         int currentAmmo = caliberService.getCaliberAmmoInStore(caliberUUID);
-
         CalibersAddedEntity added = CalibersAddedEntity.builder().addedBy(user.getFullName()).imageUUID(imageUUID).ammoAdded(count).belongTo(caliberUUID).caliberName(caliber.getName()).date(date).time(time).description(description).stateForAddedDay(currentAmmo).finalStateForAddedDay(currentAmmo + count).build();
         calibersAddedRepository.save(added);
-        if (caliber.getAmmoAdded() != null) {
-            caliber.getAmmoAdded().add(added);
-        }
-        caliber.setQuantity(caliber.getQuantity() + count);
+        caliber.setQuantity((caliber.getQuantity() == null ? 0 : caliber.getQuantity()) + count);
         caliberRepository.save(caliber);
         LOG.info("Dodano {} szt. amunicji do kalibru {} przez {}", count, caliber.getName(), user.getFullName());
         return ResponseEntity.ok("Dodano amunicję do kalibru " + caliber.getName());
@@ -114,12 +104,11 @@ public class ArmoryService {
         return caliberRepository.findById(caliberUUID).orElseThrow(EntityNotFoundException::new).getAmmoAdded().stream().sorted(Comparator.comparing(CalibersAddedEntity::getDate)).collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> addGunEntity(AddGunImageWrapper addGunImageWrapper, String imageUUID, String pinCode) {
+    public ResponseEntity<?> addGunEntity(AddGunImageWrapper addGunImageWrapper, String imageUUID) {
         Gun gun = addGunImageWrapper.getGun();
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
+        UserEntity user = userAuthContext.get();
         if (user == null) {
-            return ResponseEntity.badRequest().body("Nieprawidłowy PIN");
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
         if (isBlank(gun.getModelName()) || isBlank(gun.getCaliber()) || isBlank(gun.getGunType()) || isBlank(gun.getSerialNumber())) {
 
@@ -252,10 +241,13 @@ public class ArmoryService {
 
     @Transactional
     @RecordHistory(action = "Gun.remove", entity = HistoryEntityType.GUN, entityArgIndex = 0)
-    public ResponseEntity<?> removeGun(String gunUUID, String basisOfRemoved, String pinCode, String imageUUID) {
+    public ResponseEntity<?> removeGun(String gunUUID, String basisOfRemoved, String imageUUID) {
 
         GunEntity gun = gunRepository.findById(gunUUID).orElseThrow(() -> new EntityNotFoundException("Nie ma takiej broni"));
-        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
+        }
         gun.setInStock(false);
         gun.setBasisOfRemoved(basisOfRemoved);
         gun.setRemovedBy(user.getFullName());
@@ -384,11 +376,13 @@ public class ArmoryService {
 
     @Transactional
     @RecordHistory(action = "AmmoEvidence.signUpkeep", entity = HistoryEntityType.AMMO_IN_EVIDENCE, entityArgIndex = 0)
-    public ResponseEntity<?> signUpkeepAmmo(String ammoInEvidenceUUID, String imageUUID, String pinCode) {
+    public ResponseEntity<?> signUpkeepAmmo(String ammoInEvidenceUUID, String imageUUID) {
 
         AmmoInEvidenceEntity entry = ammoInEvidenceRepository.findById(ammoInEvidenceUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono wpisu amunicji"));
-        UserEntity user = userAuthService.getAuthenticatedUser(pinCode);
-
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
+        }
         if (entry.isLocked()) {
             return ResponseEntity.badRequest().body("Już zatwierdzono");
         }
@@ -414,11 +408,6 @@ public class ArmoryService {
         LOG.info("Podpisano i zablokowano wpis amunicji {} przez {}", entry.getUuid(), user.getFullName());
 
         return ResponseEntity.ok("Zablokowano listę z kalibrem " + entry.getCaliberName());
-    }
-
-
-    private String getHash(String pinCode) {
-        return Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
     }
 
 
@@ -467,12 +456,11 @@ public class ArmoryService {
     }
 
 
-    public ResponseEntity<?> signIssuanceGun(String gunUsedUUID, String imageUUID, LocalDate date, LocalTime time, String pinCode) throws NoUserPermissionException {
+    public ResponseEntity<?> signIssuanceGun(String gunUsedUUID, String imageUUID, LocalDate date, LocalTime time) {
         GunUsedEntity used = gunUsedRepository.findById(gunUsedUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono wpisu wydania broni"));
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
+        UserEntity user = userAuthContext.get();
         if (user == null) {
-            throw new NoUserPermissionException();
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
         if (user.getUserPermissionsList() == null || !user.getUserPermissionsList().contains(UserSubType.WEAPONS_WAREHOUSEMAN.getName())) {
             filesRepository.deleteById(imageUUID);
@@ -512,13 +500,11 @@ public class ArmoryService {
         return ResponseEntity.ok("podpisano zdanie broni: " + gun.getModelName() + " " + gun.getSerialNumber());
     }
 
-
-    public ResponseEntity<?> signAcceptanceGun(String gunUsedUUID, String imageUUID, LocalDate date, LocalTime time, String pinCode) throws NoUserPermissionException {
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
-        if (user == null || user.getUserPermissionsList() == null || !user.getUserPermissionsList().contains(UserSubType.WEAPONS_WAREHOUSEMAN.getName())) {
-            filesRepository.deleteById(imageUUID);
-            throw new NoUserPermissionException();
+    @Transactional
+    public ResponseEntity<?> signAcceptanceGun(String gunUsedUUID, String imageUUID, LocalDate date, LocalTime time) {
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
         GunUsedEntity used = gunUsedRepository.findById(gunUsedUUID).orElseThrow(EntityNotFoundException::new);
         GunEntity gun = gunRepository.findById(used.getGunUUID()).orElseThrow(EntityNotFoundException::new);
@@ -540,13 +526,11 @@ public class ArmoryService {
         return ResponseEntity.ok(dto);
     }
 
-
-    public ResponseEntity<?> addGunSign(String gunUUID, String imageUUID, String pinCode) throws NoUserPermissionException {
-        String code = getHash(pinCode);
-        UserEntity user = userRepository.findByPinCode(code).orElse(null);
-        if (user == null || user.getUserPermissionsList() == null || !user.getUserPermissionsList().contains(UserSubType.WEAPONS_WAREHOUSEMAN.getName())) {
-            filesRepository.deleteById(imageUUID);
-            throw new NoUserPermissionException();
+    @Transactional
+    public ResponseEntity<?> addGunSign(String gunUUID, String imageUUID) {
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
         GunEntity gun = gunRepository.findById(gunUUID).orElseThrow(EntityNotFoundException::new);
         gun.setAddedSign(imageUUID);

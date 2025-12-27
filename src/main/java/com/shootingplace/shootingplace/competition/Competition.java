@@ -81,14 +81,6 @@ public class Competition {
     public void setName(String name) {
         this.name = name;
     }
-//
-//    public String getDiscipline() {
-//        return discipline;
-//    }
-//
-//    public void setDiscipline(String discipline) {
-//        this.discipline = discipline;
-//    }
 
     public Integer getNumberOfShots() {
         return numberOfShots;
@@ -113,22 +105,6 @@ public class Competition {
     public void setOrdering(Integer ordering) {
         this.ordering = ordering;
     }
-
-//    public String[] getDisciplines() {
-//        return disciplines;
-//    }
-//
-//    public void setDisciplines(String[] disciplines) {
-//        this.disciplines = disciplines;
-//    }
-//
-//    public Integer[] getNumberOfManyShots() {
-//        return numberOfManyShots;
-//    }
-//
-//    public void setNumberOfManyShots(Integer[] numberOfManyShots) {
-//        this.numberOfManyShots = numberOfManyShots;
-//    }
 
     public String getAbbreviation() {
         return abbreviation;

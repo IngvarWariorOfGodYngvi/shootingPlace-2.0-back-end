@@ -274,12 +274,12 @@ public class WorkingTimeEvidenceService {
             return ResponseEntity.badRequest().body("Lista jest pusta - wybierz elementy do zmiany");
         }
 
-            List<WorkingTimeEvidenceEntity> list = new ArrayList<>();
-            uuidList.forEach(e -> list.add(workRepo.findById(e).orElseThrow(EntityNotFoundException::new)));
-            list.forEach(e -> e.setAccepted(true));
+        List<WorkingTimeEvidenceEntity> list = new ArrayList<>();
+        uuidList.forEach(e -> list.add(workRepo.findById(e).orElseThrow(EntityNotFoundException::new)));
+        list.forEach(e -> e.setAccepted(true));
 
-            list.forEach(workRepo::save);
-            return ResponseEntity.ok("Zatwierdzono czas pracy");
+        workRepo.saveAll(list);
+        return ResponseEntity.ok("Zatwierdzono czas pracy");
     }
 
     public ResponseEntity<String> inputChangesToWorkTime(List<WorkingTimeEvidenceDTO> list) {
@@ -345,10 +345,6 @@ public class WorkingTimeEvidenceService {
 
 
         return ResponseEntity.ok(list);
-    }
-
-    public boolean isInWork(UserEntity userEntity) {
-        return workRepo.findAll().stream().filter(f -> !f.isClose()).anyMatch(e -> e.getUser().equals(userEntity));
     }
 
     public ResponseEntity<?> getAllWorkingYear() {

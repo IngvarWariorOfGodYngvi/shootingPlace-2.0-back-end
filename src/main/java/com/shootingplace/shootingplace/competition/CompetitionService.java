@@ -4,7 +4,7 @@ import com.shootingplace.shootingplace.enums.CompetitionType;
 import com.shootingplace.shootingplace.enums.CountingMethod;
 import com.shootingplace.shootingplace.enums.Discipline;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.RecordHistory;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -32,57 +32,6 @@ public class CompetitionService {
         return competitionRepository.findAll().stream().sorted(Comparator.comparing(CompetitionEntity::getOrdering)).collect(Collectors.toList());
     }
 
-//    private void createCompetitions() {
-//
-//        competitionRepository.save(CompetitionEntity.builder()
-//                .uuid(UUID.randomUUID().toString())
-//                .name("25m Pistolet sportowy 10 strzałów OPEN")
-//                .numberOfShots(10)
-//                .type(CompetitionType.OPEN.getName())
-//                .discipline(Discipline.PISTOL.getName())
-//                .countingMethod(CountingMethod.NORMAL.getName())
-//                .ordering(3)
-//                .build());
-//
-//        competitionRepository.save(CompetitionEntity.builder()
-//                .uuid(UUID.randomUUID().toString())
-//                .name("25m Pistolet centralnego zapłonu 10 strzałów OPEN")
-//                .numberOfShots(10)
-//                .type(CompetitionType.OPEN.getName())
-
-    /// /                .discipline(Discipline.PISTOL.getName())
-//                .countingMethod(CountingMethod.NORMAL.getName())
-//                .ordering(4)
-//                .build());
-//        competitionRepository.save(CompetitionEntity.builder()
-//                .uuid(UUID.randomUUID().toString())
-//                .name("10m Pistolet pneumatyczny 10 strzałów OPEN")
-//                .numberOfShots(10)
-//                .type(CompetitionType.OPEN.getName())
-//                .discipline(Discipline.PISTOL.getName())
-//                .countingMethod(CountingMethod.NORMAL.getName())
-//                .ordering(2)
-//                .build());
-//        competitionRepository.save(CompetitionEntity.builder()
-//                .uuid(UUID.randomUUID().toString())
-//                .name("50m Pistolet dowolny 10 strzałów OPEN")
-//                .numberOfShots(10)
-//                .type(CompetitionType.OPEN.getName())
-//                .discipline(Discipline.PISTOL.getName())
-//                .countingMethod(CountingMethod.NORMAL.getName())
-//                .ordering(5)
-//                .build());
-//        competitionRepository.save(CompetitionEntity.builder()
-//                .uuid(UUID.randomUUID().toString())
-//                .name("10m Karabin pneumatyczny 10 strzałów OPEN")
-//                .numberOfShots(10)
-//                .type(CompetitionType.OPEN.getName())
-//                .discipline(Discipline.RIFLE.getName())
-//                .countingMethod(CountingMethod.NORMAL.getName())
-//                .ordering(1)
-//                .build());
-//        LOG.info("Stworzono encje konkurencji");
-//    }
     public ResponseEntity<?> createNewCompetition(Competition competition) {
         List<String> list = competitionRepository.findAll().stream().map(CompetitionEntity::getName).toList();
         int size = competitionRepository.findAll().stream().max(Comparator.comparing(CompetitionEntity::getOrdering)).get().getOrdering() + 1;

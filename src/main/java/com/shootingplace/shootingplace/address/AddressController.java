@@ -18,7 +18,7 @@ public class AddressController {
     @Transactional
     @PutMapping("/{memberUUID}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> updateMemberAddress(@PathVariable String memberUUID, @RequestBody Address address, @RequestParam String pinCode) {
+    public ResponseEntity<?> updateMemberAddress(@PathVariable String memberUUID, @RequestBody Address address) {
             return addressService.updateAddress(memberUUID, address);
     }
 }

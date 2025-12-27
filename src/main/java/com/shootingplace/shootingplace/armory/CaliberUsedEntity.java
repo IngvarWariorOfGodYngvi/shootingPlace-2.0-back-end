@@ -2,16 +2,14 @@ package com.shootingplace.shootingplace.armory;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,23 +27,4 @@ public class CaliberUsedEntity {
     private Integer ammoUsed;
     private float unitPrice;
 
-    public void setBelongTo(String belongTo) {
-        this.belongTo = belongTo;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public void setTime(LocalTime time) {
-        this.time = time;
-    }
-
-    public void setUnitPrice(float unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public void setAmmoUsed(Integer ammoUsed) {
-        this.ammoUsed = ammoUsed;
-    }
 }

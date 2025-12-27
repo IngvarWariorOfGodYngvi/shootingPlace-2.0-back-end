@@ -10,8 +10,6 @@ import java.util.List;
 public interface LicensePaymentHistoryRepository extends JpaRepository<LicensePaymentHistoryEntity, String> {
     @Query(nativeQuery = true,value = "select * from shootingplace.license_payment_history_entity where is_pay_inpzssportal = false")
     List<LicensePaymentHistoryEntity> findAllByPayInPZSSPortalFalse();
-    @Query(nativeQuery = true,value = "select * from shootingplace.license_payment_history_entity where is_pay_inpzssportal = true")
-    List<LicensePaymentHistoryEntity> findAllByPayInPZSSPortalTrue();
 
     @Query(nativeQuery = true,value = "select * from shootingplace.license_payment_history_entity where (date between (:firstDate) and (:secondDate))")
     List<LicensePaymentHistoryEntity> findAllByPayInPZSSPortalBetweenDate(@Param("firstDate") LocalDate firstDate, @Param("secondDate") LocalDate secondDate);

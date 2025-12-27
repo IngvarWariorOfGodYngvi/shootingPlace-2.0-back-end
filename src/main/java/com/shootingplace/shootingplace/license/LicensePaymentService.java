@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.license;
 
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.history.*;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

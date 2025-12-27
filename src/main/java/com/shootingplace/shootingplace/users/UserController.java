@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.users;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.security.RequirePermissions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +18,14 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/access")
-    @RequirePermissions({UserSubType.MANAGEMENT,
-            UserSubType.ADMIN,
-            UserSubType.SUPER_USER})
-    public ResponseEntity<?> getAccess(@RequestParam String pinCode){
+    @RequirePermissions({UserSubType.MANAGEMENT, UserSubType.ADMIN, UserSubType.SUPER_USER})
+    public ResponseEntity<?> getAccess() {
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/permissions")
     public ResponseEntity<List<String>> getPermissions() {
         return ResponseEntity.ok(userService.getPermissions());
-    }
-
-    @GetMapping("/permissionsByPin")
-    public ResponseEntity<?> permissionsByPin(@RequestParam String pinCode) {
-        return ResponseEntity.ok(userService.permissionsByPin(pinCode));
     }
 
     @GetMapping("/userList")
@@ -54,14 +46,13 @@ public class UserController {
 
     @PostMapping("/editUser")
     public ResponseEntity<?> editUser(@Nullable @RequestParam String firstName, @Nullable @RequestParam String secondName, @Nullable @RequestParam List<String> userPermissionsList, @Nullable @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable String otherID, @RequestParam String userUUID) {
-
         return userService.editUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID, userUUID);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestParam String userID, @RequestParam String pinCode) throws NoUserPermissionException {
-
-        return userService.deleteUser(userID, pinCode);
+    @RequirePermissions({UserSubType.SUPER_USER, UserSubType.ADMIN, UserSubType.CEO})
+    public ResponseEntity<?> deleteUser(@RequestParam String userID) {
+        return userService.deleteUser(userID);
     }
 }
 

@@ -109,7 +109,7 @@ public class AmmoEvidenceController {
     @Transactional
     @PatchMapping("/ammoOpen")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> openEvidence(@RequestParam String pinCode, @RequestParam String evidenceUUID) {
+    public ResponseEntity<?> openEvidence(@RequestParam String evidenceUUID) {
         return ammoEvidenceService.openEvidence(evidenceUUID);
     }
 

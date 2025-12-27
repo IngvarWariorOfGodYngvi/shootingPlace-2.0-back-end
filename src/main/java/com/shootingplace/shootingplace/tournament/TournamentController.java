@@ -101,7 +101,7 @@ public class TournamentController {
     @Transactional
     @PatchMapping("/open/{tournamentUUID}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> openTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) {
+    public ResponseEntity<?> openTournament(@PathVariable String tournamentUUID) {
         return tournamentService.openTournament(tournamentUUID);
     }
 
@@ -188,7 +188,7 @@ public class TournamentController {
 
     @Transactional
     @DeleteMapping("/delete/{tournamentUUID}")
-    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentUUID, @RequestParam String pinCode) {
+    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentUUID) {
         return tournamentService.deleteTournament(tournamentUUID);
     }
 }

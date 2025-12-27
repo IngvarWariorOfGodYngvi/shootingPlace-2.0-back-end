@@ -1,4 +1,4 @@
-package com.shootingplace.shootingplace.history;
+package com.shootingplace.shootingplace.history.changeHistory;
 
 import com.shootingplace.shootingplace.users.UserEntity;
 import jakarta.persistence.*;
@@ -7,10 +7,11 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 
-@Data
 @Entity
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ChangeHistoryEntity {
 

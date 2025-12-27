@@ -19,4 +19,7 @@ public class MemberPermissions {
     private String arbiterStaticClass;
     private LocalDate arbiterStaticPermissionValidThru;
 
+    private String arbiterDynamicNumber;
+    private String arbiterDynamicClass;
+    private LocalDate arbiterDynamicPermissionValidThru;
 }

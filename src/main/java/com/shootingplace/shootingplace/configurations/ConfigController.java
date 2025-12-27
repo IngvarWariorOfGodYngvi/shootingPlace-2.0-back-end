@@ -24,10 +24,9 @@ public class ConfigController {
 
     @GetMapping("/ping")
     public ResponseEntity<?> ping() {
-        return ResponseEntity.ok(
-                Objects.requireNonNull(environment.getProperty("dateTime"))
-        ); // test
+        return ResponseEntity.ok(Objects.requireNonNull(environment.getProperty("dateTime")));
     }
+
     @GetMapping("/env")
     public ResponseEntity<?> env() {
         List<String> env = new ArrayList<>();
@@ -35,6 +34,9 @@ public class ConfigController {
         env.add(environment.getProperty("shootingPlaceName"));
         return ResponseEntity.ok(env);
     }
+
     @GetMapping("/fs")
-    public ResponseEntity<?> fs() { return userService.checkFirstStart(); }
+    public ResponseEntity<?> fs() {
+        return userService.checkFirstStart();
+    }
 }

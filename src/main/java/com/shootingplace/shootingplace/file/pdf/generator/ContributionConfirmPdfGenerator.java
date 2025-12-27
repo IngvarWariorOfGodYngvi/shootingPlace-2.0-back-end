@@ -3,15 +3,14 @@ package com.shootingplace.shootingplace.file.pdf.generator;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.shootingplace.shootingplace.club.ClubEntity;
-import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.contributions.ContributionEntity;
 import com.shootingplace.shootingplace.contributions.ContributionRepository;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
 import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -22,21 +21,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.Utils.dateFormat;
+import static com.shootingplace.shootingplace.file.utils.Utils.font;
 
 @Component
 @RequiredArgsConstructor
 public class ContributionConfirmPdfGenerator {
 
-    private final ClubRepository clubRepository;
     private final Environment environment;
     private final MemberRepository memberRepository;
     private final ContributionRepository contributionRepository;
 
     public PdfGenerationResults generate(String memberUUID, String contributionUUID, boolean a5rotate) throws DocumentException, IOException {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
-        ContributionEntity contributionEntity = contributionRepository.findById(contributionUUID).orElseThrow(EntityNotFoundException::new);
-        ClubEntity club = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
+        ContributionEntity contributionEntity = contributionRepository.findById(contributionUUID).orElse(member.getHistory().getContributionList().getFirst());
+
+        ClubEntity club = member.getClub();
 
         int count = (int) member.getHistory().getContributionList().stream().filter(f -> f.getPaymentDay().equals(contributionEntity.getPaymentDay())).count();
 

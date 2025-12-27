@@ -5,6 +5,7 @@ import com.shootingplace.shootingplace.competition.CompetitionEntity;
 import com.shootingplace.shootingplace.competition.CompetitionRepository;
 import com.shootingplace.shootingplace.enums.ArbiterWorkClass;
 import com.shootingplace.shootingplace.history.*;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberDTO;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
@@ -127,7 +128,7 @@ public class TournamentService {
                 .forEach(e ->
                 {
                     if (e.getOrdering() == null) {
-                        CompetitionEntity competitionEntity = competitionRepository.getOne(e.getCompetitionUUID());
+                        CompetitionEntity competitionEntity = competitionRepository.findById(e.getCompetitionUUID()).orElseThrow(EntityNotFoundException::new);
                         e.setOrdering(competitionEntity.getOrdering());
                         competitionMembersListRepository.save(e);
                     }
@@ -509,7 +510,7 @@ public class TournamentService {
             return "Nie udało się dodać konkurencji";
         }
 
-        CompetitionEntity competition = competitionRepository.getOne(competitionUUID);
+        CompetitionEntity competition = competitionRepository.findById(competitionUUID).orElseThrow(EntityNotFoundException::new);
         if (!tournamentEntity.getCompetitionsList().isEmpty() && tournamentEntity.getCompetitionsList().stream().anyMatch(e -> e.getName().equals(competition.getName()))) {
             LOG.info("konkurencja {} jest już dodana", competition.getName());
             return "konkurencja " + competition.getName() + " jest już dodana";

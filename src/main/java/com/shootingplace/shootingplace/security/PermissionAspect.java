@@ -9,6 +9,8 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Method;
@@ -19,6 +21,7 @@ import java.lang.reflect.Method;
 public class PermissionAspect {
 
     private final UserAuthService userAuthService;
+    private final UserAuthContext userAuthContext;
 
     @Before("@annotation(com.shootingplace.shootingplace.security.RequirePermissions)")
     public void checkPermissions(JoinPoint joinPoint) {
@@ -26,21 +29,25 @@ public class PermissionAspect {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
         RequirePermissions rp = method.getAnnotation(RequirePermissions.class);
 
-        String pinCode = extractPin(joinPoint.getArgs());
-        if (pinCode == null) {
+        String pinCode = extractPinFromHeader();
+        if (pinCode == null || pinCode.isBlank()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Brak parametru pinCode"
+                    "Brak nagłówka X-OPERATOR-PIN"
             );
         }
 
         try {
             UserEntity user = userAuthService.authenticate(pinCode);
+
             userAuthService.hasAnyPermission(
                     user,
                     rp.value(),
                     rp.requireWork()
             );
+
+            userAuthContext.set(user);
+
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Błędny PIN");
         } catch (SecurityException e) {
@@ -48,12 +55,12 @@ public class PermissionAspect {
         }
     }
 
-    private String extractPin(Object[] args) {
-        for (Object arg : args) {
-            if (arg instanceof String s && s.length() >= 4) {
-                return s;
-            }
-        }
-        return null;
+    private String extractPinFromHeader() {
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        return attrs != null
+                ? attrs.getRequest().getHeader("X-OPERATOR-PIN")
+                : null;
     }
 }

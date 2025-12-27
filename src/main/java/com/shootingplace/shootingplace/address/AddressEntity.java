@@ -1,16 +1,13 @@
 package com.shootingplace.shootingplace.address;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 @Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +15,6 @@ import org.hibernate.annotations.UuidGenerator;
 public class AddressEntity {
 
     @Id
-    @GeneratedValue
     @UuidGenerator
     private String uuid;
 
@@ -28,26 +24,6 @@ public class AddressEntity {
     private String street;
     private String streetNumber;
     private String flatNumber;
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public void setPostOfficeCity(String postOfficeCity) {
-        this.postOfficeCity = postOfficeCity;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public void setStreetNumber(String streetNumber) {
-        this.streetNumber = streetNumber;
-    }
-
-    public void setFlatNumber(String flatNumber) {
-        this.flatNumber = flatNumber;
-    }
 
     @Override
     public String toString() {

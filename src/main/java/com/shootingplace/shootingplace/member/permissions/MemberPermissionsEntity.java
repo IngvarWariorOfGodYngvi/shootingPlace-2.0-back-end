@@ -24,8 +24,11 @@ public class MemberPermissionsEntity {
     private String shootingLeaderNumber;
 
     private String arbiterStaticNumber;
-
     private String arbiterStaticClass;
     private LocalDate arbiterStaticPermissionValidThru;
+
+    private String arbiterDynamicNumber;
+    private String arbiterDynamicClass;
+    private LocalDate arbiterDynamicPermissionValidThru;
     
 }

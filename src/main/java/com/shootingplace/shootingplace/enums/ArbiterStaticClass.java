@@ -3,7 +3,7 @@ package com.shootingplace.shootingplace.enums;
 import lombok.Getter;
 
 @Getter
-public enum ArbiterClass {
+public enum ArbiterStaticClass {
     CLASS_3("Klasa 3"),
     CLASS_2("Klasa 2"),
     CLASS_1("Klasa 1"),
@@ -12,7 +12,7 @@ public enum ArbiterClass {
 
     private final String name;
 
-    ArbiterClass(String name) {
+    ArbiterStaticClass(String name) {
         this.name = name;
     }
 

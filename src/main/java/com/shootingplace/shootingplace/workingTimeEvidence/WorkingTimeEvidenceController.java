@@ -69,14 +69,14 @@ public class WorkingTimeEvidenceController {
     @Transactional
     @PatchMapping("/accept")
     @RequirePermissions(value = {UserSubType.CEO})
-    public ResponseEntity<?> acceptWorkingTime(@RequestParam List<String> uuidList, @RequestParam String pinCode) {
+    public ResponseEntity<?> acceptWorkingTime(@RequestParam List<String> uuidList) {
             return workService.acceptWorkingTime(uuidList);
     }
 
     @Transactional
     @PutMapping("/")
     @RequirePermissions(value = {UserSubType.CEO})
-    public ResponseEntity<?> inputChangesToWorkTime(@RequestParam String[] list, @RequestParam String pinCode) {
+    public ResponseEntity<?> inputChangesToWorkTime(@RequestParam String[] list) {
         List<WorkingTimeEvidenceDTO> list1 = new ArrayList<>();
         for (String s : list) {
             String[] split = s.split(";", 5);

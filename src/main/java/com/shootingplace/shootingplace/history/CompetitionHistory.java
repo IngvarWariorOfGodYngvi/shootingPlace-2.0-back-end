@@ -19,8 +19,6 @@ public class CompetitionHistory {
 
     private UUID attachedToList;
 
-    private String discipline;
-
     private String disciplineList;
 
     private LocalDate date;
@@ -39,14 +37,6 @@ public class CompetitionHistory {
 
     public void setAttachedToList(UUID attachedToList) {
         this.attachedToList = attachedToList;
-    }
-
-    public String getDiscipline() {
-        return discipline;
-    }
-
-    public void setDiscipline(String discipline) {
-        this.discipline = discipline;
     }
 
     public List<String> getDisciplineList() {

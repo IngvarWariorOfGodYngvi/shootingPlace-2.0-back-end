@@ -2,15 +2,13 @@ package com.shootingplace.shootingplace.history;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,41 +29,4 @@ public class UsedHistoryEntity {
     private boolean returnToStore;
     private String userName;
     private String memberUUID;
-
-
-    public void setGunName(String gunName) {
-        this.gunName = gunName;
-    }
-
-    public void setGunUUID(String gunUUID) {
-        this.gunUUID = gunUUID;
-    }
-
-    public void setGunSerialNumber(String gunSerialNumber) {
-        this.gunSerialNumber = gunSerialNumber;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setUsedType(String usedType) {
-        this.usedType = usedType;
-    }
-
-    public void setEvidenceUUID(String evidenceUUID) {
-        this.evidenceUUID = evidenceUUID;
-    }
-
-    public void setReturnToStore(boolean returnToStore) {
-        this.returnToStore = returnToStore;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setMemberUUID(String userUUID) {
-        this.memberUUID = userUUID;
-    }
 }

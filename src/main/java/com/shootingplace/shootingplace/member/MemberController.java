@@ -129,13 +129,13 @@ public class MemberController {
     @Transactional
     @PostMapping("/")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> addMember(@RequestBody @Valid MemberWithAddressWrapper memberWithAddressWrapper, @RequestParam boolean returningToClub, @RequestParam String pinCode) {
+    public ResponseEntity<?> addMember(@RequestBody @Valid MemberWithAddressWrapper memberWithAddressWrapper, @RequestParam boolean returningToClub) {
         Member member = memberWithAddressWrapper.getMember();
         Address address = memberWithAddressWrapper.getAddress();
         if (member.getPesel().isEmpty() || member.getPhoneNumber().isEmpty() || member.getFirstName().isEmpty() || member.getSecondName().isEmpty() || member.getIDCard().isEmpty()) {
             return ResponseEntity.status(406).body("Uwaga! Nie podano wszystkich informacji");
         }
-        return memberService.addNewMember(member, address, returningToClub, pinCode);
+        return memberService.addNewMember(member, address, returningToClub);
     }
 
     @PostMapping("/note")
@@ -146,13 +146,13 @@ public class MemberController {
 
     @PutMapping("/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> updateMember(@PathVariable String uuid, @RequestBody @Valid Member member, @RequestParam String pinCode) {
+    public ResponseEntity<?> updateMember(@PathVariable String uuid, @RequestBody @Valid Member member) {
         return memberService.updateMember(uuid, member);
     }
 
     @PutMapping("/group/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> assignMemberToGroup(@PathVariable String uuid, @RequestParam Long groupId, @RequestParam String pinCode) {
+    public ResponseEntity<?> assignMemberToGroup(@PathVariable String uuid, @RequestParam Long groupId) {
         return memberService.assignMemberToGroup(uuid, groupId);
     }
 
@@ -174,7 +174,7 @@ public class MemberController {
     @Transactional
     @PatchMapping("/adult/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> changeAdult(@PathVariable String uuid, @RequestParam String pinCode) {
+    public ResponseEntity<?> changeAdult(@PathVariable String uuid) {
             return memberService.changeAdult(uuid);
     }
 
@@ -185,13 +185,13 @@ public class MemberController {
 
     @PatchMapping("/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> activateOrDeactivateMember(@PathVariable String uuid, @RequestParam String pinCode) {
+    public ResponseEntity<?> activateOrDeactivateMember(@PathVariable String uuid) {
             return memberService.activateOrDeactivateMember(uuid);
     }
 
     @PatchMapping("/erase/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
-    public ResponseEntity<?> eraseMember(@PathVariable String uuid, @RequestParam String additionalDescription, @RequestParam String erasedDate, @RequestParam String erasedType, @RequestParam String pinCode) {
+    public ResponseEntity<?> eraseMember(@PathVariable String uuid, @RequestParam String additionalDescription, @RequestParam String erasedDate, @RequestParam String erasedType) {
             if (additionalDescription.trim().isBlank() || additionalDescription.trim().equals("null")) {
                 additionalDescription = null;
             }

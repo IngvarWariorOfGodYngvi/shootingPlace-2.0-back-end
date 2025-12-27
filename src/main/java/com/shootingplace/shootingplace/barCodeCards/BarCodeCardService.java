@@ -1,13 +1,11 @@
 package com.shootingplace.shootingplace.barCodeCards;
 
-import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.domain.Person;
-import com.shootingplace.shootingplace.enums.UserSubType;
-import com.shootingplace.shootingplace.exceptions.NoUserPermissionException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.RecordHistory;
+import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
@@ -18,9 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -30,15 +26,14 @@ public class BarCodeCardService {
     private final BarCodeCardRepository barCodeCardRepo;
     private final UserRepository userRepository;
     private final MemberRepository memberRepository;
-
+    private final UserAuthContext userAuthContext;
     private final Logger LOG = LogManager.getLogger();
 
-    public ResponseEntity<?> createNewCard(String barCode, String uuid, String pinCode) throws NoUserPermissionException {
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
-        UserEntity userEntity = userRepository.findByPinCode(pin).orElse(null);
-        List<String> acceptedPermissions = Arrays.asList(UserSubType.ADMIN.getName(), UserSubType.SUPER_USER.getName(), UserSubType.MANAGEMENT.getName(), UserSubType.WORKER.getName());
-        if (userEntity == null) {
-            return ResponseEntity.badRequest().body("brak Użytkownika");
+    @RecordHistory(action = "BarcodeCard.create", entity = HistoryEntityType.BARCODE_CARD)
+    public ResponseEntity<?> createNewCard(String barCode, String uuid) {
+        UserEntity user = userAuthContext.get();
+        if (user == null) {
+            throw new IllegalStateException("Brak użytkownika w kontekście");
         }
         if (barCodeCardRepo.existsByBarCode(barCode)) {
             return ResponseEntity.badRequest().body("Taki numer jest już do kogoś przypisany - użyj innej karty");
@@ -46,34 +41,30 @@ public class BarCodeCardService {
         if (barCode.isBlank()) {
             return ResponseEntity.badRequest().body("Nie podano numeru Karty");
         }
-        if (userEntity.getUserPermissionsList().stream().noneMatch(acceptedPermissions::contains)) {
-            throw new NoUserPermissionException();
-        }
         Person person = null;
+        List<BarCodeCardEntity> barCodeCardList;
         if (userRepository.existsById(uuid)) {
-            userEntity = userRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
-            List<BarCodeCardEntity> barCodeCardList;
-            List<BarCodeCardEntity> allByBelongsTo = barCodeCardRepo.findAllByBelongsTo(userEntity.getUuid());
+            user = userRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
+            List<BarCodeCardEntity> allByBelongsTo = barCodeCardRepo.findAllByBelongsTo(user.getUuid());
             int size = (int) allByBelongsTo.stream().filter(f -> f.getActivatedDay().getMonthValue() == LocalDate.now().getMonthValue()).count();
             if (size > 2) {
-                return ResponseEntity.badRequest().body("Nie można dodać więcej kart do " + userEntity.getFirstName());
+                return ResponseEntity.badRequest().body("Nie można dodać więcej kart do " + user.getFirstName());
             }
-            BarCodeCardEntity build = BarCodeCardEntity.builder().barCode(barCode).belongsTo(userEntity.getUuid()).isActive(true).isMaster(true).activatedDay(LocalDate.now()).type("User").build();
+            BarCodeCardEntity build = BarCodeCardEntity.builder().barCode(barCode).belongsTo(user.getUuid()).isActive(true).isMaster(true).activatedDay(LocalDate.now()).type("User").build();
             BarCodeCardEntity save = barCodeCardRepo.save(build);
-            barCodeCardList = userEntity.getBarCodeCardList();
+            barCodeCardList = user.getBarCodeCardList();
             barCodeCardList.add(save);
-            userEntity.setBarCodeCardList(barCodeCardList);
-            userRepository.save(userEntity);
-            person = userEntity;
+            user.setBarCodeCardList(barCodeCardList);
+            userRepository.save(user);
+            person = user;
             return ResponseEntity.ok("Zapisano numer i przypisano do: " + person.getFirstName() + " " + person.getSecondName());
         }
         if (memberRepository.existsById(uuid)) {
             MemberEntity memberEntity = memberRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
-            List<BarCodeCardEntity> barCodeCardList;
-            List<BarCodeCardEntity> allByBelongsTo = barCodeCardRepo.findAllByBelongsTo(userEntity.getUuid());
+            List<BarCodeCardEntity> allByBelongsTo = barCodeCardRepo.findAllByBelongsTo(user.getUuid());
             int size = (int) allByBelongsTo.stream().filter(f -> f.getActivatedDay().getMonthValue() == LocalDate.now().getMonthValue()).count();
             if (size > 2) {
-                return ResponseEntity.badRequest().body("Nie można dodać więcej kart do " + userEntity.getFirstName());
+                return ResponseEntity.badRequest().body("Nie można dodać więcej kart do " + user.getFirstName());
             }
             BarCodeCardEntity build = BarCodeCardEntity.builder().barCode(barCode).belongsTo(memberEntity.getUuid()).isActive(true).isMaster(true).activatedDay(LocalDate.now()).type("Member").build();
             BarCodeCardEntity save = barCodeCardRepo.save(build);

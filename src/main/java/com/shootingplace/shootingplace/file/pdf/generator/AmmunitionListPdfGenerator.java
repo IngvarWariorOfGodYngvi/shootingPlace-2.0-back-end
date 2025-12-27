@@ -76,11 +76,11 @@ public class AmmunitionListPdfGenerator {
 
         for (AmmoInEvidenceEntity ammo : ordered) {
 
-            Paragraph p2 = new Paragraph("Kaliber : " + ammo.getCaliberName(), font(12, 1));
+            Paragraph p2 = new Paragraph("Kaliber: " + ammo.getCaliberName(), font(12, 1));
             p2.setIndentationLeft(230);
             p2.setSpacingBefore(10);
             document.add(p2);
-
+            document.add(new Paragraph(" ",font(6,0)));
             PdfPTable tableLabel = new PdfPTable(widths);
             tableLabel.addCell(new PdfPCell(new Paragraph("lp.", font(10, 2))));
             tableLabel.addCell(new PdfPCell(new Paragraph("Imię i Nazwisko", font(10, 2))));

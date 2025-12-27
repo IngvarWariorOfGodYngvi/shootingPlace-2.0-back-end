@@ -2,7 +2,7 @@ package com.shootingplace.shootingplace.users;
 
 import com.shootingplace.shootingplace.barCodeCards.BarCodeCardEntity;
 import com.shootingplace.shootingplace.domain.Person;
-import com.shootingplace.shootingplace.history.ChangeHistoryEntity;
+import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryEntity;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
