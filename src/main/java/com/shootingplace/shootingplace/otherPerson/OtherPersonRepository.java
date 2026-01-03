@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OtherPersonRepository extends JpaRepository<OtherPersonEntity, Integer> {
@@ -11,4 +12,8 @@ public interface OtherPersonRepository extends JpaRepository<OtherPersonEntity, 
     List<OtherPersonEntity> findAllByActiveTrue();
 
     List<OtherPersonEntity> findAllByPhoneNumberAndActiveTrue(String phone);
+
+    Optional<OtherPersonEntity> findByLicenseNumberAndActiveTrue(String licenseNumber);
+
+    boolean existsByLicenseNumber(String licenseNumber);
 }

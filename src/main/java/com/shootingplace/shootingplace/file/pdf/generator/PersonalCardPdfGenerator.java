@@ -26,7 +26,7 @@ public class PersonalCardPdfGenerator {
 
     public PdfGenerationResults generate(MemberEntity member) throws DocumentException, IOException {
 
-        String fileName = "Karta Członkowska " + member.getFirstName().stripTrailing() + " " + member.getSecondName().stripTrailing() + ".pdf";
+        String fileName = "Karta Czlonkowska " + member.getFirstName().stripTrailing() + " " + member.getSecondName().stripTrailing() + ".pdf";
 
         LocalDate birthDate = member.getBirthDate();
 

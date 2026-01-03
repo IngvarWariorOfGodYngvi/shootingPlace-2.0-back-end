@@ -283,13 +283,6 @@ public class HistoryService {
 
     public void updateTournamentInJudgingHistory(String tournamentUUID) {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
-        if (tournamentEntity.getArbitersList() != null) {
-            tournamentEntity.getArbitersList().forEach(member -> member.getHistory().getJudgingHistory().stream().filter(f -> f.getTournamentUUID().equals(tournamentUUID)).forEach(f -> {
-                f.setName(tournamentEntity.getName());
-                f.setDate(tournamentEntity.getDate());
-                judgingHistoryRepository.save(f);
-            }));
-        }
         if (tournamentEntity.getMainArbiter() != null) {
             tournamentEntity.getMainArbiter().getHistory().getJudgingHistory().stream().filter(f -> f.getTournamentUUID().equals(tournamentUUID)).forEach(f -> {
                 f.setName(tournamentEntity.getName());

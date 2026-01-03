@@ -101,11 +101,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getAllMemberDTO(adult1, active1, erase1));
     }
 
-    @GetMapping("/getArbiters")
-    public List<MemberInfo> getArbiters() {
-        return memberService.getArbiters();
-    }
-
     @GetMapping("/pesel")
     public ResponseEntity<?> getMemberPeselIsPresent(@RequestParam String pesel) {
         return ResponseEntity.ok(memberService.getMemberPeselIsPresent(pesel));

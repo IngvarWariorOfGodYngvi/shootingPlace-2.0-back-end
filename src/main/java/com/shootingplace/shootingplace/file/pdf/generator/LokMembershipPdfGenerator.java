@@ -36,7 +36,7 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
 
     public PdfGenerationResults generate(MemberEntity member) throws DocumentException, IOException {
 
-        String fileName = "Deklaracja Członkowska LOK " + member.getFullName() + ".pdf";
+        String fileName = "Deklaracja Czlonkowska LOK " + member.getFullName() + ".pdf";
 
         URL resource = LokMembershipPdfGenerator.class.getClassLoader().getResource("logo_LOK.png");
         if (resource == null) {

@@ -31,6 +31,8 @@ import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
 import com.shootingplace.shootingplace.tournament.TournamentDTO;
 import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryDTO;
+import com.shootingplace.shootingplace.tournament.axis.ShootingAxisDTO;
+import com.shootingplace.shootingplace.tournament.axis.ShootingAxisEntity;
 import com.shootingplace.shootingplace.users.UserDTO;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.weaponPermission.WeaponPermission;
@@ -38,6 +40,7 @@ import com.shootingplace.shootingplace.weaponPermission.WeaponPermissionEntity;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceDTO;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceEntity;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -123,7 +126,8 @@ public class Mapping {
                 .legitimationNumber(e.getLegitimationNumber())
                 .isAdult(e.isAdult())
                 .note(e.getNote())
-                .arbiterClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterStaticClass() : null)
+                .arbiterStaticClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterStaticClass() : null)
+                .arbiterDynamicClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterDynamicClass() : null)
                 .declarationLOK(e.getDeclarationLOK()).build();
     }
 
@@ -338,10 +342,15 @@ public class Mapping {
     public static MemberPermissionsEntity map(MemberPermissions m) {
         return Optional.ofNullable(m).map(e -> MemberPermissionsEntity.builder()
                 .instructorNumber(e.getInstructorNumber())
+                .shootingLeaderNumber(e.getShootingLeaderNumber())
                 .arbiterStaticNumber(e.getArbiterStaticNumber())
                 .arbiterStaticClass(e.getArbiterStaticClass())
                 .arbiterStaticPermissionValidThru(e.getArbiterStaticPermissionValidThru())
-                .shootingLeaderNumber(e.getShootingLeaderNumber())
+                .arbiterStaticPermissionIssuedAt(e.getArbiterStaticPermissionIssuedAt())
+                .arbiterDynamicNumber(e.getArbiterDynamicNumber())
+                .arbiterDynamicClass(e.getArbiterDynamicClass())
+                .arbiterDynamicPermissionValidThru(e.getArbiterDynamicPermissionValidThru())
+                .arbiterDynamicPermissionIssuedAt(e.getArbiterDynamicPermissionIssuedAt())
                 .build()).orElse(null);
     }
 
@@ -741,6 +750,22 @@ public class Mapping {
                 .subject(e.getSubject())
                 .scheduledFor(e.getScheduledFor())
                 .mailType(e.getMailType())
+                .build();
+    }
+
+    public static List<ShootingAxisDTO> map(List<ShootingAxisEntity> shootingAxis) {
+        return shootingAxis.stream().map(Mapping::map).collect(Collectors.toList());
+    }
+    public static ShootingAxisDTO map(ShootingAxisEntity e) {
+        return ShootingAxisDTO.builder()
+                .uuid(e.getUuid())
+                .tournamentUUID(e.getTournament().getUuid())
+                .ordering(e.getOrdering())
+                .name(e.getName())
+                .leaderName(e.getLeaderName())
+                .leaderType(e.getLeaderType())
+                .axisArbiters(e.getAxisArbiters().stream().map(Mapping::map2DTO).collect(Collectors.toList()))
+                .otherAxisArbiters(e.getOtherAxisArbiters())
                 .build();
     }
 }

@@ -102,7 +102,7 @@ public class MemberLegitimationPdfGenerator {
         return new PdfGenerationResults(fileName, baos.toByteArray());
     }
 
-    private static void text(PdfContentByte cb, String value, Font font, float x, float y) throws IOException {
+    private static void text(PdfContentByte cb, String value, Font font, float x, float y) {
         ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase(value, font), x, y, 0);
     }
 

@@ -88,23 +88,8 @@ public class AmmoEvidenceService {
     }
 
 
-    public String checkAnyOpenEvidence() {
-        // send name of colors with -> \" \" <-
-        // primary
-        // secondary
-        // accent
-        // warning
-        // negative
-        // rest of colors
-        String message = "\"primary\"";
-
-        if (ammoEvidenceRepository.findAll().stream().anyMatch(f -> f.isOpen() && !f.isForceOpen())) {
-            message = "\"negative\"";
-        }
-        if (ammoEvidenceRepository.findAll().stream().anyMatch(f -> f.isOpen() && f.isForceOpen())) {
-            message = "\"red\"";
-        }
-        return message;
+    public boolean checkAnyOpenEvidence() {
+        return ammoEvidenceRepository.findAll().stream().anyMatch(f -> f.isOpen() && f.isForceOpen());
     }
 
     public List<AmmoEvidenceDTO> getNotLockedEvidences() {

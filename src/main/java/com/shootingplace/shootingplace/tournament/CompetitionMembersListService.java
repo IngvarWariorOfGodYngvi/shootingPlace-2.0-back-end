@@ -99,8 +99,6 @@ public class CompetitionMembersListService {
 
 
     public String removeScoreFromList(String competitionUUID, int legitimationNumber, int otherPerson) {
-
-//        String competitionUUID = getCompetitionIDByName(competitionName, tournamentUUID);
         CompetitionMembersListEntity list = competitionMembersListRepository.findById(competitionUUID).orElseThrow(EntityNotFoundException::new);
         List<ScoreEntity> scoreList = list.getScoreList();
         ScoreEntity score;

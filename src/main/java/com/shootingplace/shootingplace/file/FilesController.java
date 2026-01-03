@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,21 +50,6 @@ public class FilesController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
         }
     }
-
-    @Transactional
-    @PostMapping("/upload/csvOthers")
-    public ResponseEntity<?> uploadCSVOthers(@RequestParam("file") MultipartFile file) {
-        String message;
-        try {
-            filesService.uploadCSVOthers(file);
-            message = "Uploaded the file successfully: " + file.getName();
-            return ResponseEntity.status(HttpStatus.OK).body(message);
-        } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
-        }
-    }
-
 
     @DeleteMapping("/removeImg")
     public ResponseEntity<?> removeImageFromGun(@RequestParam String gunUUID) {

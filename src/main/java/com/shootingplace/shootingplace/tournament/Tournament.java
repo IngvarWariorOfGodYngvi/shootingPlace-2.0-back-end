@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.tournament;
 
 import com.shootingplace.shootingplace.member.MemberDTO;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
+import com.shootingplace.shootingplace.tournament.axis.ShootingAxisDTO;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -24,7 +25,7 @@ public class Tournament {
     private MemberDTO commissionRTSArbiter;
     private MemberDTO mainArbiter;
 
-    private List<MemberDTO> arbitersList;
+    private List<MemberDTO> technicalSupportList;
     @ManyToMany
     private List<MemberDTO> arbitersRTSList;
 
@@ -33,7 +34,7 @@ public class Tournament {
     @ManyToOne
     private OtherPersonEntity otherCommissionRTSArbiter;
     @ManyToMany
-    private List<OtherPersonEntity> otherArbitersList;
+    private List<OtherPersonEntity> otherTechnicalSupportList;
     @ManyToMany
     private List<OtherPersonEntity> otherArbitersRTSList;
     @OneToMany(orphanRemoval = true)
@@ -41,7 +42,6 @@ public class Tournament {
     private List<CompetitionMembersList> competitionsList;
     private boolean open;
     private boolean wzss;
-    private boolean ranking;
-    private boolean dynamic;
+    private List<ShootingAxisDTO> shootingAxis;
 
 }

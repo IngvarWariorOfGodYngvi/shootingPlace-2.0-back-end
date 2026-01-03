@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 @RestController
@@ -39,14 +38,13 @@ public class UserController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<?> createUser(@RequestParam String firstName, @RequestParam String secondName, @RequestParam List<String> userPermissionsList, @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable Integer otherID) {
-
-        return userService.createUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID);
+    public ResponseEntity<?> createUser(@RequestBody UserCreateDTO userCreateDTO, @RequestParam String superPinCode) {
+        return userService.createUser(userCreateDTO, superPinCode);
     }
 
     @PostMapping("/editUser")
-    public ResponseEntity<?> editUser(@Nullable @RequestParam String firstName, @Nullable @RequestParam String secondName, @Nullable @RequestParam List<String> userPermissionsList, @Nullable @RequestParam String pinCode, @RequestParam String superPinCode, @RequestParam @Nullable String memberUUID, @RequestParam @Nullable String otherID, @RequestParam String userUUID) {
-        return userService.editUser(firstName, secondName, userPermissionsList, pinCode, superPinCode, memberUUID, otherID, userUUID);
+    public ResponseEntity<?> editUser(@RequestBody UserCreateDTO userCreateDTO, @RequestParam String superPinCode, @RequestParam String userUUID) {
+        return userService.editUser(userCreateDTO, superPinCode, userUUID);
     }
 
     @DeleteMapping("/delete")

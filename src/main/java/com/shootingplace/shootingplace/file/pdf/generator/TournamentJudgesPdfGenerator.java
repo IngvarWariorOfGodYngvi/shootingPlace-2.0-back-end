@@ -2,7 +2,8 @@ package com.shootingplace.shootingplace.file.pdf.generator;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
-import com.shootingplace.shootingplace.enums.ProfilesEnum;
+import com.shootingplace.shootingplace.club.ClubEntity;
+import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
@@ -10,7 +11,6 @@ import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -23,13 +23,13 @@ import static com.shootingplace.shootingplace.file.utils.Utils.*;
 public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
     private final TournamentRepository tournamentRepository;
-    private final Environment environment;
+    private final ClubRepository clubRepository;
 
     @Override
     public PdfGenerationResults generate(String tournamentUUID) throws DocumentException, IOException {
 
         TournamentEntity tournament = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
-
+        ClubEntity club = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
         String fileName = "Lista_sędziów_na_zawodach_" + tournament.getName() + ".pdf";
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -42,21 +42,21 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         document.add(new Paragraph(tournament.getName().toUpperCase(), font(13, Font.BOLD)));
 
-        document.add(new Paragraph(resolveCity() + ", " + dateFormat(tournament.getDate()), font(10, Font.ITALIC)));
+        document.add(new Paragraph(club.getCity() + ", " + dateFormat(tournament.getDate()), font(10, Font.ITALIC)));
 
         document.add(new Paragraph("\n", font(13, Font.NORMAL)));
         document.add(new Paragraph("WYKAZ SĘDZIÓW", font(13, Font.NORMAL)));
 
         addMainArbiterSection(document, tournament);
         addRTSCommissionSection(document, tournament);
-        addStandArbiters(document, tournament);
+        addShootingAxesSection(document, tournament);
         addRTSArbiters(document, tournament);
+        addTechnicalSupport(document, tournament);
 
         document.close();
         return new PdfGenerationResults(fileName, baos.toByteArray());
     }
 
-    /* ================= sections ================= */
 
     private void addMainArbiterSection(Document document, TournamentEntity t) throws DocumentException, IOException {
 
@@ -72,15 +72,15 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
         document.add(new Paragraph(resolveArbiter(t.getCommissionRTSArbiter(), t.getOtherCommissionRTSArbiter()), font(12, Font.NORMAL)));
     }
 
-    private void addStandArbiters(Document document, TournamentEntity t) throws DocumentException, IOException {
+    private void addTechnicalSupport(Document document, TournamentEntity t) throws DocumentException, IOException {
 
-        if (t.getArbitersList().isEmpty() && t.getOtherArbitersList().isEmpty()) {
+        if (t.getTechnicalSupportList().isEmpty() && t.getOtherTechnicalSupportList().isEmpty()) {
             return;
         }
 
-        document.add(new Paragraph("\nSędziowie Stanowiskowi\n", font(12, Font.NORMAL)));
+        document.add(new Paragraph("\nPomoc Techniczna\n", font(12, Font.NORMAL)));
 
-        t.getArbitersList().forEach(a -> {
+        t.getTechnicalSupportList().forEach(a -> {
             try {
                 addArbiter(document, a);
             } catch (IOException e) {
@@ -88,7 +88,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
             }
         });
 
-        t.getOtherArbitersList().forEach(a -> {
+        t.getOtherTechnicalSupportList().forEach(a -> {
             try {
                 addArbiter(document, a);
             } catch (IOException e) {
@@ -96,6 +96,56 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
             }
         });
     }
+
+    private void addShootingAxesSection(Document document, TournamentEntity t)
+            throws DocumentException, IOException {
+
+        if (t.getShootingAxis() == null || t.getShootingAxis().isEmpty()) {
+            return;
+        }
+
+        document.add(new Paragraph("\nOSIE STRZELECKIE\n", font(13, Font.BOLD)));
+
+        for (var axis : t.getShootingAxis()) {
+
+            document.add(new Paragraph(axis.getName(), font(12, Font.BOLD)));
+            document.add(new Paragraph(
+                    "Kierownik osi: " +
+                            (axis.getLeaderName() != null ? axis.getLeaderName() : "Nie wskazano"),
+                    font(11, Font.NORMAL)
+            ));
+
+            if (!axis.getAxisArbiters().isEmpty() || !axis.getOtherAxisArbiters().isEmpty()) {
+
+                document.add(new Paragraph("Sędziowie stanowiskowi:", font(11, Font.NORMAL)));
+
+                axis.getAxisArbiters().forEach(a -> {
+                    try {
+                        addArbiter(document, a);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                axis.getOtherAxisArbiters().forEach(a -> {
+                    try {
+                        addArbiter(document, a);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+            } else {
+                document.add(new Paragraph(
+                        "Sędziowie stanowiskowi: brak",
+                        font(11, Font.ITALIC)
+                ));
+            }
+
+            document.add(new Paragraph("\n"));
+        }
+    }
+
 
     private void addRTSArbiters(Document document, TournamentEntity t) throws DocumentException, IOException {
 
@@ -141,10 +191,5 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
             return other.getFirstName() + " " + other.getSecondName() + " " + getArbiterClass(other.getPermissionsEntity().getArbiterStaticClass());
         }
         return "Nie Wskazano";
-    }
-
-    // #TODO poprawić tak by nie było tylko dla łodzi i panaszewa ale ogólnie dla wszystkich
-    private String resolveCity() {
-        return environment.getActiveProfiles()[0].equals(ProfilesEnum.DZIESIATKA.getName()) || environment.getActiveProfiles()[0].equals(ProfilesEnum.TEST.getName()) ? "Łódź" : environment.getActiveProfiles()[0].equals(ProfilesEnum.PANASZEW.getName()) ? "Panaszew" : "";
     }
 }

@@ -15,7 +15,8 @@ public class MemberInfo {
     String secondName;
     String firstName;
     String name;
-    String arbiterClass;
+    String arbiterStaticClass;
+    String arbiterDynamicClass;
     int id;
     Integer legitimationNumber;
     boolean isActive;

@@ -75,10 +75,10 @@ public class StartsMetricPdfGenerator {
         document.addTitle(fileName);
         document.addCreationDate();
 
-        List<String> comp = competitions.stream().map(m -> competitionRepository.getOne(m).getName()).filter(value -> !value.contains(" pneumatyczny ") && !value.contains(" pneumatyczna ")).sorted().collect(Collectors.toList());
+        List<String> comp = competitions.stream().map(m -> competitionRepository.findById(m).orElseThrow(EntityNotFoundException::new).getName()).filter(value -> !value.contains(" pneumatyczny ") && !value.contains(" pneumatyczna ")).sorted().collect(Collectors.toList());
 
         // dopisz pneumatyczne na końcu
-        competitions.stream().map(m -> competitionRepository.getOne(m).getName()).filter(competition -> competition.contains(" pneumatyczny ") || competition.contains(" pneumatyczna ")).sorted().forEach(comp::add);
+        competitions.stream().map(m -> competitionRepository.findById(m).orElseThrow(EntityNotFoundException::new).getName()).filter(competition -> competition.contains(" pneumatyczny ") || competition.contains(" pneumatyczna ")).sorted().forEach(comp::add);
 
         for (int j = 0; j < comp.size(); j++) {
             int d = Integer.parseInt(startNumber);

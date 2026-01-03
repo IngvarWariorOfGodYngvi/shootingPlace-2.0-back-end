@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.tournament;
 
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
+import com.shootingplace.shootingplace.tournament.axis.ShootingAxisEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -26,29 +27,36 @@ public class TournamentEntity {
 
     @ManyToOne
     private MemberEntity mainArbiter;
+
     @ManyToOne
     private MemberEntity commissionRTSArbiter;
-    @ManyToMany
-    private List<MemberEntity> arbitersList;
-    @ManyToMany
-    private List<MemberEntity> arbitersRTSList;
 
     @ManyToOne
     private OtherPersonEntity otherMainArbiter;
+
     @ManyToOne
     private OtherPersonEntity otherCommissionRTSArbiter;
+
     @ManyToMany
-    private List<OtherPersonEntity> otherArbitersList;
+    private List<MemberEntity> arbitersRTSList;
+
     @ManyToMany
     private List<OtherPersonEntity> otherArbitersRTSList;
 
+    @ManyToMany
+    private List<MemberEntity> technicalSupportList;
+
+    @ManyToMany
+    private List<OtherPersonEntity> otherTechnicalSupportList;
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("ordering ASC")
+    private List<ShootingAxisEntity> shootingAxis;
 
     @OneToMany(orphanRemoval = true)
     @OrderBy("ordering ASC")
     private List<CompetitionMembersListEntity> competitionsList;
+
     private boolean open;
     private boolean WZSS;
-    private boolean ranking;
-    private boolean dynamic;
-
 }

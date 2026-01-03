@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.file;
 
 import com.lowagie.text.DocumentException;
-import com.shootingplace.shootingplace.address.Address;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceEntity;
 import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceRepository;
 import com.shootingplace.shootingplace.armory.GunEntity;
@@ -14,9 +13,6 @@ import com.shootingplace.shootingplace.file.pdf.generator.*;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
-import com.shootingplace.shootingplace.otherPerson.OtherPerson;
-import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonService;
 import com.shootingplace.shootingplace.security.UserAuthContext;
@@ -37,13 +33,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,20 +88,6 @@ public class FilesService {
         FilesModel build = FilesModel.builder().name(fileName).type(file.getContentType()).data(file.getBytes()).size(file.getSize()).build();
         createFileEntity(build);
     }
-
-    public void uploadCSVOthers(MultipartFile file) throws IOException {
-
-        InputStream inputStream = file.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-        List<String> list = br.lines().toList();
-        list.forEach(e -> {
-            String[] s = e.split(";");
-            OtherPersonEntity otherPerson = otherPersonService.addPerson(s[2], OtherPerson.builder().address(new Address()).email("").phoneNumber("").memberPermissions(new MemberPermissions()).weaponPermissionNumber("").secondName(s[0].toUpperCase(Locale.ROOT)).firstName(s[1].substring(0, 1).toUpperCase(Locale.ROOT).concat(s[1].substring(1).toLowerCase(Locale.ROOT))).build());
-            otherPersonRepository.save(otherPerson);
-        });
-
-    }
-
     public List<?> getAllMemberFiles(String uuid) {
         return filesRepository.findAllByBelongToMemberUUIDEquals(uuid);
     }
@@ -119,14 +101,13 @@ public class FilesService {
         return filesRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Plik nie istnieje: " + uuid));
     }
 
-    public String store(MultipartFile file, MemberEntity member) throws IOException {
+    public void store(MultipartFile file, MemberEntity member) throws IOException {
         String name = member.getLegitimationNumber() + member.getSecondName().toUpperCase() + member.getFirstName().toUpperCase();
         FilesModel build = FilesModel.builder().name(name).type(file.getContentType()).data(file.getBytes()).size(file.getSize()).belongToMemberUUID(member.getUuid()).build();
         FilesEntity fileEntity = createFileEntity(build);
         member.setImageUUID(fileEntity.getUuid());
         memberRepository.save(member);
 
-        return fileEntity.getUuid();
     }
 
     public ResponseEntity<?> delete(String uuid) {

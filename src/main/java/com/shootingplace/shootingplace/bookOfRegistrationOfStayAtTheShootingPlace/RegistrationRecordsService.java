@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.bookOfRegistrationOfStayAtTheShootingPla
 
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.otherPerson.OtherPerson;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.users.UserEntity;
@@ -72,25 +73,25 @@ public class RegistrationRecordsService {
         }
     }
 
-    public ResponseEntity<?> createRecordInBook(String imageUUID, OtherPersonEntity otherPersonEntity) {
+    public ResponseEntity<?> createRecordInBook(String imageUUID, OtherPerson otherPerson) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();
         if (registrationRepo.findAll().stream().anyMatch(f ->
-                LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(String.valueOf(otherPersonEntity.getId())))) {
+                LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(String.valueOf(otherPerson.getId())))) {
             LOG.info("Osoba znajduje się już na liście");
             return ResponseEntity.badRequest().body("Osoba znajduje się już na liście");
         } else {
-            r.setFirstName(firstLetterToUpperCase(otherPersonEntity.getFirstName()));
-            r.setSecondName(otherPersonEntity.getSecondName().toUpperCase(Locale.ROOT));
+            r.setFirstName(firstLetterToUpperCase(otherPerson.getFirstName()));
+            r.setSecondName(otherPerson.getSecondName().toUpperCase(Locale.ROOT));
             r.setDataProcessingAgreement(true);
             r.setStatementOnReadingTheShootingPlaceRegulations(true);
-            if (otherPersonEntity.getWeaponPermissionNumber() == null) {
-                r.setAddress(otherPersonEntity.getAddress().toString());
+            if (otherPerson.getWeaponPermissionNumber() == null) {
+                r.setAddress(otherPerson.getAddress().toString());
             } else {
-                r.setWeaponPermission(otherPersonEntity.getWeaponPermissionNumber());
+                r.setWeaponPermission(otherPerson.getWeaponPermissionNumber());
             }
             r.setDateTime(LocalDateTime.now());
             r.setImageUUID(imageUUID);
-            r.setPeselOrID(String.valueOf(otherPersonEntity.getId()));
+            r.setPeselOrID(String.valueOf(otherPerson.getId()));
             r.setDayIndex(getDayIndex() + 1);
             String name = r.getSecondName() + ' ' + r.getFirstName();
             LOG.info("Zapisano do książki {}", name);

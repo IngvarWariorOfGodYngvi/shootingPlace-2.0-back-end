@@ -173,31 +173,7 @@ public class ArmoryService {
         });
         return all1;
     }
-
-    public void a() {
-        gunStoreRepository.findAll().forEach(e -> {
-            e.setRemovedGunEntityList(new ArrayList<>());
-            gunStoreRepository.save(e);
-        });
-    }
-
-    public void b() {
-        List<GunStoreEntity> all = gunStoreRepository.findAll();
-        gunRepository.findAll().forEach(e -> {
-            GunStoreEntity gunStoreEntity = all.stream().filter(f -> f.getTypeName().equals(e.getGunType())).findFirst().orElse(null);
-            if (!e.isInStock() && gunStoreEntity != null) {
-                List<GunEntity> gunEntityList = gunStoreEntity.getRemovedGunEntityList();
-                gunEntityList.add(e);
-                System.out.println("usuwam");
-                gunStoreEntity.setRemovedGunEntityList(gunEntityList);
-                gunStoreRepository.save(gunStoreEntity);
-            }
-        });
-    }
-
     public List<?> getAllRemovedGuns() {
-//        a();
-//        b();
         List<GunStoreEntity> all = gunStoreRepository.findAll();
         all.sort(Comparator.comparing(GunStoreEntity::getTypeName));
         List<GunStoreDTO> all1 = new ArrayList<>();

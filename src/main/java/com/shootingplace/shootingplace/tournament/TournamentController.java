@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.tournament;
 
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import com.shootingplace.shootingplace.tournament.axis.AxisArbiterType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -60,19 +61,49 @@ public class TournamentController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<String> addNewTournament(@RequestBody Tournament tournament) {
+    public ResponseEntity<String> createNewTournament(@RequestBody TournamentDTO tournament) {
         return tournamentService.createNewTournament(tournament);
     }
 
     @Transactional
-    @PostMapping("/removeArbiter/{tournamentUUID}")
-    public ResponseEntity<?> removeArbiterFromTournament(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+    @PostMapping("/axis")
+    public ResponseEntity<?> setAxisLeader(@RequestParam AxisArbiterType axisArbiterType, @RequestParam String axisLeaderID, @RequestParam String axisUUID) {
+        return tournamentService.setAxisLeader(axisArbiterType, axisLeaderID, axisUUID);
+    }
+
+    @Transactional
+    @PostMapping("/axis/arbiter")
+    public ResponseEntity<?> setAxisArbiter(@RequestParam AxisArbiterType axisArbiterType,@RequestParam String axisArbiterID, @RequestParam String axisUUID) {
+        return tournamentService.setAxisArbiter(axisArbiterType,axisArbiterID, axisUUID);
+    }
+    @Transactional
+    @DeleteMapping("/axis/arbiter")
+    public ResponseEntity<?> removeAxisArbiter(@RequestParam AxisArbiterType axisArbiterType,@RequestParam String axisArbiterID, @RequestParam String axisUUID) {
+        return tournamentService.removeAxisArbiter(axisArbiterType,axisArbiterID, axisUUID);
+    }
+    @Transactional
+    @PutMapping("/addTechnicalSupport/{tournamentUUID}")
+    public ResponseEntity<?> addOthersArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
         if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
-            return tournamentService.removeArbiterFromTournament(tournamentUUID, memberUUID);
+            return tournamentService.addTechnicalSupport(tournamentUUID, memberUUID);
         }
         if (id > 0) {
-            return tournamentService.removeOtherArbiterFromTournament(tournamentUUID, id);
+            return tournamentService.addOtherTechnicalSupport(tournamentUUID, id);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+    @Transactional
+    @PostMapping("/removeTechnicalSupport/{tournamentUUID}")
+    public ResponseEntity<?> removeTechnicalSupportFromTournament(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
+
+        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
+            return tournamentService.removeTechnicalSupportFromTournament(tournamentUUID, memberUUID);
+        }
+        if (id > 0) {
+            return tournamentService.removeOtherTechnicalSupportFromTournament(tournamentUUID, id);
         } else {
             return ResponseEntity.status(418).body("I'm a teapot");
         }
@@ -141,21 +172,6 @@ public class TournamentController {
     }
 
     @Transactional
-    @PutMapping("/addOthersArbiters/{tournamentUUID}")
-    public ResponseEntity<?> addOthersArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
-
-        if (memberUUID != null && !memberUUID.isEmpty() && !memberUUID.equals("null")) {
-            return tournamentService.addOthersArbiters(tournamentUUID, memberUUID);
-        }
-        if (id > 0) {
-            return tournamentService.addPersonOthersArbiters(tournamentUUID, id);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-
-    }
-
-    @Transactional
     @PutMapping("/addOthersRTSArbiters/{tournamentUUID}")
     public ResponseEntity<?> addOthersRTSArbiters(@PathVariable String tournamentUUID, @RequestParam String memberUUID, @RequestParam int id) {
 
@@ -188,6 +204,7 @@ public class TournamentController {
 
     @Transactional
     @DeleteMapping("/delete/{tournamentUUID}")
+    @RequirePermissions({UserSubType.ADMIN, UserSubType.MANAGEMENT, UserSubType.SUPER_USER, UserSubType.WORKER})
     public ResponseEntity<?> deleteTournament(@PathVariable String tournamentUUID) {
         return tournamentService.deleteTournament(tournamentUUID);
     }

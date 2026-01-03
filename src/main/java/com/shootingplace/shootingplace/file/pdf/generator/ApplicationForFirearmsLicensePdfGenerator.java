@@ -37,7 +37,6 @@ public class ApplicationForFirearmsLicensePdfGenerator {
             case "Szczecin" -> "w Szczecinie";
             case "Warszawa" -> "w Warszawie";
             case "Wrocław" -> "we Wrocławiu";
-            case "Łódź" -> "w Łodzi";
             default -> "w Łodzi";
         };
 

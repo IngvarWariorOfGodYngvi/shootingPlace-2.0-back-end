@@ -48,22 +48,22 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> createUser(String firstName, String secondName, List<String> userPermissionsList, String pinCode, String superPinCode, String memberUUID, Integer otherID) {
-        String pin = Hashing.sha256().hashString(pinCode, StandardCharsets.UTF_8).toString();
+    public ResponseEntity<?> createUser(UserCreateDTO user, String superPinCode) {
+        String pin = Hashing.sha256().hashString(user.getPinCode(), StandardCharsets.UTF_8).toString();
         String superPin = Hashing.sha256().hashString(superPinCode, StandardCharsets.UTF_8).toString();
         if (userRepository.findAll().stream().filter(f -> f.getPinCode().equals(superPin)).noneMatch(a -> a.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()))) {
             return ResponseEntity.badRequest().body("Nie można utworzyć użytkownika. Brak użytkownika z uprawnieniami.");
         }
-        if ((firstName.trim().isEmpty() || firstName.equals("null")) || secondName.trim().isEmpty() || secondName.equals("null") || (pinCode.trim().isEmpty() || pinCode.equals("null"))) {
+        if ((user.getFirstName().isEmpty() || user.getFirstName().equals("null")) || user.getSecondName().trim().isEmpty() || user.getSecondName().equals("null") || (user.getPinCode().trim().isEmpty() || user.getPinCode().equals("null"))) {
             return ResponseEntity.badRequest().body("Musisz podać jakieś informacje.");
         }
-        String[] s1 = firstName.split(" ");
+        String[] s1 = user.getFirstName().split(" ");
         StringBuilder trim = new StringBuilder();
         for (String value : s1) {
             String splinted = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase() + " ";
             trim.append(splinted);
         }
-        String[] s2 = secondName.split(" ");
+        String[] s2 = user.getSecondName().split(" ");
         StringBuilder trim1 = new StringBuilder();
         for (String value : s2) {
             String splinted = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase() + " ";
@@ -77,19 +77,23 @@ public class UserService {
         if (b) {
             return ResponseEntity.badRequest().body("Wymyśl inny Kod PIN");
         }
-        if (memberUUID != null && !memberUUID.isEmpty() && !memberRepository.existsById(memberUUID)) {
+        if (user.getMemberUUID() != null && !user.getMemberUUID().isEmpty() && !memberRepository.existsById(user.getMemberUUID())) {
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza o podanym identyfikatorze - nie można utworzyć użytkownika");
         }
         try {
-            userPinPolicy.validate(pinCode);
+            userPinPolicy.validate(user.getPinCode());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(409).body(e.getMessage());
         }
-        if (otherID == null) {
-            otherID = 0;
-        }
-        UserEntity userEntity = UserEntity.builder().firstName(trim.toString()).secondName(trim1.toString()).pinCode(pin).active(true).otherID(otherID).member(memberRepository.findById(memberUUID).orElse(null)).build();
-        userEntity.setUserPermissionsList(userPermissionsList);
+        UserEntity userEntity = UserEntity.builder()
+                .firstName(trim.toString())
+                .secondName(trim1.toString())
+                .pinCode(pin)
+                .active(true)
+                .otherID(user.getOtherID())
+                .member(memberRepository.findById(user.getMemberUUID()).orElse(null))
+                .build();
+        userEntity.setUserPermissionsList(user.getUserPermissionsList());
         userRepository.save(userEntity);
         UserEntity actor = userAuthService.getAuthenticatedUser(superPinCode);
         changeHistoryService.record(actor, UserEntity.class.getSimpleName() + " createUser", userEntity.getUuid());
@@ -97,7 +101,7 @@ public class UserService {
 
     }
 
-    public ResponseEntity<?> editUser(String firstName, String secondName, List<String> userPermissionsList, String pinCode, String superPinCode, String memberUUID, String otherID, String userUUID) {
+    public ResponseEntity<?> editUser(UserCreateDTO user, String superPinCode, String userUUID) {
 
         String superPin = Hashing.sha256().hashString(superPinCode, StandardCharsets.UTF_8).toString();
         if (userRepository.findAll().stream().filter(f -> f.getPinCode().equals(superPin)).noneMatch(a -> a.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()))) {
@@ -106,9 +110,9 @@ public class UserService {
         UserEntity entity = userRepository.findById(userUUID).orElseThrow(EntityNotFoundException::new);
         StringBuilder trim = new StringBuilder();
         StringBuilder trim1 = new StringBuilder();
-        if (firstName != null && !firstName.equals("null") && !firstName.isEmpty()) {
+        if (user.getFirstName() != null && !user.getFirstName().equals("null") && !user.getFirstName().isEmpty()) {
 
-            String[] s1 = firstName.split(" ");
+            String[] s1 = user.getFirstName().split(" ");
             for (String value : s1) {
                 String splinted = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase() + " ";
                 trim.append(splinted);
@@ -116,9 +120,9 @@ public class UserService {
         } else {
             trim.append(entity.getFirstName());
         }
-        if (secondName != null && !secondName.equals("null") && !secondName.isEmpty()) {
+        if (user.getSecondName() != null && !user.getSecondName().equals("null") && !user.getSecondName().isEmpty()) {
 
-            String[] s2 = secondName.split(" ");
+            String[] s2 = user.getSecondName().split(" ");
             for (String value : s2) {
                 String splinted = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase() + " ";
                 trim1.append(splinted);
@@ -126,7 +130,7 @@ public class UserService {
         } else {
             trim1.append(entity.getSecondName());
         }
-        if (firstName != null || secondName != null) {
+        if (user.getFirstName() != null || user.getSecondName() != null) {
             boolean anyMatch = userRepository.findAll().stream().anyMatch(a -> a.getFirstName().contentEquals(trim) && a.getSecondName().contentEquals(trim1) && !a.getUuid().equals(userUUID));
             if (anyMatch) {
                 return ResponseEntity.status(406).body("Taki użytkownik już istnieje.");
@@ -135,15 +139,15 @@ public class UserService {
                 entity.setSecondName(trim1.toString());
             }
         }
-        if (pinCode != null) {
+        if (user.getPinCode() != null) {
             try {
-                userPinPolicy.validate(pinCode);
+                userPinPolicy.validate(user.getPinCode());
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.status(409).body(e.getMessage());
             }
 
             String pin = Hashing.sha256()
-                    .hashString(pinCode, StandardCharsets.UTF_8)
+                    .hashString(user.getPinCode(), StandardCharsets.UTF_8)
                     .toString();
 
             if (userRepository.existsByPinCode(pin)) {
@@ -152,18 +156,18 @@ public class UserService {
 
             entity.setPinCode(pin);
         }
-        if (userPermissionsList != null && !userPermissionsList.isEmpty()) {
-            entity.setUserPermissionsList(userPermissionsList);
+        if (user.getUserPermissionsList() != null && !user.getUserPermissionsList().isEmpty()) {
+            entity.setUserPermissionsList(user.getUserPermissionsList());
         }
-        if (memberUUID != null && !memberUUID.equals("null") && !memberUUID.isEmpty() && !memberUUID.equals("undefined")) {
-            if (memberRepository.existsById(memberUUID)) {
-                entity.setMember(memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new));
+        if (user.getMemberUUID() != null && !user.getMemberUUID().equals("null") && !user.getMemberUUID().isEmpty() && !user.getMemberUUID().equals("undefined")) {
+            if (memberRepository.existsById(user.getMemberUUID())) {
+                entity.setMember(memberRepository.findById(user.getMemberUUID()).orElseThrow(EntityNotFoundException::new));
                 entity.setOtherID(null);
             }
         }
-        if (otherID != null && !otherID.equals("null") && !otherID.isEmpty() && !otherID.equals("undefined")) {
-            if (otherPersonRepository.existsById(Integer.parseInt(otherID))) {
-                entity.setOtherID(Integer.valueOf(otherID));
+        if (user.getOtherID() != null && user.getOtherID() != 0) {
+            if (otherPersonRepository.existsById(user.getOtherID())) {
+                entity.setOtherID(user.getOtherID());
                 entity.setMember(null);
             }
         }
@@ -244,7 +248,7 @@ public class UserService {
     }
 
     @RecordHistory(action = "User.delete", entity = HistoryEntityType.USER, entityArgIndex = 0)
-    public ResponseEntity<?> deleteUser(String userID){
+    public ResponseEntity<?> deleteUser(String userID) {
         UserEntity targetUser = userRepository.findById(userID).orElseThrow(EntityNotFoundException::new);
         targetUser.setActive(false);
         userRepository.save(targetUser);

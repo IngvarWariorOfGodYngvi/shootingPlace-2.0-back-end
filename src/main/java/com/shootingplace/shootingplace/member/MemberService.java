@@ -12,7 +12,7 @@ import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.license.LicenseRepository;
 import com.shootingplace.shootingplace.license.LicenseService;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissionsService;
+import com.shootingplace.shootingplace.member.permissions.PermissionService;
 import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatentService;
 import com.shootingplace.shootingplace.users.UserEntity;
@@ -44,7 +44,7 @@ public class MemberService {
     private final ContributionService contributionService;
     private final HistoryService historyService;
     private final WeaponPermissionService weaponPermissionService;
-    private final MemberPermissionsService memberPermissionsService;
+    private final PermissionService permissionService;
     private final ClubRepository clubRepository;
     private final ErasedRepository erasedRepository;
     private final MemberGroupRepository memberGroupRepository;
@@ -53,10 +53,6 @@ public class MemberService {
 
     private static final Logger LOG = LogManager.getLogger(MemberService.class);
     private static final Collator PL_COLLATOR = Collator.getInstance(Locale.forLanguageTag("pl"));
-
-    public List<MemberInfo> getArbiters() {
-        return memberRepository.findAllByErasedFalseAndMemberPermissions_ArbiterStaticNumberIsNotNull().stream().map(Mapping::map2).sorted(Comparator.comparing(MemberInfo::getSecondName, PL_COLLATOR).thenComparing(MemberInfo::getFirstName, PL_COLLATOR)).toList();
-    }
 
     @Transactional
     public void checkMembers() {
@@ -138,7 +134,7 @@ public class MemberService {
         member.setLicense(licenseService.getLicense());
         member.setHistory(historyService.getHistory());
         member.setWeaponPermission(weaponPermissionService.getWeaponPermission());
-        member.setMemberPermissions(memberPermissionsService.getMemberPermissions());
+        member.setMemberPermissions(permissionService.getMemberPermissions());
         member.setPersonalEvidence(PersonalEvidence.builder().ammoList(new ArrayList<>()).build());
 
         member.setPzss(false);
@@ -146,7 +142,6 @@ public class MemberService {
         member.setActive(true);
 
         MemberEntity saved = memberRepository.save(Mapping.map(member));
-
         MemberGroupEntity group = memberGroupRepository.findByName(member.getGroup()).orElseThrow(() -> new IllegalStateException("Nie znaleziono grupy"));
 
         saved.setSignBy(user.getFullName());

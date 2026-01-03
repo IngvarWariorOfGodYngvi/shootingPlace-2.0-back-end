@@ -15,7 +15,7 @@ public class UpdateService {
     private final Logger log = LogManager.getLogger();
     private final UpdateAgentProperties props;
 
-    public void startUpdateAgent() {
+    public void     startUpdateAgent() {
         try {
             File dir = new File(props.getDir());
 

@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.bookOfRegistrationOfStayAtTheShootingPlace;
 
 import com.shootingplace.shootingplace.file.FilesService;
-import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonService;
 import com.shootingplace.shootingplace.wrappers.ImageOtherPersonWrapper;
 import jakarta.validation.constraints.NotNull;
@@ -42,8 +41,8 @@ public class RegistrationRecordsController {
         String imageUUID = filesService.storeImageEvidenceBook(other,other.getImageString() );
         // tworzenie osoby spoza Klubu, bo wyrazi zgodę
         if (rememberMe) {
-            OtherPersonEntity otherPerson = otherPersonService.addPerson(other.getOther().getClub().getShortName(), other.getOther());
-            return recordsServ.createRecordInBook(imageUUID,otherPerson);
+            otherPersonService.addPerson(other.getOther());
+            return recordsServ.createRecordInBook(imageUUID,other.getOther());
         }
         // bez tworzenia osoby - wpis bez zapisu człowieka do bazy
         return recordsServ.createRecordInBook(imageUUID, other);

@@ -88,12 +88,10 @@ public class BarCodeCardService {
         }
         String belongsTo = barCodeCardEntity.getBelongsTo();
         MemberEntity member;
-        // szukam u userów
         UserEntity userEntity = userRepository.findById(belongsTo).orElseThrow(EntityNotFoundException::new);
         if (userEntity != null) {
             member = userEntity.getMember();
         } else {
-            // szukam u memberów
             member = memberRepository.findById(belongsTo).orElseThrow(EntityNotFoundException::new);
         }
         if (member != null) {

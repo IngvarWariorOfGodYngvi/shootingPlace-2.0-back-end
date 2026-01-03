@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class OtherPerson {
-
     private String id;
     private String firstName;
     private String secondName;

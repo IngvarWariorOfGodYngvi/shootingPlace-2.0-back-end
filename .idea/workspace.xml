@@ -4,11 +4,67 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="close soft refactor">
+    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="reformat all pinCodes, deleting all auth from methods and controllers, fix some entities, fix CompetitionHistory">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ApiErrorHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/PermissionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/AxisArbiterType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserCreateDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b00d6c6d-665f-43c2-96fc-0ac7314ebd1b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b00d6c6d-665f-43c2-96fc-0ac7314ebd1b.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/UpdateAgentProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/UpdateAgentProperties.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/settings/SettingsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/settings/SettingsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoUsedPersonal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoUsedPersonal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/AmmoInEvidenceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/AmmoInEvidenceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/Caliber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/Caliber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CaliberEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CaliberEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CalibersAddedEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CalibersAddedEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/UpdateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/UpdateService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/enums/ArbiterDynamicClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/enums/ArbiterDynamicClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/enums/ArbiterStaticClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/enums/ArbiterStaticClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/NoUserPermissionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ExceptionsHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ExceptionsHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ApplicationForFirearmsLicensePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ApplicationForFirearmsLicensePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/LokMembershipPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/LokMembershipPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MemberLegitimationPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MemberLegitimationPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/PersonalCardPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/PersonalCardPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/StartsMetricPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/StartsMetricPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentJudgesPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentJudgesPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/HistoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/HistoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPerson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPerson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/StatisticsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/statistics/StatisticsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/CompetitionMembersListService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/CompetitionMembersListService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/Tournament.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/Tournament.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +84,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
       </list>
@@ -79,21 +136,28 @@
     &quot;Maven.shootingplace [clean,package].executor&quot;: &quot;Run&quot;,
     &quot;Maven.shootingplace [clean].executor&quot;: &quot;Run&quot;,
     &quot;Maven.shootingplace [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.shootingplace [install].executor&quot;: &quot;Run&quot;,
     &quot;Maven.shootingplace [package].executor&quot;: &quot;Run&quot;,
     &quot;Maven.shootingplace [spring-boot:run].executor&quot;: &quot;Run&quot;,
     &quot;Maven.shootingplace [validate].executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ShootingplaceApplication.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/izebr/Projekty/Strzelnica/back-end/shootingPlace-2.0-back-end/src/test/resources&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.updates&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -126,8 +190,19 @@
         <option value="SpringBootApplicationConfigurationType" />
       </set>
     </option>
+    <option name="hiddenConfigurations">
+      <map>
+        <entry key="SpringBootApplicationConfigurationType">
+          <value>
+            <set>
+              <option value="ShootingplaceApplication" />
+            </set>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
-  <component name="RunManager" selected="Maven.shootingplace [clean,package]">
+  <component name="RunManager" selected="Spring Boot.ShootingplaceApplication">
     <configuration name="All in shootingplace2.0" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="shootingplace2.0" />
       <option name="PACKAGE_NAME" value="" />
@@ -197,44 +272,29 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
-    <configuration name="ShootingplaceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
-      <option name="ALTERNATIVE_JRE_PATH" value="21" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-      <module name="shootingplace2.0" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.shootingplace.shootingplace.ShootingplaceApplication" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.shootingplace.shootingplace.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="ShootingplaceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
+      <option name="ACTIVE_PROFILES" value="guardians" />
       <module name="shootingplace" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.shootingplace.shootingplace.ShootingplaceApplication" />
+      <option name="VM_PARAMETERS" value="-Dspring.config.additional-location=file:/$PROJECT_DIR$/../../../../../../shootingplace/config/" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.shootingplace.shootingplace.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.shootingplace.shootingplace.ShootingplaceApplication" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
       <item itemvalue="JUnit.All in shootingplace2.0" />
-      <item itemvalue="Maven.shootingplace [spring-boot:run]" />
       <item itemvalue="Maven.shootingplace [clean,package]" />
+      <item itemvalue="Maven.shootingplace [spring-boot:run]" />
       <item itemvalue="Spring Boot.ShootingplaceApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Spring Boot.ShootingplaceApplication" />
         <item itemvalue="Spring Boot.ShootingplaceApplication" />
         <item itemvalue="JUnit.All in shootingplace2.0" />
       </list>
@@ -243,8 +303,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-cffe25b9f5b3-intellij.indexing.shared.core-IU-253.28294.334" />
-        <option value="bundled-js-predefined-d6986cc7102b-c7e53b3be11b-JavaScript-IU-253.28294.334" />
+        <option value="bundled-jdk-30f59d01ecdd-26cb7f24e5b0-intellij.indexing.shared.core-IU-253.29346.138" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.29346.138" />
       </set>
     </attachedChunks>
   </component>
@@ -311,7 +371,35 @@
       <workItem from="1766416651877" duration="7299000" />
       <workItem from="1766443566686" duration="13470000" />
       <workItem from="1766478228708" duration="10224000" />
-      <workItem from="1766496442179" duration="997000" />
+      <workItem from="1766496442179" duration="2097000" />
+      <workItem from="1766500695575" duration="25000" />
+      <workItem from="1766500967632" duration="4725000" />
+      <workItem from="1766523184698" duration="609000" />
+      <workItem from="1766533750439" duration="312000" />
+      <workItem from="1766567858148" duration="26703000" />
+      <workItem from="1766683753716" duration="13977000" />
+      <workItem from="1766705794033" duration="6479000" />
+      <workItem from="1766746746003" duration="410000" />
+      <workItem from="1766777456589" duration="26542000" />
+      <workItem from="1766830725329" duration="36876000" />
+      <workItem from="1766945009312" duration="3623000" />
+      <workItem from="1767000295737" duration="8904000" />
+      <workItem from="1767026230168" duration="10371000" />
+      <workItem from="1767085821076" duration="1580000" />
+      <workItem from="1767095209996" duration="2415000" />
+      <workItem from="1767138816168" duration="2011000" />
+      <workItem from="1767190507801" duration="1000" />
+      <workItem from="1767192291589" duration="12020000" />
+      <workItem from="1767303525951" duration="2960000" />
+      <workItem from="1767339568099" duration="12841000" />
+      <workItem from="1767389263431" duration="4426000" />
+      <workItem from="1767398420493" duration="1255000" />
+      <workItem from="1767429738102" duration="5820000" />
+      <workItem from="1767457935526" duration="7581000" />
+      <workItem from="1767469729513" duration="396000" />
+      <workItem from="1767470649812" duration="1606000" />
+      <workItem from="1767473879364" duration="119000" />
+      <workItem from="1767475242403" duration="403000" />
     </task>
     <task id="LOCAL-00001" summary="after part of refactor, prepare to update agent.">
       <option name="closed" value="true" />
@@ -345,7 +433,31 @@
       <option name="project" value="LOCAL" />
       <updated>1766491920735</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fix bug in UpdateAgentProperties.">
+      <option name="closed" value="true" />
+      <created>1766498561786</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1766498561786</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix bug in ScoreEntity and ScoreService, fix PageStamper and files, refactor xlsx files, start updated dynamic Judge.">
+      <option name="closed" value="true" />
+      <created>1766780685940</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1766780685940</updated>
+    </task>
+    <task id="LOCAL-00007" summary="reformat all pinCodes, deleting all auth from methods and controllers, fix some entities, fix CompetitionHistory">
+      <option name="closed" value="true" />
+      <created>1766806899108</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1766806899108</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -371,10 +483,20 @@
     <MESSAGE value="part of refactor, add license public key" />
     <MESSAGE value="part of refactor and fix typos" />
     <MESSAGE value="close soft refactor" />
-    <option name="LAST_COMMIT_MESSAGE" value="close soft refactor" />
+    <MESSAGE value="fix bug in UpdateAgentProperties." />
+    <MESSAGE value="fix bug in ScoreEntity and ScoreService, fix PageStamper and files, start upadated dynamic Judge." />
+    <MESSAGE value="fix bug in ScoreEntity and ScoreService, fix PageStamper and files, refactor xlsx files, start upadated dynamic Judge." />
+    <MESSAGE value="fix bug in ScoreEntity and ScoreService, fix PageStamper and files, refactor xlsx files, start updated dynamic Judge." />
+    <MESSAGE value="reformat all pinCodes, deleting all auth from methods and controllers, fix some entities, fix CompetitionHistory" />
+    <option name="LAST_COMMIT_MESSAGE" value="reformat all pinCodes, deleting all auth from methods and controllers, fix some entities, fix CompetitionHistory" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/shootingPlace_2_0_back_end$ShootingplaceApplication.ic" NAME="ShootingplaceApplication Coverage Results" MODIFIED="1766534005634" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.shootingplace.shootingplace.*</FILTER>
+    </SUITE>
   </component>
 </project>

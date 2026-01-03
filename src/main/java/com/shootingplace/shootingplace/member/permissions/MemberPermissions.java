@@ -15,11 +15,12 @@ public class MemberPermissions {
     private String shootingLeaderNumber;
 
     private String arbiterStaticNumber;
-
     private String arbiterStaticClass;
     private LocalDate arbiterStaticPermissionValidThru;
+    private LocalDate arbiterStaticPermissionIssuedAt;
 
     private String arbiterDynamicNumber;
     private String arbiterDynamicClass;
     private LocalDate arbiterDynamicPermissionValidThru;
+    private LocalDate arbiterDynamicPermissionIssuedAt;
 }

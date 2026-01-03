@@ -96,19 +96,6 @@ public class EmailService {
         }
         sendAndSaveEmail(request, message, mailType, memberUUID);
     }
-//
-//    private String getBcc() {
-//        String activeProfile = environment.getActiveProfiles()[0];
-//        switch (activeProfile) {
-//            case "test":
-//            case "prod":
-//                return "odautomatu@ksdziesiatka.pl";
-//            case "rcs":
-//                return "biuro@rcspanaszew.pl";
-//        }
-//
-//        return activeProfile;
-//    }
 
     private String sendAndSaveEmail(EmailRequest request, MimeMessage message, String mailType, String memberUUID) {
         MemberEntity memberEntity = memberRepository.findById(memberUUID).orElse(null);
@@ -496,7 +483,7 @@ public class EmailService {
     }
 
     public ResponseEntity<?> deleteScheduledMail(String uuid) {
-        scheduledEmailRepository.delete(scheduledEmailRepository.getByUuid(uuid));
+        scheduledEmailRepository.delete(scheduledEmailRepository.findById(uuid).orElseThrow(EntityNotFoundException::new));
         return ResponseEntity.ok("skasowano");
     }
 

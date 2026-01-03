@@ -4,17 +4,22 @@ import lombok.Getter;
 
 @Getter
 public enum ArbiterStaticClass {
-    CLASS_3("Klasa 3"),
-    CLASS_2("Klasa 2"),
-    CLASS_1("Klasa 1"),
-    CLASS_STATE("Klasa Państwowa"),
-    CLASS_INTERNATIONAL("Klasa Międzynarodowa");
-
+    III("Klasa 3"),
+    II("Klasa 2"),
+    I("Klasa 1"),
+    P("Klasa Państwowa");
     private final String name;
 
     ArbiterStaticClass(String name) {
         this.name = name;
     }
 
-
+    public static ArbiterStaticClass fromName(String name) {
+        for (ArbiterStaticClass arbiterClass : values()) {
+            if (arbiterClass.name.equalsIgnoreCase(name)) {
+                return arbiterClass;
+            }
+        }
+        throw new IllegalArgumentException("Nieznana klasa: " + name);
+    }
 }

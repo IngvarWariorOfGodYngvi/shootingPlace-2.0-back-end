@@ -14,5 +14,12 @@ public enum ArbiterDynamicClass {
     ArbiterDynamicClass(String name) {
         this.name = name;
     }
-
+    public static ArbiterDynamicClass fromName(String name) {
+        for (ArbiterDynamicClass arbiterClass : values()) {
+            if (arbiterClass.name.equalsIgnoreCase(name)) {
+                return arbiterClass;
+            }
+        }
+        throw new IllegalArgumentException("Nieznana klasa: " + name);
+    }
 }

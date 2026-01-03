@@ -28,7 +28,6 @@ public class AmmoInEvidenceService {
         //      Nie znaleziono żadnej listy
         if (!ammoEvidenceRepository.existsByOpenTrue()) {
             if (ammoUsedToEvidenceEntity.getCounter() < 0) {
-                LOG.info("nie można dodać ujemnej wartości");
             } else {
 //                nadawanie numeru listy
                 int number;
@@ -109,7 +108,6 @@ public class AmmoInEvidenceService {
                 List<AmmoUsedToEvidenceEntity> ammoUsedToEvidenceEntityList = ammoInEvidenceEntity.getAmmoUsedToEvidenceEntityList();
                 if (ammoUsedToEvidenceEntityList.stream().noneMatch(f -> f.getName().equals(ammoUsedToEvidenceEntity.getName()))) {
                     if (ammoUsedToEvidenceEntity.getCounter() <= 0) {
-                        LOG.info("nie można dodać ujemnej wartości");
                         return false;
                     } else {
                         ammoUsedToEvidenceEntityList.add(ammoUsedToEvidenceEntity);

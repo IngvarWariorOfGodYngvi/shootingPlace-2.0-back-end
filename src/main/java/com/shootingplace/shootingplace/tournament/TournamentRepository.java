@@ -9,4 +9,6 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity,Str
     Page<TournamentEntity> findAllByOpenIsFalse(Pageable page);
 
     TournamentEntity findByOpenIsTrue();
+
+    boolean existsByOpenTrue();
 }
