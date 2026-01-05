@@ -24,5 +24,7 @@ public class AmmoUsedToEvidenceDTO {
 
     private Integer IDNumber;
 
+    private float unitPrice;
 
+    private float unitPriceForNonMember;
 }

@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,9 +41,9 @@ public class ShootingAxisEntity {
     private AxisArbiterType leaderType;
 
     @ManyToMany
-    private List<MemberEntity> axisArbiters = new ArrayList<>();
+    private List<MemberEntity> axisArbiters;
 
     @ManyToMany
-    private List<OtherPersonEntity> otherAxisArbiters = new ArrayList<>();
+    private List<OtherPersonEntity> otherAxisArbiters;
 }
 

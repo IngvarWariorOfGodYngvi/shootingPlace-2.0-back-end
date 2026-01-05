@@ -98,6 +98,8 @@ public class EmailService {
     }
 
     private String sendAndSaveEmail(EmailRequest request, MimeMessage message, String mailType, String memberUUID) {
+        EmailConfig configEntity = emailConfigRepository.findAll().stream().findFirst().orElse(null);
+        if (configEntity == null) return "Brak konfiguracji";
         MemberEntity memberEntity = memberRepository.findById(memberUUID).orElse(null);
 
         SentEmail log = new SentEmail();
@@ -113,7 +115,7 @@ public class EmailService {
             if (!checkSendingEmails()) {
                 LOG.info("Udaję, że wysyłam mail");
             } else {
-//                mailSender.send(message);
+                mailSender.send(message);
                 LOG.info("Mail został wysłany do:{}", log.getRecipient());
             }
             SentEmail save = sentEmailRepository.save(log);

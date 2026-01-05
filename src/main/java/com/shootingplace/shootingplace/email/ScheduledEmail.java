@@ -1,15 +1,13 @@
 package com.shootingplace.shootingplace.email;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,28 +28,4 @@ public class ScheduledEmail {
     private String mailType;
 
     private String memberUUID;
-
-    public void setRecipient(String toAddress) {
-        this.recipient = toAddress;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public void setHtmlContent(String content) {
-        this.htmlContent = content;
-    }
-
-    public void setScheduledFor(LocalDateTime scheduledFor) {
-        this.scheduledFor = scheduledFor;
-    }
-
-    public void setMailType(String mailType) {
-        this.mailType = mailType;
-    }
-
-    public void setMemberUUID(String memberUUID) {
-        this.memberUUID = memberUUID;
-    }
 }

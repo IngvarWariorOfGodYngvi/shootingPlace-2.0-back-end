@@ -303,14 +303,14 @@ public class ArmoryService {
         List<String> response = new ArrayList<>();
 
         // Pobieramy tylko potrzebne użycia z danego dnia (zamiast findAll())
-        List<GunUsedEntity> usedToday = gunUsedRepository.findAllByAcceptanceDateBetween(date, date);
+        List<GunUsedEntity> usedToday = gunUsedRepository.findAllByUsedDate(LocalDate.now());
         for (String gunUUID : gunUUIDList) {
             GunEntity gun = gunRepository.findById(gunUUID).orElse(null);
             if (gun == null) {
                 response.add("Nie ma takiej broni");
                 continue;
             }
-            boolean alreadyOnList = usedToday.stream().anyMatch(a -> gunUUID.equals(a.getGunUUID()) && a.getAcceptanceSign() == null);
+            boolean alreadyOnList = usedToday.stream().anyMatch(a -> gunUUID.equals(a.getGunUUID()));
             if (alreadyOnList) {
                 response.add("Broń już znajduje się na liście: " + gun.getModelName() + " " + gun.getSerialNumber());
                 continue;

@@ -6,7 +6,7 @@ import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.domain.Person;
 import com.shootingplace.shootingplace.history.HistoryEntity;
 import com.shootingplace.shootingplace.license.LicenseEntity;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissionsEntity;
+import com.shootingplace.shootingplace.permissions.MemberPermissionsEntity;
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatentEntity;
 import com.shootingplace.shootingplace.validators.ValidPESEL;
 import com.shootingplace.shootingplace.weaponPermission.WeaponPermissionEntity;

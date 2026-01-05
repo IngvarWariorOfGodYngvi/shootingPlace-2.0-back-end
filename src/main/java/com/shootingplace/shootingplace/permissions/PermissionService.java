@@ -1,4 +1,4 @@
-package com.shootingplace.shootingplace.member.permissions;
+package com.shootingplace.shootingplace.permissions;
 
 import com.shootingplace.shootingplace.enums.ArbiterDynamicClass;
 import com.shootingplace.shootingplace.enums.ArbiterStaticClass;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class PermissionService {
 
     private static final Collator PL_COLLATOR = Collator.getInstance(Locale.forLanguageTag("pl"));
-    private final MemberPermissionsRepository memberPermissionsRepository;
+    private final PermissionsRepository permissionsRepository;
     private final MemberRepository memberRepository;
     private final OtherPersonRepository otherPersonRepository;
     private final Logger LOG = LogManager.getLogger(getClass());
@@ -68,7 +68,7 @@ public class PermissionService {
             // Sędzia dynamiczny
             handleArbiter(dto.getArbiterDynamicNumber(), dto.getArbiterDynamicClass(), dto.getArbiterDynamicPermissionIssuedAt(), dto.getArbiterDynamicPermissionValidThru(), "LD", ArbiterDynamicClass::fromName, entity::setArbiterDynamicNumber, entity::setArbiterDynamicClass, entity::setArbiterDynamicPermissionIssuedAt, entity::setArbiterDynamicPermissionValidThru, MemberPermissionsEntity::getArbiterDynamicNumber, activeMembers, "Nie można nadać uprawnień Sędziego Dynamicznego");
 
-            memberPermissionsRepository.save(entity);
+            permissionsRepository.save(entity);
             return ResponseEntity.ok("Zaktualizowano uprawnienia");
 
         } catch (IllegalStateException e) {
@@ -103,7 +103,16 @@ public class PermissionService {
         }
     }
 
+    private String extractBaseNumber(String fullNumber) {
+        // LS-123/II/23 -> 123
+        int dash = fullNumber.indexOf('-');
+        int slash = fullNumber.indexOf('/');
 
+        if (dash < 0 || slash < 0 || dash > slash) {
+            throw new IllegalStateException("Nieprawidłowy numer sędziego: " + fullNumber);
+        }
+        return fullNumber.substring(dash + 1, slash);
+    }
     private boolean isProvided(String value) {
         return value != null && !value.isBlank();
     }
@@ -116,33 +125,101 @@ public class PermissionService {
         }
     }
 
-    public ResponseEntity<?> updateMemberArbiterStaticClass(String memberUUID) {
-        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
-        MemberPermissionsEntity memberPermissions = memberEntity.getMemberPermissions();
-        String arbiterClass = memberPermissions.getArbiterStaticClass();
+    public ResponseEntity<?> updateMemberArbiterStaticClass(MemberPermissions permissions, String memberUUID) {
 
-        if (memberPermissions.getArbiterStaticNumber() == null || memberPermissions.getArbiterStaticNumber().isEmpty()) {
+        MemberPermissionsEntity entity = memberRepository.findById(memberUUID)
+                .orElseThrow(EntityNotFoundException::new)
+                .getMemberPermissions();
+
+        if (!isProvided(entity.getArbiterStaticNumber())) {
             LOG.info("nie można zaktualizować");
             return ResponseEntity.badRequest().body("nie można zaktualizować");
         }
 
-        String finalArbiterClass = arbiterClass;
-        ArbiterStaticClass arbiterStaticClass1 = Arrays.stream(ArbiterStaticClass.values()).filter(f -> f.getName().equals(finalArbiterClass)).findFirst().orElseThrow(EntityNotFoundException::new);
-        if (arbiterStaticClass1.equals(ArbiterStaticClass.III)) {
-            arbiterClass = ArbiterStaticClass.II.getName();
-        }
-        if (arbiterStaticClass1.equals(ArbiterStaticClass.II)) {
-            arbiterClass = ArbiterStaticClass.I.getName();
-        }
-        if (arbiterStaticClass1.equals(ArbiterStaticClass.I)) {
-            arbiterClass = ArbiterStaticClass.P.getName();
-        }
-        memberPermissions.setArbiterStaticClass(arbiterClass);
-        memberPermissionsRepository.save(memberPermissions);
-        return ResponseEntity.ok("Podniesiono klasę sędziego na " + arbiterClass);
+        ArbiterStaticClass current = ArbiterStaticClass.fromName(entity.getArbiterStaticClass());
 
+        String nextClass = switch (current) {
+            case III -> ArbiterStaticClass.II.getName();
+            case II  -> ArbiterStaticClass.I.getName();
+            case I   -> ArbiterStaticClass.P.getName();
+            default  -> entity.getArbiterStaticClass();
+        };
 
+        String baseNumber = extractBaseNumber(entity.getArbiterStaticNumber());
+
+        List<MemberEntity> activeMembers =
+                memberRepository.findAll().stream()
+                        .filter(m -> !m.isErased())
+                        .toList();
+
+        handleArbiter(
+                baseNumber,
+                nextClass,
+                permissions.getArbiterStaticPermissionIssuedAt(),
+                permissions.getArbiterStaticPermissionValidThru(),
+                "LS",
+                ArbiterStaticClass::fromName,
+                entity::setArbiterStaticNumber,
+                entity::setArbiterStaticClass,
+                entity::setArbiterStaticPermissionIssuedAt,
+                entity::setArbiterStaticPermissionValidThru,
+                MemberPermissionsEntity::getArbiterStaticNumber,
+                activeMembers,
+                "Nie można zaktualizować numeru sędziego"
+        );
+
+        permissionsRepository.save(entity);
+
+        return ResponseEntity.ok("Podniesiono klasę sędziego na " + nextClass);
     }
+    public ResponseEntity<?> updateMemberArbiterDynamicClass(MemberPermissions permissions, String memberUUID) {
+
+        MemberPermissionsEntity entity = memberRepository.findById(memberUUID)
+                .orElseThrow(EntityNotFoundException::new)
+                .getMemberPermissions();
+
+        if (!isProvided(entity.getArbiterDynamicNumber())) {
+            LOG.info("nie można zaktualizować");
+            return ResponseEntity.badRequest().body("nie można zaktualizować");
+        }
+
+        ArbiterDynamicClass current = ArbiterDynamicClass.fromName(entity.getArbiterDynamicClass());
+
+        String nextClass = switch (current) {
+            case ARO -> ArbiterDynamicClass.RO.getName();
+            case RO  -> ArbiterDynamicClass.CRO.getName();
+            case CRO   -> ArbiterDynamicClass.RM.getName();
+            default  -> entity.getArbiterDynamicClass();
+        };
+
+        String baseNumber = extractBaseNumber(entity.getArbiterDynamicNumber());
+
+        List<MemberEntity> activeMembers =
+                memberRepository.findAll().stream()
+                        .filter(m -> !m.isErased())
+                        .toList();
+
+        handleArbiter(
+                baseNumber,
+                nextClass,
+                permissions.getArbiterDynamicPermissionIssuedAt(),
+                permissions.getArbiterDynamicPermissionValidThru(),
+                "LD",
+                ArbiterDynamicClass::fromName,
+                entity::setArbiterDynamicNumber,
+                entity::setArbiterDynamicClass,
+                entity::setArbiterDynamicPermissionIssuedAt,
+                entity::setArbiterDynamicPermissionValidThru,
+                MemberPermissionsEntity::getArbiterDynamicNumber,
+                activeMembers,
+                "Nie można zaktualizować numeru sędziego"
+        );
+
+        permissionsRepository.save(entity);
+
+        return ResponseEntity.ok("Podniesiono klasę sędziego na " + nextClass);
+    }
+
 
     public MemberPermissions getMemberPermissions() {
         return MemberPermissions.builder().instructorNumber(null).shootingLeaderNumber(null).arbiterStaticClass(null).arbiterStaticNumber(null).arbiterStaticPermissionValidThru(null).build();

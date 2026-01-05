@@ -12,4 +12,5 @@ public interface GunUsedRepository extends JpaRepository<GunUsedEntity, String> 
     @Query(nativeQuery = true, value = "SELECT * FROM shootingplace.gun_used_entity WHERE acceptance_date BETWEEN :firstDate AND :secondDate ORDER BY acceptance_date")
     List<GunUsedEntity> findAllByAcceptanceDateBetween(@Param("firstDate") LocalDate firstDate, @Param("secondDate") LocalDate secondDate);
 
+    List<GunUsedEntity> findAllByUsedDate(LocalDate usedDate);
 }

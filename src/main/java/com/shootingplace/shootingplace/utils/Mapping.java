@@ -17,8 +17,8 @@ import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryEntity
 import com.shootingplace.shootingplace.license.License;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.member.*;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissionsEntity;
+import com.shootingplace.shootingplace.permissions.MemberPermissions;
+import com.shootingplace.shootingplace.permissions.MemberPermissionsEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.score.Score;
 import com.shootingplace.shootingplace.score.ScoreDTO;
@@ -623,6 +623,7 @@ public class Mapping {
                 .time(a.getDateTime().toLocalTime())
                 .ammoUsedToEvidenceDTOList(a.getAmmoUsedToEvidenceEntityList().stream().map(Mapping::map).collect(Collectors.toList()))
                 .quantity(a.getQuantity())
+                .price(a.getPrice())
                 .build();
     }
 

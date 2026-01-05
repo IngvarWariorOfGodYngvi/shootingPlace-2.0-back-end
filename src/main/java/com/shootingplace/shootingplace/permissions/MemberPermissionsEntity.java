@@ -1,4 +1,4 @@
-package com.shootingplace.shootingplace.member.permissions;
+package com.shootingplace.shootingplace.permissions;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

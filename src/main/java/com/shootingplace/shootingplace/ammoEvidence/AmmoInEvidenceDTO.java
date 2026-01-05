@@ -6,11 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class AmmoInEvidenceDTO {
 
     private String uuid;
@@ -27,4 +24,5 @@ public class AmmoInEvidenceDTO {
     private LocalDate date;
     private LocalTime time;
     private boolean locked;
+    private float price;
 }

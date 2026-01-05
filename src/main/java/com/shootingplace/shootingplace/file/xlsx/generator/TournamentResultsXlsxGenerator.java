@@ -3,7 +3,6 @@ package com.shootingplace.shootingplace.file.xlsx.generator;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.enums.CountingMethod;
-import com.shootingplace.shootingplace.enums.ProfilesEnum;
 import com.shootingplace.shootingplace.file.xlsx.model.XlsxGenerationResult;
 import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -25,7 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.Utils.arabicToRomanNumberConverter;
+import static com.shootingplace.shootingplace.file.utils.Utils.getArbiterClass;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +32,6 @@ public class TournamentResultsXlsxGenerator {
 
     private final TournamentRepository tournamentRepository;
     private final ClubRepository clubRepository;
-    private final Environment environment;
 
     public XlsxGenerationResult generate(String tournamentUUID) throws IOException {
 
@@ -107,7 +105,7 @@ public class TournamentResultsXlsxGenerator {
             sheet.setColumnWidth(i, 18 * 128);
         }
         cell.setCellValue(tournamentEntity.getName().toUpperCase() + " " + c.getShortName());
-        cell1.setCellValue((environment.getActiveProfiles()[0].equals(ProfilesEnum.DZIESIATKA.getName()) || environment.getActiveProfiles()[0].equals(ProfilesEnum.TEST.getName()) ? "Łódź, " : "Panaszew, ") + dateFormat(tournamentEntity.getDate()));
+        cell1.setCellValue(c.getCity());
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 6));
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 6));
 

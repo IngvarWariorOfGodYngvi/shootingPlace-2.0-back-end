@@ -338,6 +338,10 @@ public class AmmoUsedService {
                             .filter(f -> f.getIDNumber() != null && f.getIDNumber().equals(Integer.valueOf(finalIdNumber)))
                             .toList()));
         }
+        collect.forEach(e-> {
+            e.setUnitPriceForNonMember(caliberRepository.findCaliberByName(e.getCaliberName()).getUnitPriceForNotMember());
+            e.setUnitPrice(caliberRepository.findCaliberByName(e.getCaliberName()).getUnitPrice());
+        });
         return collect;
     }
 }

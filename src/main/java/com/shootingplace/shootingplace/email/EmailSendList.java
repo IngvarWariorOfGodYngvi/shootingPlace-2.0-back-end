@@ -19,17 +19,4 @@ public class EmailSendList {
     private boolean sendLicensePaymentConfirmation;
     private boolean sendIndividual;
 
-    @Override
-    public String toString() {
-        return "EmailSendList{" +
-                "uuid='" + uuid + '\'' +
-                ", sendRemindersForActiveOneMonthBefore=" + sendRemindersForActiveOneMonthBefore +
-                ", sendRemindersForNonActive=" + sendRemindersForNonActive +
-                ", sendCongratulationsOnTheAnniversary=" + sendCongratulationsOnTheAnniversary +
-                ", sendRegistrationConfirmation=" + sendRegistrationConfirmation +
-                ", sendContributionConfirmation=" + sendContributionConfirmation +
-                ", sendLicensePaymentConfirmation=" + sendLicensePaymentConfirmation +
-                ", sendIndividual=" + sendIndividual +
-                '}';
-    }
 }

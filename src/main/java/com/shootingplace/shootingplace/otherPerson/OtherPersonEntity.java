@@ -2,7 +2,7 @@ package com.shootingplace.shootingplace.otherPerson;
 
 import com.shootingplace.shootingplace.address.AddressEntity;
 import com.shootingplace.shootingplace.club.ClubEntity;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissionsEntity;
+import com.shootingplace.shootingplace.permissions.MemberPermissionsEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

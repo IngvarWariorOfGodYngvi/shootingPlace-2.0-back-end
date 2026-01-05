@@ -6,7 +6,7 @@ import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.domain.Person;
 import com.shootingplace.shootingplace.history.History;
 import com.shootingplace.shootingplace.license.License;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
+import com.shootingplace.shootingplace.permissions.MemberPermissions;
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatent;
 import com.shootingplace.shootingplace.weaponPermission.WeaponPermission;
 import lombok.*;

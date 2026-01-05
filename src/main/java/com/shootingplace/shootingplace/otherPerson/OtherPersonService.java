@@ -7,9 +7,9 @@ import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissionsEntity;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissionsRepository;
-import com.shootingplace.shootingplace.member.permissions.PermissionService;
+import com.shootingplace.shootingplace.permissions.MemberPermissionsEntity;
+import com.shootingplace.shootingplace.permissions.PermissionsRepository;
+import com.shootingplace.shootingplace.permissions.PermissionService;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static com.shootingplace.shootingplace.utils.NameNormalizer.normalizeFirstName;
+import static com.shootingplace.shootingplace.utils.NameNormalizer.normalizeSecondName;
+
 @Service
 @RequiredArgsConstructor
 public class OtherPersonService {
 
     private final ClubRepository clubRepository;
     private final OtherPersonRepository otherPersonRepository;
-    private final MemberPermissionsRepository memberPermissionsRepository;
+    private final PermissionsRepository permissionsRepository;
     private final PermissionService permissionService;
     private final AddressRepository addressRepository;
     private final Logger LOG = LogManager.getLogger();
@@ -40,15 +43,15 @@ public class OtherPersonService {
         ClubEntity clubEntity = clubRepository.findByShortName(person.getClub().getShortName());
         MemberPermissionsEntity memberPermissionsEntity = null;
         if (person.getMemberPermissions() != null) {
-            memberPermissionsEntity = memberPermissionsRepository.save(Mapping.map(person.getMemberPermissions()));
+            memberPermissionsEntity = permissionsRepository.save(Mapping.map(person.getMemberPermissions()));
         }
         AddressEntity addressEntity = null;
         if (person.getAddress() != null) {
             addressEntity = addressRepository.save(Mapping.map(person.getAddress()));
         }
         OtherPersonEntity otherPersonEntity = OtherPersonEntity.builder()
-                .firstName(person.getFirstName())
-                .secondName(person.getSecondName())
+                .firstName(normalizeFirstName(person.getFirstName()))
+                .secondName(normalizeSecondName(person.getSecondName()))
                 .phoneNumber(person.getPhoneNumber().trim().replaceAll(" ", ""))
                 .active(true)
                 .email(person.getEmail())
@@ -106,8 +109,8 @@ public class OtherPersonService {
 
         one.setPhoneNumber(coalesceText(oP.getPhoneNumber(), one.getPhoneNumber()).replaceAll(" ", ""));
 
-        one.setFirstName(coalesceText(oP.getFirstName(), one.getFirstName()));
-        one.setSecondName(coalesceText(oP.getSecondName(), one.getSecondName()));
+        one.setFirstName(normalizeFirstName(coalesceText(oP.getFirstName(), one.getFirstName())));
+        one.setSecondName(normalizeSecondName(coalesceText(oP.getSecondName(), one.getSecondName())));
 
         one.setWeaponPermissionNumber(coalesceText(oP.getWeaponPermissionNumber(), one.getWeaponPermissionNumber()));
 

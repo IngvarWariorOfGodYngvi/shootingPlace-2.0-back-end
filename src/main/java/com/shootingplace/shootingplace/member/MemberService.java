@@ -12,7 +12,7 @@ import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.license.LicenseRepository;
 import com.shootingplace.shootingplace.license.LicenseService;
-import com.shootingplace.shootingplace.member.permissions.PermissionService;
+import com.shootingplace.shootingplace.permissions.PermissionService;
 import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.shootingPatent.ShootingPatentService;
 import com.shootingplace.shootingplace.users.UserEntity;

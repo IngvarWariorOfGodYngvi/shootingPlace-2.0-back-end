@@ -4,7 +4,7 @@ import com.shootingplace.shootingplace.club.Club;
 import com.shootingplace.shootingplace.domain.Person;
 import com.shootingplace.shootingplace.enums.ErasedType;
 import com.shootingplace.shootingplace.license.License;
-import com.shootingplace.shootingplace.member.permissions.MemberPermissions;
+import com.shootingplace.shootingplace.permissions.MemberPermissions;
 import lombok.*;
 
 import java.time.LocalDate;

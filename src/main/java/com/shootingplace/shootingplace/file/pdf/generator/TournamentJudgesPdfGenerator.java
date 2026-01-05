@@ -4,6 +4,8 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
+import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
@@ -11,6 +13,7 @@ import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -24,6 +27,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
     private final TournamentRepository tournamentRepository;
     private final ClubRepository clubRepository;
+    private final Environment environment;
 
     @Override
     public PdfGenerationResults generate(String tournamentUUID) throws DocumentException, IOException {
@@ -34,8 +38,8 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
-        PdfWriter.getInstance(document, baos);
-
+        PdfWriter writer = PdfWriter.getInstance(document, baos);
+        writer.setPageEvent(new PageStamper(environment, false, true, PageStampMode.A4));
         document.open();
         document.addTitle(fileName);
         document.addCreationDate();

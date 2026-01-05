@@ -75,14 +75,18 @@ public class Utils {
     }
 
     public static String getArbiterClass(String arbiterClass) {
-        switch (arbiterClass) {
-            case "Klasa 3" -> arbiterClass = "Sędzia Klasy Trzeciej";
-            case "Klasa 2" -> arbiterClass = "Sędzia Klasy Drugiej";
-            case "Klasa 1" -> arbiterClass = "Sędzia Klasy Pierwszej";
-            case "Klasa Państwowa" -> arbiterClass = "Sędzia Klasy Państwowej";
-            case "Klasa Międzynarodowa" -> arbiterClass = "Sędzia Klasy Międzynarodowej";
+        if (arbiterClass == null) {
+            return null; // albo "" – zależnie od oczekiwań
         }
-        return arbiterClass;
+
+        return switch (arbiterClass) {
+            case "Klasa 3" -> "Sędzia Klasy Trzeciej";
+            case "Klasa 2" -> "Sędzia Klasy Drugiej";
+            case "Klasa 1" -> "Sędzia Klasy Pierwszej";
+            case "Klasa Państwowa" -> "Sędzia Klasy Państwowej";
+            case "Klasa Międzynarodowa" -> "Sędzia Klasy Międzynarodowej";
+            default -> arbiterClass;
+        };
     }
 
     public static Collator pl() {

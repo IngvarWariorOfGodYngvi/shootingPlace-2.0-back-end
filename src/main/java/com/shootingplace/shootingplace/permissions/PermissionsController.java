@@ -1,10 +1,9 @@
-package com.shootingplace.shootingplace.member.permissions;
+package com.shootingplace.shootingplace.permissions;
 
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberInfo;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
-import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonService;
 import com.shootingplace.shootingplace.users.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,11 +17,10 @@ import java.util.List;
 @RequestMapping("/permissions")
 @CrossOrigin
 @RequiredArgsConstructor
-public class MemberPermissionsController {
+public class PermissionsController {
 
     private final PermissionService permissionService;
     private final MemberRepository memberRepository;
-    private final OtherPersonRepository otherPersonRepository;
     private final OtherPersonService otherPersonService;
     private final UserService userService;
 
@@ -54,21 +52,19 @@ public class MemberPermissionsController {
         return permissionService.getAllOthersArbiters();
     }
 
-    @PutMapping("/{memberUUID}")
+    @PutMapping("/member/{memberUUID}")
     public ResponseEntity<?> updateMemberPermissions(@PathVariable String memberUUID,
                                                      @RequestBody MemberPermissions memberPermissions) {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
         return permissionService.updatePermissions(member.getMemberPermissions(), memberPermissions);
     }
-    @PutMapping("/{otherID}")
-    public ResponseEntity<?> updateOtherPermissions(@PathVariable Integer otherID,
-                                                     @RequestBody MemberPermissions memberPermissions) {
-        OtherPersonEntity otherPersonEntity = otherPersonRepository.findById(otherID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono osoby"));
-        return permissionService.updatePermissions(otherPersonEntity.getPermissionsEntity(), memberPermissions);
-    }
 
-    @PutMapping("arbiter/{memberUUID}")
-    public ResponseEntity<?> updateMemberArbiterClass(@PathVariable String memberUUID) {
-        return permissionService.updateMemberArbiterStaticClass(memberUUID);
+    @PutMapping("arbiter/static/{memberUUID}")
+    public ResponseEntity<?> updateArbiterStaticClass(@RequestBody MemberPermissions permissions,@PathVariable String memberUUID) {
+        return permissionService.updateMemberArbiterStaticClass(permissions,memberUUID);
+    }
+    @PutMapping("arbiter/dynamic/{memberUUID}")
+    public ResponseEntity<?> updateArbiterDynamicClass(@RequestBody MemberPermissions permissions,@PathVariable String memberUUID) {
+        return permissionService.updateMemberArbiterDynamicClass(permissions,memberUUID);
     }
 }
