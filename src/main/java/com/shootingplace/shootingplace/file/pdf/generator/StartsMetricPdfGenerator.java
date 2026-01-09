@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 
 @Component
 @RequiredArgsConstructor

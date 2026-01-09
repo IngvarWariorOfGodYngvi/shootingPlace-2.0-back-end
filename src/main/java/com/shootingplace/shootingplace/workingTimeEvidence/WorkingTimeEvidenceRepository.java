@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.workingTimeEvidence;
 
+import com.shootingplace.shootingplace.users.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,6 @@ public interface WorkingTimeEvidenceRepository extends JpaRepository<WorkingTime
     List<WorkingTimeEvidenceEntity> findAllByStopQuery(@Param("year") int year, @Param("month") int month);
 
     boolean existsByIsCloseFalse();
+
+    boolean existsByUserAndIsCloseFalse(UserEntity user);
 }

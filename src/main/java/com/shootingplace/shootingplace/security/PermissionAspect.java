@@ -1,7 +1,6 @@
 package com.shootingplace.shootingplace.security;
 
 import com.shootingplace.shootingplace.users.UserEntity;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,36 +30,18 @@ public class PermissionAspect {
 
         String pinCode = extractPinFromHeader();
         if (pinCode == null || pinCode.isBlank()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Brak nagłówka X-OPERATOR-PIN"
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brak nagłówka X-OPERATOR-PIN");
         }
 
-        try {
-            UserEntity user = userAuthService.authenticate(pinCode);
-
-            userAuthService.hasAnyPermission(
-                    user,
-                    rp.value(),
-                    rp.requireWork()
-            );
-
-            userAuthContext.set(user);
-
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Błędny PIN");
-        } catch (SecurityException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
-        }
+        UserEntity user = userAuthService.authenticate(pinCode);
+        userAuthService.hasAnyPermission(user, rp.value(), rp.requireWork());
+        userAuthContext.set(user);
     }
 
     private String extractPinFromHeader() {
-        ServletRequestAttributes attrs =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
-        return attrs != null
-                ? attrs.getRequest().getHeader("X-OPERATOR-PIN")
-                : null;
+        return attrs != null ? attrs.getRequest().getHeader("X-OPERATOR-PIN") : null;
     }
 }
+

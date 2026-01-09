@@ -14,6 +14,6 @@ public class ShootingPacketDTO {
 
     private String name;
     private List<CaliberForShootingPacketDTO> calibers;
-    private float price;
+    private Float price;
 
 }

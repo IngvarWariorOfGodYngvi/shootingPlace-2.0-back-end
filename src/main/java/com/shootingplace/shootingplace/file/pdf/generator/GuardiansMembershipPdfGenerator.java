@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 
 @Component
 public class GuardiansMembershipPdfGenerator {

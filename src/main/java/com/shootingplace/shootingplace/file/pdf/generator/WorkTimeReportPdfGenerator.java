@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 @Component
 @RequiredArgsConstructor
 public class WorkTimeReportPdfGenerator {

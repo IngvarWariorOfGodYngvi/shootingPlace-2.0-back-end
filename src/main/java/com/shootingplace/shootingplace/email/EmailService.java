@@ -81,14 +81,14 @@ public class EmailService {
         helper.setSubject(request.getSubject());
         helper.setText(request.getHtmlContent(), true); // HTML
         // Załączniki
-        if (request.getAttachments() != null) {
+        if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
             for (EmailRequest.Attachment attachment : request.getAttachments()) {
                 byte[] fileBytes = Base64.getDecoder().decode(attachment.getContentBase64());
                 helper.addAttachment(attachment.getFilename(), new ByteArrayResource(fileBytes), attachment.getContentType());
             }
         }
         // Inline images
-        if (request.getInlineImages() != null) {
+        if (request.getInlineImages() != null && !request.getInlineImages().isEmpty()) {
             for (EmailRequest.InlineImage image : request.getInlineImages()) {
                 byte[] imageBytes = Base64.getDecoder().decode(image.getContentBase64());
                 helper.addInline(image.getContentId(), new ByteArrayResource(imageBytes), image.getContentType());
@@ -99,23 +99,29 @@ public class EmailService {
 
     private String sendAndSaveEmail(EmailRequest request, MimeMessage message, String mailType, String memberUUID) {
         EmailConfig configEntity = emailConfigRepository.findAll().stream().findFirst().orElse(null);
-        if (configEntity == null) return "Brak konfiguracji";
-        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElse(null);
-
+        if (configEntity == null) {
+            LOG.info("Brak konfiguracji");
+            return "Brak konfiguracji";
+        }
+        MemberEntity memberEntity = null;
         SentEmail log = new SentEmail();
-
-        log.setRecipient(request.getTo());
-        log.setSubject(request.getSubject());
-        log.setContent(request.getHtmlContent());
-        log.setSentAt(LocalDateTime.now());
-        log.setMailType(mailType);
-        log.setMemberUUID(memberEntity != null ? memberEntity.getUuid() : null);
         try {
+            if (memberUUID != null) {
+                memberEntity = memberRepository.findById(memberUUID).orElse(null);
+            }
+            log.setRecipient(request.getTo());
+            log.setSubject(request.getSubject());
+            log.setContent(request.getHtmlContent());
+            log.setSentAt(LocalDateTime.now());
+            log.setMailType(mailType);
+            log.setMemberUUID(memberEntity != null ? memberEntity.getUuid() : null);
             log.setSuccess(true);
             if (!checkSendingEmails()) {
                 LOG.info("Udaję, że wysyłam mail");
             } else {
+                LOG.info("SMTP SEND start → {}", request.getTo());
                 mailSender.send(message);
+                LOG.info("SMTP SEND OK → {}", request.getTo());
                 LOG.info("Mail został wysłany do:{}", log.getRecipient());
             }
             SentEmail save = sentEmailRepository.save(log);
@@ -379,27 +385,17 @@ public class EmailService {
         if (!checkSendingEmails())
             return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
 
-        Optional<MemberEntity> byEmail = memberRepository.findAllByErasedFalse().stream().filter(f -> f.getEmail().equals(request.getTo())).findFirst();
-
-        if (byEmail.isPresent()) {
-            try {
-                ScheduledEmail email = new ScheduledEmail();
-                email.setRecipient(byEmail.get().getEmail());
-                email.setScheduledFor(LocalDateTime.now().plusMinutes(3));
-                email.setMailType(MailType.CUSTOM.getName());
-                email.setMemberUUID(byEmail.get().getUuid());
-                email.setSubject(request.getSubject());
-                email.setHtmlContent(request.getHtmlContent());
-                scheduledEmailRepository.save(email);
-                LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
-                sendRichEmail(request, MailType.CUSTOM.getName(), byEmail.get().getUuid());
-                return ResponseEntity.ok("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
-            } catch (MessagingException ex) {
-                ex.printStackTrace();
-                return ResponseEntity.badRequest().body("Wiadomość do " + request.getTo() + " nie zostanie wysłana - Brak Maila w bazie");
-            }
-        }
-        return null;
+        MemberEntity byEmail = memberRepository.findByEmail(request.getTo()).orElseThrow(EntityNotFoundException::new);
+        ScheduledEmail email = new ScheduledEmail();
+        email.setRecipient(byEmail.getEmail());
+        email.setScheduledFor(LocalDateTime.now().plusMinutes(1));
+        email.setMailType(MailType.CUSTOM.getName());
+        email.setMemberUUID(byEmail.getUuid());
+        email.setSubject(request.getSubject());
+        email.setHtmlContent(request.getHtmlContent());
+        scheduledEmailRepository.save(email);
+        LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
+        return ResponseEntity.ok("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
     }
 
     // 8
@@ -441,25 +437,19 @@ public class EmailService {
             return ResponseEntity.badRequest().body("Opcja wysyłania wiadomości email jest wyłączona");
         List<String> responses = new ArrayList<>();
         emailsList.forEach(e -> {
-            Optional<MemberEntity> byEmail = memberRepository.findAllByErasedFalse().stream().filter(f -> f.getEmail().equals(e)).findFirst();
+            Optional<MemberEntity> byEmail = memberRepository.findByEmail(e);
             if (byEmail.isPresent()) {
-                try {
-                    ScheduledEmail email = new ScheduledEmail();
-                    request.setTo(e);
-                    email.setRecipient(byEmail.get().getEmail());
-                    email.setScheduledFor(LocalDateTime.now().plusMinutes(60));
-                    email.setMailType(MailType.CUSTOM.getName());
-                    email.setMemberUUID(byEmail.get().getUuid());
-                    email.setSubject(request.getSubject());
-                    email.setHtmlContent(request.getHtmlContent());
-                    scheduledEmailRepository.save(email);
-                    LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
-                    sendRichEmail(request, MailType.CUSTOM.getName(), byEmail.get().getUuid());
-                    responses.add("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
-                } catch (MessagingException ex) {
-                    responses.add("Wiadomość do " + e + " nie zostanie wysłana - Brak Maila w bazie");
-                    ex.printStackTrace();
-                }
+                ScheduledEmail email = new ScheduledEmail();
+                request.setTo(e);
+                email.setRecipient(byEmail.get().getEmail());
+                email.setScheduledFor(LocalDateTime.now().plusMinutes(60));
+                email.setMailType(MailType.CUSTOM.getName());
+                email.setMemberUUID(byEmail.get().getUuid());
+                email.setSubject(request.getSubject());
+                email.setHtmlContent(request.getHtmlContent());
+                scheduledEmailRepository.save(email);
+                LOG.info("Zapisano mail do późniejszej wysyłki {}", email.getRecipient());
+                responses.add("Zapisano mail do późniejszej wysyłki " + email.getRecipient());
             }
         });
         return ResponseEntity.ok(responses);
@@ -502,12 +492,29 @@ public class EmailService {
         mailSender.setPassword(config.getPassword());
 
         Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.smtp.auth", config.isAuth());
+
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", String.valueOf(config.isAuth()));
+
+        // STARTTLS (587)
         props.put("mail.smtp.starttls.enable", config.isStarttls());
+        props.put("mail.smtp.starttls.required", config.getSslTrust());
+        props.put("mail.smtp.ssl.enable", "false");
+
+        props.put("mail.smtp.ssl.checkserveridentity", "false");
         props.put("mail.smtp.ssl.trust", config.getSslTrust());
+
+        // timeouty
+        props.put("mail.smtp.connectiontimeout", "5000");
+        props.put("mail.smtp.timeout", "5000");
+        props.put("mail.smtp.writetimeout", "5000");
+
+        // debug – tymczasowo
+        props.put("mail.debug", "true");
 
         return mailSender;
     }
+
 
     public ResponseEntity<?> editConnection(EmailConfig newConfig, String uuid) {
 

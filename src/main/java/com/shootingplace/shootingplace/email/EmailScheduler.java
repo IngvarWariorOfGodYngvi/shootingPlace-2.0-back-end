@@ -30,8 +30,8 @@ public class EmailScheduler {
                 String s = item.getMemberEntity() != null ? item.getMemberEntity().getUuid() : null;
                 emailService.sendRichEmail(item.getRequest(), item.getMailType(), s);
             } catch (Exception e) {
-                LOG.error(e.getStackTrace());
-                LOG.error("Błąd wysyłania do: {}, {}", item.getRequest().getTo(), e.getMessage());
+                LOG.error("Błąd wysyłki maila", e);
+                LOG.info("Błąd wysyłania do: {}, {}", item.getRequest().getTo(), e.getMessage());
             }
         }
     }

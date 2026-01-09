@@ -1,9 +1,9 @@
 package com.shootingplace.shootingplace.armory;
 
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.utils.Mapping;
-import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +24,6 @@ public class ShootingPacketService {
 
     private final ShootingPacketRepository shootingPacketRepository;
     private final CaliberForShootingPacketRepository caliberForShootingPacketRepository;
-    private final WorkingTimeEvidenceRepository workingTimeEvidenceRepository;
     private final CaliberRepository caliberRepository;
 
     private final Logger LOG = LogManager.getLogger();
@@ -44,10 +43,6 @@ public class ShootingPacketService {
     @Transactional
     @RecordHistory(action = "ShootingPacket.create", entity = HistoryEntityType.SHOOTING_PACKET)
     public ResponseEntity<?> addShootingPacket(String name, float price, Map<String, Integer> calibers) {
-        if (!workingTimeEvidenceRepository.existsByIsCloseFalse()) {
-            return ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt");
-        }
-
         List<CaliberForShootingPacketEntity> caliberEntities = new ArrayList<>();
 
         calibers.forEach((caliberUUID, quantity) -> {
@@ -70,30 +65,27 @@ public class ShootingPacketService {
 
     @Transactional
     @RecordHistory(action = "ShootingPacket.update", entity = HistoryEntityType.SHOOTING_PACKET, entityArgIndex = 0)
-    public ResponseEntity<?> updateShootingPacket(String uuid, String name, Float price, Map<String, Integer> calibers) {
-        if (!workingTimeEvidenceRepository.existsByIsCloseFalse()) {
-            return ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt");
-        }
-        ShootingPacketEntity packet = shootingPacketRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono pakietu"));
+    public ResponseEntity<?> updateShootingPacket(String uuid, ShootingPacketDTO newPacket) {
+        ShootingPacketEntity packet = shootingPacketRepository.findById(uuid).orElseThrow(() -> new DomainNotFoundException("ShootingPacket", uuid));
 
-        if (name != null && !name.isBlank() && !name.equalsIgnoreCase(packet.getName())) {
-            packet.setName(name.toUpperCase());
+        if (newPacket.getName() != null && !newPacket.getName().isBlank() && !newPacket.getName().equalsIgnoreCase(packet.getName())) {
+            packet.setName(newPacket.getName().toUpperCase());
         }
 
-        if (price != null && !price.equals(packet.getPrice())) {
-            packet.setPrice(price);
+        if (newPacket.getPrice() != null && !newPacket.getPrice().equals(packet.getPrice())) {
+            packet.setPrice(newPacket.getPrice());
         }
 
-        if (calibers != null && !calibers.isEmpty()) {
+        if (newPacket.getCalibers() != null && !newPacket.getCalibers().isEmpty()) {
             List<CaliberForShootingPacketEntity> caliberEntities = new ArrayList<>();
-
-            for (Map.Entry<String, Integer> entry : calibers.entrySet()) {
-                if (entry.getValue() <= 0) {
-                    return ResponseEntity.badRequest().body("Ilość amunicji musi być większa od 0");
-                }
-                CaliberEntity caliber = caliberRepository.findById(entry.getKey()).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono kalibru"));
-                caliberEntities.add(caliberForShootingPacketRepository.save(CaliberForShootingPacketEntity.builder().caliberUUID(entry.getKey()).caliberName(caliber.getName()).quantity(entry.getValue()).build()));
-            }
+            newPacket.getCalibers().forEach(e -> {
+                CaliberEntity caliber = caliberRepository.findById(e.getCaliberUUID()).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono kalibru"));
+                caliberEntities.add(caliberForShootingPacketRepository.save(CaliberForShootingPacketEntity.builder()
+                        .caliberUUID(e.getCaliberUUID())
+                        .caliberName(caliber.getName())
+                        .quantity(e.getQuantity())
+                        .build()));
+            });
             packet.setCalibers(caliberEntities);
         }
         shootingPacketRepository.save(packet);

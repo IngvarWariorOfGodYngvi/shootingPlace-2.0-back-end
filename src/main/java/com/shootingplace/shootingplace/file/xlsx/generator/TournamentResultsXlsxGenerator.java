@@ -3,6 +3,7 @@ package com.shootingplace.shootingplace.file.xlsx.generator;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.enums.CountingMethod;
+import com.shootingplace.shootingplace.file.utils.FilesUtils;
 import com.shootingplace.shootingplace.file.xlsx.model.XlsxGenerationResult;
 import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
@@ -23,8 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.arabicToRomanNumberConverter;
-import static com.shootingplace.shootingplace.file.utils.Utils.getArbiterClass;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.arabicToRomanNumberConverter;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.getArbiterClass;
 
 @Service
 @RequiredArgsConstructor
@@ -105,7 +106,7 @@ public class TournamentResultsXlsxGenerator {
             sheet.setColumnWidth(i, 18 * 128);
         }
         cell.setCellValue(tournamentEntity.getName().toUpperCase() + " " + c.getShortName());
-        cell1.setCellValue(c.getCity());
+        cell1.setCellValue(c.getCity() + ", " + FilesUtils.dateFormat(tournamentEntity.getDate()));
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 6));
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 6));
 
@@ -142,9 +143,9 @@ public class TournamentResultsXlsxGenerator {
                         series.add(row3.createCell(cc++));
                     }
                 }
+                XSSFCell cell35 = row3.createCell(cc++); // wynik
                 XSSFCell cell36 = row3.createCell(cc++); // 10X
-                XSSFCell cell37 = row3.createCell(cc++); // 10/
-                XSSFCell cell35 = row3.createCell(cc); // wynik
+                XSSFCell cell37 = row3.createCell(cc); // 10/
 
                 cell31.setCellValue("M-ce");
                 cell32.setCellValue("Nazwisko i Imię");
@@ -310,10 +311,10 @@ public class TournamentResultsXlsxGenerator {
                             series1.add(row4.createCell(cc++));
                         }
                     }
+                    XSSFCell cell45 = row4.createCell(cc++); //Wynik
                     XSSFCell cell46 = row4.createCell(cc++); //10x
-                    XSSFCell cell47 = row4.createCell(cc++); //10/
+                    XSSFCell cell47 = row4.createCell(cc); //10/
 
-                    XSSFCell cell45 = row4.createCell(cc); //Wynik
 
                     cell41.setCellValue(String.valueOf(j + 1));
                     cell42.setCellValue(secondName + " " + firstName);
@@ -433,4 +434,3 @@ public class TournamentResultsXlsxGenerator {
         return XlsxGenerationResult.builder().fileName(fileName).data(baos.toByteArray()).build();
     }
 }
-

@@ -120,7 +120,6 @@ public class ArmoryController {
 
     @GetMapping("/getGunUsedHistory")
     public ResponseEntity<?> getGunUsedHistory(@RequestParam String gunUUID) {
-
         return ResponseEntity.ok(armoryService.getGunUsedHistory(gunUUID));
     }
 
@@ -151,8 +150,8 @@ public class ArmoryController {
     @Transactional
     @PostMapping("/updateShootingPacket")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.WEAPONS_WAREHOUSEMAN})
-    public ResponseEntity<?> updateShootingPacket(@RequestParam String uuid, @RequestParam String name, @RequestParam Float price, @RequestBody Map<String, Integer> map) {
-        return shootingPacketService.updateShootingPacket(uuid, name, price, map);
+    public ResponseEntity<?> updateShootingPacket(@RequestParam String uuid, @RequestBody ShootingPacketDTO newPacket) {
+        return shootingPacketService.updateShootingPacket(uuid, newPacket);
     }
 
     @Transactional

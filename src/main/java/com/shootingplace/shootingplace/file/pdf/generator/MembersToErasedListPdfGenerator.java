@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 
 @Component
 public class MembersToErasedListPdfGenerator {

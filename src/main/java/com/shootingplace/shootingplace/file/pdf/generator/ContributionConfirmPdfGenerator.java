@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.dateFormat;
-import static com.shootingplace.shootingplace.file.utils.Utils.font;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.dateFormat;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.font;
 
 @Component
 @RequiredArgsConstructor

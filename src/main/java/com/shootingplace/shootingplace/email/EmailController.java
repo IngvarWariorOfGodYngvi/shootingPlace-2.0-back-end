@@ -68,7 +68,6 @@ public class EmailController {
     @Transactional
     @PostMapping("/sendSingleEmail")
     public ResponseEntity<?> sendSingleEmail(@RequestBody EmailRequest request) {
-        System.out.println("wchodzę");
         return emailService.sendSingleEmail(request);
     }
 
@@ -98,7 +97,7 @@ public class EmailController {
     }
 
     @PutMapping("/edit")
-    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER, UserSubType.ADMIN, UserSubType.SUPER_USER})
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.ADMIN, UserSubType.SUPER_USER})
     public ResponseEntity<?> editConnection(@RequestBody EmailConfig emailConfig, @RequestParam String uuid) {
         return emailService.editConnection(emailConfig, uuid);
     }

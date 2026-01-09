@@ -2,6 +2,7 @@ package com.shootingplace.shootingplace.contributions;
 
 
 import com.shootingplace.shootingplace.email.EmailService;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
 import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
@@ -36,7 +37,7 @@ public class ContributionService {
     @RecordHistory(action = "Cntribution.add", entity = HistoryEntityType.CONTRIBUTION)
     public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, Integer contributionCount) {
 
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
 
         ContributionStrategy strategy = profileContext.getContributionStrategy();
         int count = strategy.getContributionCount(contributionCount);

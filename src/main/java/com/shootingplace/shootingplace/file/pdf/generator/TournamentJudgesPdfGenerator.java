@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 
 @Component
 @RequiredArgsConstructor

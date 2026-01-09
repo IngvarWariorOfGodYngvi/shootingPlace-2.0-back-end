@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 
 @Component
 @RequiredArgsConstructor

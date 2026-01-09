@@ -9,7 +9,6 @@ import com.shootingplace.shootingplace.member.PersonalEvidenceRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
-import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -38,8 +37,6 @@ public class AmmoUsedService {
     private final AmmoEvidenceRepository ammoEvidenceRepository;
     private final AmmoInEvidenceRepository ammoInEvidenceRepository;
 
-    private final WorkingTimeEvidenceRepository workingTimeEvidenceRepository;
-
     private final Logger LOG = LogManager.getLogger();
 
     public boolean isEvidenceIsClosedOrEqual(int quantity) {
@@ -56,9 +53,6 @@ public class AmmoUsedService {
 
     @Transactional
     public ResponseEntity<String> addAmmoUsedEntity(String caliberUUID, Integer legitimationNumber, Integer otherID, Integer quantity) throws NoPersonToAmmunitionException {
-        if (!workingTimeEvidenceRepository.existsByIsCloseFalse()) {
-            return ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt");
-        }
         if (ammoEvidenceRepository.existsByOpenTrueAndForceOpenFalse()) {
             List<AmmoEvidenceEntity> collect = new ArrayList<>(ammoEvidenceRepository.findAllByOpenTrueAndForceOpenFalse());
             if (collect.size() > 1) {
@@ -135,10 +129,6 @@ public class AmmoUsedService {
 
     @Transactional
     public ResponseEntity<?> addListOfAmmoToEvidence(Map<String, String> caliberUUIDAmmoQuantityMap, Integer legitimationNumber, Integer otherID) throws NoPersonToAmmunitionException {
-        if (!workingTimeEvidenceRepository.existsByIsCloseFalse()) {
-            return ResponseEntity.badRequest().body("Najpierw zarejestruj pobyt");
-        }
-
         if (ammoEvidenceRepository.existsByOpenTrueAndForceOpenFalse()) {
             AmmoEvidenceEntity ammoEvidenceEntity = ammoEvidenceRepository.findAllByOpenTrueAndForceOpenFalse().stream().findFirst().orElseThrow(EntityNotFoundException::new);
             if (ammoEvidenceEntity.getDate().isBefore(LocalDate.now())) {

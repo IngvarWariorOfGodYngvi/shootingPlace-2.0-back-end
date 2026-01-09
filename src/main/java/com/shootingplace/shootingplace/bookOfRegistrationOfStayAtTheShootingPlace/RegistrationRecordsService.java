@@ -5,7 +5,6 @@ import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPerson;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
-import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import com.shootingplace.shootingplace.workingTimeEvidence.WorkingTimeEvidenceService;
 import com.shootingplace.shootingplace.wrappers.ImageOtherPersonWrapper;
@@ -38,17 +37,14 @@ public class RegistrationRecordsService {
     public ResponseEntity<?> createRecordInBook(String pesel, String imageUUID) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();
         MemberEntity member = memberRepo.findAllByErasedFalse().stream().filter(f->f.getPesel().equals(pesel)).findFirst().orElse(null);
-        if (member != null && !member.isErased()) {
+        if (member != null) {
             if (registrationRepo.findAll().stream().anyMatch(f ->
                     LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(member.getPesel()))) {
                 LOG.info("Osoba znajduje się już na liście");
                 return ResponseEntity.badRequest().body("Osoba znajduje się już na liście");
             } else {
                 // jeśli klubowicz jest również użytkownikiem to włączam mu czas pracy
-                UserEntity userEntity = userRepository.findByMemberUuid(member.getUuid()).orElseThrow(EntityNotFoundException::new);
-                if (userEntity != null) {
-                    workingTimeEvidenceService.openWTEByUser(userEntity);
-                }
+                userRepository.findByMemberUuid(member.getUuid()).ifPresent(workingTimeEvidenceService::openWTEByUser);
                 r.setFirstName(member.getFirstName());
                 r.setSecondName(member.getSecondName());
                 r.setDataProcessingAgreement(true);

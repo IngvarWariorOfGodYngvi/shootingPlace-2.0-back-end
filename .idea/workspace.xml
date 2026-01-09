@@ -4,39 +4,65 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="last commit before release">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/NameNormalizer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="after first start, fix bugs, added permissions methods.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/ApiError.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/domain/DomainNotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/pinExceptions/InvalidPinException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/pinExceptions/PinTooShortException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/userStateExceptions/MissingPermissionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/userStateExceptions/UserNotAtWorkAndNoPermissionException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/userStateExceptions/UserNotAtWorkException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/workingTimeExceptions/NoOneAtWorkException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/version/VersionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/version/VersionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/aspect/AnyoneAtWorkAspect.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/aspect/RequireAnyoneAtWork.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoInEvidenceDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoUsedToEvidenceDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoUsedToEvidenceDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/AmmoUsedService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/AmmoUsedService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CaliberRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CaliberRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/GunUsedRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/GunUsedRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailSendList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailSendList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ShootingPacketDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ShootingPacketDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ShootingPacketService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ShootingPacketService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/bookOfRegistrationOfStayAtTheShootingPlace/RegistrationRecordsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/contributions/ContributionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/contributions/ContributionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailScheduler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/ScheduledEmail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/ScheduledEmail.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/SentEmail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/SentEmail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ApiErrorHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ApiErrorHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ExceptionsHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ExceptionsHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/AllMembersAttendancePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/AllMembersAttendancePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/AmmunitionListPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/AmmunitionListPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ApplicationForFirearmsLicensePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ApplicationForFirearmsLicensePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipDziesiatkaPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipDziesiatkaPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipPanaszewPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipPanaszewPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CompetitorLicenseExtensionPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CompetitorLicenseExtensionPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ContributionConfirmPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ContributionConfirmPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/DziesiatkaMembershipPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/DziesiatkaMembershipPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ErasedMembersByDatePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/ErasedMembersByDatePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/EvidenceBookByDatePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/EvidenceBookByDatePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GuardiansMembershipPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GuardiansMembershipPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GunRegistryPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GunRegistryPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GunTransportCertificatePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/GunTransportCertificatePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/JudgingReportByDatePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/JudgingReportByDatePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/LokMembershipPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/LokMembershipPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MemberLegitimationPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MemberLegitimationPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersListByAdultPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersListByAdultPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersToErasedListPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersToErasedListPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersToPoliceReportPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersToPoliceReportPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersWithLicensePdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/MembersWithLicensePdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/PersonalCardPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/PersonalCardPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/StartsMetricPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/StartsMetricPdfGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentJudgesPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentJudgesPdfGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/utils/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/utils/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/WorkTimeReportPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/WorkTimeReportPdfGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/utils/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/utils/FilesUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfAllMembersXlsxGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfAllMembersXlsxGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfErasedMembersXlsxGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfErasedMembersXlsxGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfGunXlsxGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfGunXlsxGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfMembersWithLicenceXlsxGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/ListOfMembersWithLicenceXlsxGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/TournamentResultsXlsxGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/TournamentResultsXlsxGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/Member.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/Member.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/permissions/MemberPermissions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/permissions/PermissionsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/permissions/MemberPermissionsEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/MemberPermissionsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/permissions/PermissionsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/permissions/PermissionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/permissions/PermissionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPerson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPerson.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/security/PermissionAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/security/PermissionAspect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/security/UserAuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/security/UserAuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/workingTimeEvidence/WorkingTimeEvidenceRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,9 +82,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="Interface" />
+        <option value="Enum" />
+        <option value="Record" />
         <option value="Class" />
+        <option value="Exception" />
       </list>
     </option>
   </component>
@@ -375,7 +403,12 @@
       <workItem from="1767477433749" duration="752000" />
       <workItem from="1767512771681" duration="14061000" />
       <workItem from="1767557519437" duration="5732000" />
-      <workItem from="1767598313239" duration="16517000" />
+      <workItem from="1767598313239" duration="24152000" />
+      <workItem from="1767652578968" duration="822000" />
+      <workItem from="1767655054884" duration="1300000" />
+      <workItem from="1767724005850" duration="852000" />
+      <workItem from="1767740669475" duration="8543000" />
+      <workItem from="1767859983678" duration="28974000" />
     </task>
     <task id="LOCAL-00001" summary="after part of refactor, prepare to update agent.">
       <option name="closed" value="true" />
@@ -441,7 +474,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767477582358</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="after first start, fix bugs, added permissions methods.">
+      <option name="closed" value="true" />
+      <created>1767622856920</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1767622856920</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -473,7 +514,8 @@
     <MESSAGE value="fix bug in ScoreEntity and ScoreService, fix PageStamper and files, refactor xlsx files, start updated dynamic Judge." />
     <MESSAGE value="reformat all pinCodes, deleting all auth from methods and controllers, fix some entities, fix CompetitionHistory" />
     <MESSAGE value="last commit before release" />
-    <option name="LAST_COMMIT_MESSAGE" value="last commit before release" />
+    <MESSAGE value="after first start, fix bugs, added permissions methods." />
+    <option name="LAST_COMMIT_MESSAGE" value="after first start, fix bugs, added permissions methods." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

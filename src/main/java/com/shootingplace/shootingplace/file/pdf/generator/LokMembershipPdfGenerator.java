@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.utils.Utils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
 
 @Component
 public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {

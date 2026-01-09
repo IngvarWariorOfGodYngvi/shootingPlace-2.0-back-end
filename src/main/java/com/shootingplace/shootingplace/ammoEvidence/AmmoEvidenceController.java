@@ -4,6 +4,7 @@ import com.shootingplace.shootingplace.armory.AmmoUsedService;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.exceptions.NoPersonToAmmunitionException;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import com.shootingplace.shootingplace.workingTimeEvidence.aspect.RequireAnyoneAtWork;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -66,6 +67,7 @@ public class AmmoEvidenceController {
 
     @Transactional
     @PostMapping("/ammo")
+    @RequireAnyoneAtWork
     public ResponseEntity<?> createAmmoUsed(@RequestParam String caliberUUID, @RequestParam Integer legitimationNumber, @RequestParam int otherID, @RequestParam Integer counter) throws NoPersonToAmmunitionException {
         if (counter != 0) {
             return ammoUsedService.addAmmoUsedEntity(caliberUUID, legitimationNumber, otherID, counter);
@@ -76,6 +78,7 @@ public class AmmoEvidenceController {
 
     @Transactional
     @PostMapping("/listOfAmmo")
+    @RequireAnyoneAtWork
     public ResponseEntity<?> createAmmoUsed(@RequestBody Map<String, String> caliberUUIDAmmoQuantityMap, @RequestParam Integer legitimationNumber, @RequestParam Integer otherID) throws NoPersonToAmmunitionException {
         boolean[] caliberAmmoCheck = new boolean[caliberUUIDAmmoQuantityMap.size()];
         final int[] iterator = {0};
