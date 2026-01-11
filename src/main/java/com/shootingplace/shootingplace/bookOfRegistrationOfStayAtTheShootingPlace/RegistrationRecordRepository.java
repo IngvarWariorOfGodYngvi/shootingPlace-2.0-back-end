@@ -13,4 +13,7 @@ public interface RegistrationRecordRepository extends JpaRepository<Registration
     List<RegistrationRecordEntity> findAllBetweenDate(@Param("start") LocalDateTime start, @Param("stop") LocalDateTime stop);
 
     List<RegistrationRecordEntity> findAllByEndDateTimeNull();
+
+    List< RegistrationRecordEntity> findAllByDateTimeBetween(LocalDateTime from, LocalDateTime to);
+
 }

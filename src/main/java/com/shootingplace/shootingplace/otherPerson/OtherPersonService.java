@@ -5,6 +5,7 @@ import com.shootingplace.shootingplace.address.AddressEntity;
 import com.shootingplace.shootingplace.address.AddressRepository;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.permissions.MemberPermissionsEntity;
@@ -40,7 +41,20 @@ public class OtherPersonService {
     private final Logger LOG = LogManager.getLogger();
 
     public ResponseEntity<?> addPerson(OtherPerson person) {
+
+        boolean a = otherPersonRepository.existsByPhoneNumber(person.getPhoneNumber().replaceAll(" ", ""));
+        if (a) {
+            return ResponseEntity.badRequest().body("Ktoś już ma taki numer telefonu i nie można takiego już dodać");
+        }
+        boolean b = otherPersonRepository.existsByLicenseNumber(person.getLicenseNumber());
+        if (b) {
+            return ResponseEntity.badRequest().body("Ktoś już ma taki numer licencji zawodniczej");
+        }
+
         ClubEntity clubEntity = clubRepository.findByShortName(person.getClub().getShortName());
+        if (person.getClub().getShortName().isEmpty() || clubEntity == null) {
+            clubEntity = clubRepository.findById(2).orElseThrow(() -> new DomainNotFoundException("Club", "2"));
+        }
         MemberPermissionsEntity memberPermissionsEntity = null;
         if (person.getMemberPermissions() != null) {
             memberPermissionsEntity = permissionsRepository.save(Mapping.map(person.getMemberPermissions()));
@@ -49,6 +63,7 @@ public class OtherPersonService {
         if (person.getAddress() != null) {
             addressEntity = addressRepository.save(Mapping.map(person.getAddress()));
         }
+
         OtherPersonEntity otherPersonEntity = OtherPersonEntity.builder()
                 .firstName(normalizeFirstName(person.getFirstName()))
                 .secondName(normalizeSecondName(person.getSecondName()))
@@ -58,7 +73,7 @@ public class OtherPersonService {
                 .permissionsEntity(memberPermissionsEntity)
                 .weaponPermissionNumber(person.getWeaponPermissionNumber() != null ? person.getWeaponPermissionNumber().toUpperCase(Locale.ROOT) : null)
                 .club(clubEntity)
-                .licenseNumber(person.getLicenseNumber())
+                .licenseNumber(person.getLicenseNumber().isEmpty() ? null : person.getLicenseNumber().trim().replaceAll(" ", ""))
                 .address(addressEntity).build();
         otherPersonEntity.setCreationDate();
         otherPersonRepository.save(otherPersonEntity);
@@ -170,10 +185,19 @@ public class OtherPersonService {
 
     public ResponseEntity<?> getOtherByPhone(String phone) {
         OtherPersonEntity otherPerson = otherPersonRepository.findAllByPhoneNumberAndActiveTrue(phone.replaceAll(" ", "")).stream().filter(OtherPersonEntity::isActive).findFirst().orElse(null);
-        if (otherPerson != null && otherPerson.isActive()) {
+        if (otherPerson != null) {
             return ResponseEntity.ok(otherPerson);
         } else {
             return ResponseEntity.badRequest().body("brak takiego numeru w bazie");
+        }
+    }
+
+    public ResponseEntity<?> getOtherByLicense(String license) {
+        OtherPersonEntity otherPerson = otherPersonRepository.findByLicenseNumberAndActiveTrue(license).orElse(null);
+        if (otherPerson != null) {
+            return ResponseEntity.ok(otherPerson);
+        } else {
+            return ResponseEntity.badRequest().body("brak takiego numeru licencji w bazie");
         }
     }
 }

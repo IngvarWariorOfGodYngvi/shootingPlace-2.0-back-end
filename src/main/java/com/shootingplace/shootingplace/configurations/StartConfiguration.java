@@ -3,25 +3,22 @@ package com.shootingplace.shootingplace.configurations;
 import com.google.common.hash.Hashing;
 import com.shootingplace.shootingplace.armory.GunUsedRepository;
 import com.shootingplace.shootingplace.armory.gunRepresentation.GunRepresentationService;
-import com.shootingplace.shootingplace.enums.ProfilesEnum;
 import com.shootingplace.shootingplace.enums.UserSubType;
+import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
+import com.shootingplace.shootingplace.settings.SystemConfigEntity;
+import com.shootingplace.shootingplace.settings.SystemConfigRepository;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.users.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -29,58 +26,28 @@ import java.util.List;
 public class StartConfiguration {
 
     private final UserRepository userRepository;
-    private final Environment environment;
     private final GunRepresentationService gunRepresentationService;
     private final GunUsedRepository gunUsedRepository;
     private final JdbcTemplate jdbcTemplate;
-    private final Logger LOG = LogManager.getLogger(getClass());
-
+    private final OtherPersonRepository otherPersonRepository;
+    private final SystemConfigRepository systemConfigRepository;
     @Transactional
     @PostConstruct
     public void init() {
-        setProperties();
         createAdmin();
         createEmptyClub();
         hashPinForAll();
         checkIP();
         function();
+        fixOtherPersonEntity();
+        createSystemConfigEntity();
     }
 
-    public void setProperties() {
-        System.setProperty("dateTime", LocalDateTime.now().toString());
-
-        String activeProfile = environment.getActiveProfiles().length > 0
-                ? environment.getActiveProfiles()[0]
-                : "default";
-
-        ProfilesEnum profile = Arrays.stream(ProfilesEnum.values())
-                .filter(p -> p.getName().equalsIgnoreCase(activeProfile))
-                .findFirst()
-                .orElse(null);
-
-        if (profile != null) {
-            switch (profile) {
-                case MECHANIK -> {
-                    System.setProperty("sendMail", "false");
-                    System.setProperty("shootingPlaceName", "MECHANIKTOMASZÓW");
-                }
-                case PANASZEW -> {
-                    System.setProperty("sendMail", "true");
-                    System.setProperty("shootingPlaceName", "RCSPANASZEW");
-                }
-                case DZIESIATKA -> {
-                    System.setProperty("sendMail", "true");
-                    System.setProperty("shootingPlaceName", "DZIESIĄTKAŁÓDŹ");
-                }
-                default -> {
-                    System.setProperty("sendMail", "true");
-                    System.setProperty("shootingPlaceName", "TEST");
-                }
-            }
-        }
-
-        LOG.info("dateTime property: {}", environment.getProperty("dateTime"));
-        LOG.info("sendMail property: {}", environment.getProperty("sendMail"));
+    private void fixOtherPersonEntity() {
+        otherPersonRepository.findAllByLicenseNumber("").forEach(e -> {
+            e.setLicenseNumber(null);
+            otherPersonRepository.save(e);
+        });
     }
 
     public void createAdmin() {
@@ -101,6 +68,19 @@ public class StartConfiguration {
 
             userRepository.save(admin);
         }
+    }
+    public void createSystemConfigEntity() {
+        SystemConfigEntity systemConfigEntity = systemConfigRepository.findById(1).orElse(null);
+        if (systemConfigEntity == null) {
+            systemConfigEntity = SystemConfigEntity.builder()
+                    .buildTime(System.currentTimeMillis())
+                    .iFrameGoogleCalendar(null)
+                    .build();
+        }
+        else {
+            systemConfigEntity.setBuildTime(System.currentTimeMillis());
+        }
+        systemConfigRepository.save(systemConfigEntity);
     }
 
     public void createEmptyClub() {

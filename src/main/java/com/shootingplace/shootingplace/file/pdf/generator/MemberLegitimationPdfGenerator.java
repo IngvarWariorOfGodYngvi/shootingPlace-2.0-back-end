@@ -95,7 +95,7 @@ public class MemberLegitimationPdfGenerator {
         float line = 13;
 
         text(cb, "Nr legitymacji: " + member.getLegitimationNumber(), normal, textX, textY);
-        text(cb, "Grupa: " + member.getMemberEntityGroup().getName(), normal, textX, textY - line);
+        text(cb, "Grupa: " + member.getMemberGroupEntity().getName(), normal, textX, textY - line);
         text(cb, "Data urodzenia: " + member.getBirthDate(), small, textX, textY - 2 * line);
 
         document.close();

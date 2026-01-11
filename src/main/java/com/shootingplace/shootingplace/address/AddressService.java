@@ -20,11 +20,6 @@ public class AddressService {
     private final MemberRepository memberRepository;
     private final Logger LOG = LogManager.getLogger(getClass());
 
-    public Address getAddress() {
-        return Address.builder().zipCode(null).postOfficeCity(null).street(null).streetNumber(null).flatNumber(null).build();
-
-    }
-
     @Transactional
     @RecordHistory(action = "ADDRESS.updateAddress", entity = HistoryEntityType.ADDRESS, entityArgIndex = 0)
     public ResponseEntity<?> updateAddress(String memberUUID, Address address) {

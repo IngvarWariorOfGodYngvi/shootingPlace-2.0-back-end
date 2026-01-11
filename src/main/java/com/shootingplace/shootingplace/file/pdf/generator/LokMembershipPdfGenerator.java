@@ -230,7 +230,10 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
 
         String state;
 
-        Paragraph p2 = new Paragraph("2.     Wyrażam zgodę na przetwarzanie moich ww. danych osobowych przez Stowarzyszenie Liga Obrony\n" + "     Kraju zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dn. 27.04.2016r.\n" + "     (Rozporządzenie 2016/679).", font(fs, 0));
+        Paragraph p2 = new Paragraph("""
+                2.     Wyrażam zgodę na przetwarzanie moich ww. danych osobowych przez Stowarzyszenie Liga Obrony
+                     Kraju zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dn. 27.04.2016r.
+                     (Rozporządzenie 2016/679).""", font(fs, 0));
         p2.setIndentationLeft(55);
         p2.setLeading(ls);
         document.add(p2);
@@ -241,7 +244,13 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
         document.add(p3);
         Paragraph p3a = new Paragraph("a)     Administratorem podanych danych osobowych jest Stowarzyszenie Liga Obrony Kraju mające siedzibę\n" + "główną w Warszawie pod adresem: ul. Chocimska 14, 00-791 Warszawa.", font(fs, 0));
         p3a.setIndentationLeft(65);
-        Paragraph p3b = new Paragraph("b)     W Stowarzyszeniu Liga Obrony Kraju wyznaczono inspektora ochrony danych.\n" + "     Dane kontaktowe inspektora są następujące:\n" + "        - adres korespondencyjny:                    " + "          Inspektor Ochrony Danych\n" + "                                                                                Liga Obrony Kraju, Biuro Zarządu Głównego\n" + "                                                                                ul. Chocimska 14, 00-791 Warszawa\n" + "        - adres poczty elektronicznej:               " + "          iod@lok.org.pl", font(fs, 0));
+        Paragraph p3b = new Paragraph("""
+                b)     W Stowarzyszeniu Liga Obrony Kraju wyznaczono inspektora ochrony danych.
+                     Dane kontaktowe inspektora są następujące:
+                        - adres korespondencyjny:                              Inspektor Ochrony Danych
+                                                                                                Liga Obrony Kraju, Biuro Zarządu Głównego
+                                                                                                ul. Chocimska 14, 00-791 Warszawa
+                        - adres poczty elektronicznej:                         iod@lok.org.pl""", font(fs, 0));
         p3b.setIndentationLeft(65);
         state = member.getSex() ? "Pana" : "Pani";
         Paragraph p3c = new Paragraph("c)     " + state + " dane będą przekazane w celu:\n" + "        - realizacji zadań określonych w Statucie LOK na podstawie art. 6 ust. 1 lit. a) Rozp. 2016/679;\n" + "        - udokumentowania organom kontrolującym posiadanych przez " + (member.getSex() ? "Pana" : "Panią") + " kwalifikacji;\n" + "        - wypełnienia obowiązków prawnych ciążących na LOK na podstawie powszechnie obowiązujących\n" + "        przepisów prawa, m.in. przepisów podatkowych oraz o rachunkowości, na podstawie\n" + "        art. 6 ust. 1 lit, c) Rozp. 2016/679;\n" + "        - rozliczenia finansowego zleconych usług, w tym egzekucji należności wynikających z wzajemnej\n" + "        umowy, na podstawie art. 6 ust. 1 lit f) Rozp. 2016/679. Prawnie uzasadnionym interesem LOK jest\n" + "        zapewnienie odpowiednich dochodów z prowadzonej działalności;\n" + "        - badania jakości realizacji usług szkoleniowych na podstawie art. 6 ust. 1 lit f) Rozp. 2016/679.\n" + "        Prawnie uzasadnionym interesem LOK jest pozyskanie informacji o poziomie satysfakcji klientów ze\n" + "        świadczonych usług;\n" + "        - oraz w celach analitycznych i statystycznych na podstawie art, 6 ust. 1 lit f) Rozp. 2016/679.\n" + "        Prawnie uzasadnionym interesem LOK jest prowadzenie analizy wyników prowadzonej działalności.", font(fs, 0));
@@ -300,7 +309,12 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
         p4.setLeading(ls);
         document.add(p4);
 
-        Paragraph p4a = new Paragraph("a)     zachowam w poufności dane osobowe: klientów LOK, pracowników i członków LOK, otrzymane w związku\n" + "z prowadzoną działalnością statutową.\n" + "W szczególności nie będę wykorzystywać powierzonych danych osobowych:\n" + "do prowadzenia działalności reklamowej usług i produktów własnych i firm trzecich, w celach prywatnych\n" + "(np. matrymonialnych), w celu ich \"sprzedaży\" innym osobom, podmiotom gospodarczym;", font(fs, 0));
+        Paragraph p4a = new Paragraph("""
+                a)     zachowam w poufności dane osobowe: klientów LOK, pracowników i członków LOK, otrzymane w związku
+                z prowadzoną działalnością statutową.
+                W szczególności nie będę wykorzystywać powierzonych danych osobowych:
+                do prowadzenia działalności reklamowej usług i produktów własnych i firm trzecich, w celach prywatnych
+                (np. matrymonialnych), w celu ich "sprzedaży" innym osobom, podmiotom gospodarczym;""", font(fs, 0));
         p4a.setIndentationLeft(65);
         state = member.getSex() ? "przetwarzał" : "przetwarzała";
         Paragraph p4b = new Paragraph("b)     powierzone dane osobowe będę " + state + " tylko w zakresie niezbędnym do prawidłowej realizacji\n" + "zadań statutowych, a po ich wykonaniu nie będę danych osobowych przetwarzać dłużej niź jest to\n" + "potrzebne lub wymagane przez stosowne przepisy np. podatkowe;", font(fs, 0));
@@ -312,7 +326,11 @@ public class LokMembershipPdfGenerator implements PdfGenerator<MemberEntity> {
         p4d.setIndentationLeft(65);
         Paragraph p4e = new Paragraph("e)     jeśli ww. żądanie wpłynie bezpośrednio do mnie, to w ciągu 72h przekażę je inspektorowi ochrony danych;", font(fs, 0));
         p4e.setIndentationLeft(65);
-        Paragraph p4f = new Paragraph("f)     zawiadomię w ciągu 48h inspektora ochrony danych o każdym naruszeniu ochrony powierzonych przez\n" + "LOK danych osobowych w sposób określony w pkt. 3.8 procedury PW 1.7 ochrony danych osobowych.\n" + "Procedura jest dostępna po zalogowaniu na stronie - www.lok.org.pl/iso\n" + "dane użytkownika - procedury@lok.org.pl, hasło - procedury);", font(fs, 0));
+        Paragraph p4f = new Paragraph("""
+                f)     zawiadomię w ciągu 48h inspektora ochrony danych o każdym naruszeniu ochrony powierzonych przez
+                LOK danych osobowych w sposób określony w pkt. 3.8 procedury PW 1.7 ochrony danych osobowych.
+                Procedura jest dostępna po zalogowaniu na stronie - www.lok.org.pl/iso
+                dane użytkownika - procedury@lok.org.pl, hasło - procedury);""", font(fs, 0));
         p4f.setIndentationLeft(65);
         state = member.getSex() ? "przestrzegał" : "przestrzegała";
         Paragraph p4g = new Paragraph("g)     będę " + state + " uregulowań dotyczących zachowania poufności danych firmowych określonych\n" + "w umowach zawartych ze współpracującymi z LOK firmami. Jeśli takiej umowy nie sporządzono na piśmie\n" + "lub nie zawiera ona stosownych regulacji, to zachowam w poufności wobec stron trzecich wszelkie\n" + "informacje pozyskane z firm współpracujących z LOK, również po wystąpieniu z LOK.", font(fs, 0));

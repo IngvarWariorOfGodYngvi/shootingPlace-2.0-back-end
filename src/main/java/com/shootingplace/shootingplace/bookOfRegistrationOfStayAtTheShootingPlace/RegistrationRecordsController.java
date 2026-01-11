@@ -41,8 +41,11 @@ public class RegistrationRecordsController {
         String imageUUID = filesService.storeImageEvidenceBook(other,other.getImageString() );
         // tworzenie osoby spoza Klubu, bo wyrazi zgodę
         if (rememberMe) {
-            otherPersonService.addPerson(other.getOther());
-            return recordsServ.createRecordInBook(imageUUID,other.getOther());
+            ResponseEntity<?> resp = otherPersonService.addPerson(other.getOther());
+            if (!resp.getStatusCode().is2xxSuccessful()) {
+                return resp;
+            }
+            return recordsServ.createRecordInBook(imageUUID, other.getOther());
         }
         // bez tworzenia osoby - wpis bez zapisu człowieka do bazy
         return recordsServ.createRecordInBook(imageUUID, other);

@@ -1,5 +1,6 @@
 package com.shootingplace.shootingplace.license;
 
+import com.shootingplace.shootingplace.exceptions.license.LicenseProlongationTooEarlyException;
 import com.shootingplace.shootingplace.history.*;
 import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.Member;
@@ -149,7 +150,7 @@ public class LicenseService {
 
         if (now.isBefore(earliestProlongDate) && !validThru.isBefore(now)) {
             LOG.error("Nie można przedłużyć licencji - należy poczekać do 1 listopada");
-            return ResponseEntity.status(403).body("Nie można przedłużyć licencji - należy poczekać do 1 listopada");
+            throw new LicenseProlongationTooEarlyException();
         }
 
         int newYear = validThru.getYear() + 1;

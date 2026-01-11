@@ -6,6 +6,7 @@ import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.contributions.ContributionService;
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.enums.ErasedType;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
 import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
@@ -145,7 +146,7 @@ public class MemberService {
         MemberGroupEntity group = memberGroupRepository.findByName(member.getGroup()).orElseThrow(() -> new IllegalStateException("Nie znaleziono grupy"));
 
         saved.setSignBy(user.getFullName());
-        saved.setMemberEntityGroup(group);
+        saved.setMemberGroupEntity(group);
         memberRepository.save(saved);
         historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), user));
 
@@ -164,7 +165,7 @@ public class MemberService {
             return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
         }
 
-        member.toggleActive();
+        member.setActive(!member.isActive());
         memberRepository.save(member);
 
         return ResponseEntity.ok("Zmieniono status aktywny/nieaktywny");
@@ -209,7 +210,7 @@ public class MemberService {
         erasedRepository.save(erased);
 
         member.setErasedEntity(erased);
-        member.toggleErase();
+        member.setErased(true);
         member.setPzss(false);
 
         memberRepository.save(member);
@@ -446,21 +447,19 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> toggleDeclaration(String uuid, boolean isSigned) {
-        MemberEntity member = memberRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
-        boolean signed = member.toggleDeclaration(isSigned);
-        boolean sex = member.getSex();
+    public ResponseEntity<?> toggleDeclaration(String memberUUID, boolean isSigned) {
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
+        member.setDeclarationLOK(isSigned);
         memberRepository.save(member);
-        return ResponseEntity.ok("Oznaczono, że " + member.getFullName() + " " + (signed ? "" : "nie ") + "podpisał" + (sex ? "a" : "") + " Deklaracji" + (signed ? "ę" : "i") + " LOK");
+        return ResponseEntity.ok("Oznaczono, że " + member.getFullName() + " " + (isSigned ? "" : "nie ") + "podpisał" + (member.getSex() ? "a" : "") + " Deklaracji" + (isSigned ? "ę" : "i") + " LOK");
     }
 
     @Transactional
-    public ResponseEntity<?> togglePzss(String uuid, boolean isSignedTo) {
-        MemberEntity member = memberRepository.findById(uuid).orElseThrow(() -> new EntityNotFoundException("Nie znaleziono Klubowicza"));
-        boolean signedTo = member.togglePzss(isSignedTo);
-        boolean sex = member.getSex();
+    public ResponseEntity<?> togglePzss(String memberUUID, boolean isSignedTo) {
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
+        member.setPzss(isSignedTo);
         memberRepository.save(member);
-        return ResponseEntity.ok("Oznaczono, że " + member.getFullName() + " " + (signedTo ? "" : "nie ") + "jest wpisani" + (sex ? "a" : "y") + " do portalu PZSS");
+        return ResponseEntity.ok("Oznaczono, że " + member.getFullName() + " " + (isSignedTo ? "" : "nie ") + "jest wpisani" + (member.getSex() ? "a" : "y") + " do portalu PZSS");
     }
 
     @Transactional
@@ -479,7 +478,7 @@ public class MemberService {
             return ResponseEntity.badRequest().body("Nie znaleziono grupy lub grupa jest nieaktywna");
         }
 
-        member.setMemberEntityGroup(group);
+        member.setMemberGroupEntity(group);
         memberRepository.save(member);
 
         LOG.info("Przypisano Klubowicza {} do grupy {}", member.getFullName(), group.getName());

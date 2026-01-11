@@ -68,7 +68,7 @@ public class Mapping {
                 .history(map(e.getHistory()))
                 .memberPermissions(map(e.getMemberPermissions()))
                 .personalEvidence(map(e.getPersonalEvidence()))
-                .pzss(e.isPZSS())
+                .pzss(e.isPzss())
                 .erasedEntity(e.getErasedEntity())
                 .image(e.getImageUUID())
                 .note(e.getNote())
@@ -113,7 +113,7 @@ public class Mapping {
                 .isAdult(e.isAdult())
                 .image(e.getImageUUID())
                 .note(e.getNote())
-                .declarationLOK(e.getDeclarationLOK()).build();
+                .declarationLOK(e.isDeclarationLOK()).build();
     }
 
     public static MemberInfo map2(MemberEntity e) {
@@ -128,7 +128,7 @@ public class Mapping {
                 .note(e.getNote())
                 .arbiterStaticClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterStaticClass() : null)
                 .arbiterDynamicClass(e.getMemberPermissions() != null ? e.getMemberPermissions().getArbiterDynamicClass() : null)
-                .declarationLOK(e.getDeclarationLOK()).build();
+                .declarationLOK(e.isDeclarationLOK()).build();
     }
 
     public static MemberDTO map2DTO(MemberEntity e) {
@@ -142,15 +142,15 @@ public class Mapping {
                 .active(e.isActive())
                 .erased(e.isErased())
                 .erasedEntity(e.getErasedEntity() != null ? map(e.getErasedEntity()) : null)
-                .pzss(e.isPZSS())
-                .declarationLOK(e.getDeclarationLOK())
+                .pzss(e.isPzss())
+                .declarationLOK(e.isDeclarationLOK())
                 .legitimationNumber(e.getLegitimationNumber())
                 .license(map(e.getLicense()))
                 .joinDate(e.getJoinDate())
                 .memberPermissions(map(e.getMemberPermissions()))
                 .club(map(e.getClub()))
                 .note(e.getNote())
-                .group(e.getMemberEntityGroup().getName())
+                .group(e.getMemberGroupEntity().getName())
                 .build();
     }
 

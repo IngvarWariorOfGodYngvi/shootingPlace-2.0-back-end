@@ -42,7 +42,7 @@ public class ApplicationForFirearmsLicensePdfGenerator {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
-        PdfWriter writer = PdfWriter.getInstance(document, baos);
+        PdfWriter.getInstance(document, baos);
 
         document.open();
         document.addTitle(fileName);
@@ -116,7 +116,11 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par2.setFirstLineIndent(20);
         document.add(par2);
 
-        Paragraph par21 = new Paragraph("a. bocznego zapłonu z lufami gwintowanymi, o kalibrze do 6 mm,\n" + "b. centralnego zapłonu z lufami gwintowanymi, o kalibrze do 12mm,\n" + "c. gładko lufowej,\n", font(10, 0));
+        Paragraph par21 = new Paragraph("""
+                a. bocznego zapłonu z lufami gwintowanymi, o kalibrze do 6 mm,
+                b. centralnego zapłonu z lufami gwintowanymi, o kalibrze do 12mm,
+                c. gładko lufowej,
+                """, font(10, 0));
         par21.setIndentationLeft(50);
         document.add(par21);
 
@@ -177,19 +181,39 @@ public class ApplicationForFirearmsLicensePdfGenerator {
         par11.setFirstLineIndent(20);
         document.add(par11);
 
-        Paragraph par12 = new Paragraph("1. Karabin centralnego zapłonu, 50m, kategoria MANUAL\n" + "2. Karabin centralnego zapłonu, 50m, kategoria OPEN\n" + "3. Pistolet centralnego zapłonu, 25m, 10 strzałów stojąc, tarcza TS/2\n" + "4. Strzelba dynamiczna, kategoria STANDARD\n" + "5. Strzelba dynamiczna, kategoria SEMI-AUTO\n" + "6. Strzelba dynamiczna IPSC\n" + "7. Pistolet dynamiczny (IPSC), kategoria PRODUCTION\n" + "8. Pistolet dynamiczny (IPSC), kategoria STANDARD/MINOR\n" + "9. Pistolet dynamiczny (IPSC), kategoria STANDARD/MAJOR\n", font(10, 0));
+        Paragraph par12 = new Paragraph("""
+                1. Karabin centralnego zapłonu, 50m, kategoria MANUAL
+                2. Karabin centralnego zapłonu, 50m, kategoria OPEN
+                3. Pistolet centralnego zapłonu, 25m, 10 strzałów stojąc, tarcza TS/2
+                4. Strzelba dynamiczna, kategoria STANDARD
+                5. Strzelba dynamiczna, kategoria SEMI-AUTO
+                6. Strzelba dynamiczna IPSC
+                7. Pistolet dynamiczny (IPSC), kategoria PRODUCTION
+                8. Pistolet dynamiczny (IPSC), kategoria STANDARD/MINOR
+                9. Pistolet dynamiczny (IPSC), kategoria STANDARD/MAJOR
+                """, font(10, 0));
         par12.setIndentationLeft(20);
         document.add(par12);
 
-        Paragraph par13 = new Paragraph("Zdecydowałem się pominąć konkurencje podobne lub takie, w których mógłbym na początku używać broni zakupionej też do innej konkurencji.  Niemniej jednak, interesują mnie także pozostałe typy strzelectwa sportowego (np. długodystansowe, dynamiczne, czarnoprochowe) i w przyszłości planuję brać udział w zawodach i konkurencjach je obejmujących. W szczególności interesuje mnie strzelectwo dynamiczno-praktyczne takie jak: IPSC, Liga Sportera czy 3 Gun.\n" + "Oferta stowarzyszenia o charakterze strzeleckim do którego należę jest stale poszerzana i umożliwia mi szerokie eksplorowanie pasji strzeleckiej. Specyfika konkurencji, w których już startuje oraz będę startował sprawia, że wnioskowana ilość jednostek broni jest mi niezbędna do startu w nich, treningu oraz poszerzania swoich umiejętności sportowych. Mając bogatą ofertę zawodów sportowych potrzebuję dużej dozy elastyczności w wyborze zakupionej broni. Zamierzam nabywać kolejne egzemplarze, w miarę jak moje plany uprawiania sportu strzeleckiego będą tego wymagały.\n", font(10, 0));
+        Paragraph par13 = new Paragraph("""
+                Zdecydowałem się pominąć konkurencje podobne lub takie, w których mógłbym na początku używać broni zakupionej też do innej konkurencji.  Niemniej jednak, interesują mnie także pozostałe typy strzelectwa sportowego (np. długodystansowe, dynamiczne, czarnoprochowe) i w przyszłości planuję brać udział w zawodach i konkurencjach je obejmujących. W szczególności interesuje mnie strzelectwo dynamiczno-praktyczne takie jak: IPSC, Liga Sportera czy 3 Gun.
+                Oferta stowarzyszenia o charakterze strzeleckim do którego należę jest stale poszerzana i umożliwia mi szerokie eksplorowanie pasji strzeleckiej. Specyfika konkurencji, w których już startuje oraz będę startował sprawia, że wnioskowana ilość jednostek broni jest mi niezbędna do startu w nich, treningu oraz poszerzania swoich umiejętności sportowych. Mając bogatą ofertę zawodów sportowych potrzebuję dużej dozy elastyczności w wyborze zakupionej broni. Zamierzam nabywać kolejne egzemplarze, w miarę jak moje plany uprawiania sportu strzeleckiego będą tego wymagały.
+                """, font(10, 0));
         par13.setFirstLineIndent(20);
         document.add(par13);
 
-        Paragraph par14 = new Paragraph("Zamierzam kolekcjonować broń palną sportową różnych rodzajów, typów i modeli. W chwili obecnej nie jestem w stanie określić po ile egzemplarzy broni każdego rodzaju będę mieć w swojej kolekcji. Dopiero zaczynam realizację pasji kolekcjonerskiej i nie jestem w stanie powiedzieć, w którą stronę będę chciał się rozwinąć w najbliższej przyszłości.\n" + "Chcę mieć dużą kolekcję stanowiącą przekrój najpopularniejszych modeli broni palnej. Na początek wielkość kolekcji, która \n" + "z natury rzeczy nie jest i nie może być zbiorem zamkniętym, oceniam szacunkowo na liczbę 10 sztuk. I dlatego wnoszę o wydanie pozwolenia na taką właśnie ilość broni.\n", font(10, 0));
+        Paragraph par14 = new Paragraph("""
+                Zamierzam kolekcjonować broń palną sportową różnych rodzajów, typów i modeli. W chwili obecnej nie jestem w stanie określić po ile egzemplarzy broni każdego rodzaju będę mieć w swojej kolekcji. Dopiero zaczynam realizację pasji kolekcjonerskiej i nie jestem w stanie powiedzieć, w którą stronę będę chciał się rozwinąć w najbliższej przyszłości.
+                Chcę mieć dużą kolekcję stanowiącą przekrój najpopularniejszych modeli broni palnej. Na początek wielkość kolekcji, która\s
+                z natury rzeczy nie jest i nie może być zbiorem zamkniętym, oceniam szacunkowo na liczbę 10 sztuk. I dlatego wnoszę o wydanie pozwolenia na taką właśnie ilość broni.
+                """, font(10, 0));
         par14.setFirstLineIndent(20);
         document.add(par14);
 
-        Paragraph par15 = new Paragraph("Rezygnuję niniejszym z prawa zapoznania się z aktami przed wydaniem decyzji, jeśli organ Policji dojdzie do wniosku, \n" + "że należy wydać decyzję zgodną z moim żądaniem.\n", font(10, 0));
+        Paragraph par15 = new Paragraph("""
+                Rezygnuję niniejszym z prawa zapoznania się z aktami przed wydaniem decyzji, jeśli organ Policji dojdzie do wniosku,\s
+                że należy wydać decyzję zgodną z moim żądaniem.
+                """, font(10, 0));
         par15.setFirstLineIndent(20);
         document.add(par15);
 

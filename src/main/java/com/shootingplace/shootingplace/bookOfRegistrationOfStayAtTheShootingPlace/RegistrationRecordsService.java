@@ -36,7 +36,7 @@ public class RegistrationRecordsService {
 
     public ResponseEntity<?> createRecordInBook(String pesel, String imageUUID) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();
-        MemberEntity member = memberRepo.findAllByErasedFalse().stream().filter(f->f.getPesel().equals(pesel)).findFirst().orElse(null);
+        MemberEntity member = memberRepo.findAllByErasedFalse().stream().filter(f -> f.getPesel().equals(pesel)).findFirst().orElse(null);
         if (member != null) {
             if (registrationRepo.findAll().stream().anyMatch(f ->
                     LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(member.getPesel()))) {
@@ -70,31 +70,35 @@ public class RegistrationRecordsService {
     }
 
     public ResponseEntity<?> createRecordInBook(String imageUUID, OtherPerson otherPerson) {
-        RegistrationRecordEntity r = new RegistrationRecordEntity();
-        if (registrationRepo.findAll().stream().anyMatch(f ->
-                LocalDate.of(f.getDateTime().getYear(), f.getDateTime().getMonth(), f.getDateTime().getDayOfMonth()).equals(LocalDate.now()) && f.getPeselOrID().equals(String.valueOf(otherPerson.getId())))) {
+
+        LocalDate today = LocalDate.now();
+
+        List<RegistrationRecordEntity> allByDateTimeBetween = registrationRepo.findAllByDateTimeBetween(today.atStartOfDay(), today.plusDays(1).atStartOfDay());
+        RegistrationRecordEntity first = allByDateTimeBetween.stream().filter(f -> f.getPeselOrID().equals(otherPerson.getId())).findFirst().orElse(null);
+        if (first != null) {
             LOG.info("Osoba znajduje się już na liście");
             return ResponseEntity.badRequest().body("Osoba znajduje się już na liście");
-        } else {
-            r.setFirstName(firstLetterToUpperCase(otherPerson.getFirstName()));
-            r.setSecondName(otherPerson.getSecondName().toUpperCase(Locale.ROOT));
-            r.setDataProcessingAgreement(true);
-            r.setStatementOnReadingTheShootingPlaceRegulations(true);
-            if (otherPerson.getWeaponPermissionNumber() == null) {
-                r.setAddress(otherPerson.getAddress().toString());
-            } else {
-                r.setWeaponPermission(otherPerson.getWeaponPermissionNumber());
-            }
-            r.setDateTime(LocalDateTime.now());
-            r.setImageUUID(imageUUID);
-            r.setPeselOrID(String.valueOf(otherPerson.getId()));
-            r.setDayIndex(getDayIndex() + 1);
-            String name = r.getSecondName() + ' ' + r.getFirstName();
-            LOG.info("Zapisano do książki {}", name);
-            registrationRepo.save(r);
-            return ResponseEntity.ok("Zapisano do książki " + name);
         }
+        RegistrationRecordEntity r = new RegistrationRecordEntity();
+        r.setFirstName(firstLetterToUpperCase(otherPerson.getFirstName()));
+        r.setSecondName(otherPerson.getSecondName().toUpperCase(Locale.ROOT));
+        r.setDataProcessingAgreement(true);
+        r.setStatementOnReadingTheShootingPlaceRegulations(true);
+        if (otherPerson.getWeaponPermissionNumber() == null) {
+            r.setAddress(otherPerson.getAddress().toString());
+        } else {
+            r.setWeaponPermission(otherPerson.getWeaponPermissionNumber());
+        }
+        r.setDateTime(LocalDateTime.now());
+        r.setImageUUID(imageUUID);
+        r.setPeselOrID(String.valueOf(otherPerson.getId()));
+        r.setDayIndex(getDayIndex() + 1);
+        String name = r.getSecondName() + ' ' + r.getFirstName();
+        LOG.info("Zapisano do książki {}", name);
+        registrationRepo.save(r);
+        return ResponseEntity.ok("Zapisano do książki " + name);
     }
+
 
     public ResponseEntity<?> createRecordInBook(String imageUUID, ImageOtherPersonWrapper other) {
         RegistrationRecordEntity r = new RegistrationRecordEntity();

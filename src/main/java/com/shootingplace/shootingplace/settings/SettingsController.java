@@ -4,6 +4,7 @@ import com.shootingplace.shootingplace.club.Club;
 import com.shootingplace.shootingplace.club.ClubService;
 import com.shootingplace.shootingplace.configurations.UpdateService;
 import com.shootingplace.shootingplace.enums.UserSubType;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.security.RequirePermissions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class SettingsController {
     private final ClubService clubService;
     private final ApplicationLicenseService applicationLicenseService;
     private final UpdateService updateService;
+    private final SystemConfigRepository systemConfigRepository;
 
     @Transactional
     @PostMapping("/createMotherClub")
@@ -58,5 +60,16 @@ public class SettingsController {
         return ResponseEntity.ok().build();
 
     }
-
+    @PostMapping("/addCalendar")
+    @RequirePermissions(value = {UserSubType.ADMIN, UserSubType.SUPER_USER, UserSubType.CEO, UserSubType.MANAGEMENT})
+    public ResponseEntity<?> addCalendar(@RequestParam String iframe) {
+        SystemConfigEntity config = systemConfigRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Config", "1"));
+        config.setIFrameGoogleCalendar(iframe);
+        systemConfigRepository.save(config);
+        return ResponseEntity.ok().body("Zapisano kalendarz");
+    }
+    @GetMapping("/calendar")
+    public ResponseEntity<?> getCalendar() {
+        return ResponseEntity.ok().body(systemConfigRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Config", "1")).getIFrameGoogleCalendar());
+    }
 }

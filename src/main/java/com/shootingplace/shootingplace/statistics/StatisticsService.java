@@ -445,7 +445,7 @@ public class StatisticsService {
                 .filter(m -> !m.isErased())
                 .filter(m -> m.getClub() != null && Objects.equals(m.getClub().getId(), 1))
                 .filter(m -> m.getLicense() != null && m.getLicense().getNumber() != null)
-                .filter(MemberEntity::isPZSS)
+                .filter(MemberEntity::isPzss)
                 .filter(m -> m.getLicense().isValid())
                 .count();
 
@@ -453,7 +453,7 @@ public class StatisticsService {
                 .filter(m -> !m.isErased())
                 .filter(m -> m.getClub() != null && Objects.equals(m.getClub().getId(), 1))
                 .filter(m -> m.getLicense() != null && m.getLicense().getNumber() != null)
-                .filter(MemberEntity::isPZSS)
+                .filter(MemberEntity::isPzss)
                 .filter(m -> !m.getLicense().isValid())
                 .count();
 
@@ -470,9 +470,9 @@ public class StatisticsService {
 
         Map<String, Long> membersByGroup = all.stream()
                 .filter(m -> !m.isErased())
-                .filter(m -> m.getMemberEntityGroup() != null)
+                .filter(m -> m.getMemberGroupEntity() != null)
                 .collect(Collectors.groupingBy(
-                        m -> m.getMemberEntityGroup().getName(),
+                        m -> m.getMemberGroupEntity().getName(),
                         Collectors.counting()
                 ));
         return new MembersStatsDTO(

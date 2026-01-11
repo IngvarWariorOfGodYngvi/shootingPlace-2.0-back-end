@@ -15,9 +15,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
@@ -27,6 +25,8 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class MemberEntity extends Person {
 
@@ -92,223 +92,6 @@ public class MemberEntity extends Person {
     @ManyToOne
     private MemberGroupEntity memberGroupEntity;
 
-    public String getImageUUID() {
-        return imageUUID;
-    }
-
-    public void setImageUUID(String imageUUID) {
-        this.imageUUID = imageUUID;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public LocalDate getJoinDate() {
-        return joinDate;
-    }
-
-    public void setJoinDate(LocalDate joinDate) {
-        this.joinDate = joinDate;
-    }
-
-    public Integer getLegitimationNumber() {
-        return legitimationNumber;
-    }
-
-    public String getClubCardBarCode() {
-        return clubCardBarCode;
-    }
-
-    public void setClubCardBarCode(String clubCardBarCode) {
-        this.clubCardBarCode = clubCardBarCode;
-    }
-
-    public void setLegitimationNumber(Integer legitimationNumber) {
-        this.legitimationNumber = legitimationNumber;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName.substring(0, 1).toUpperCase() + firstName.substring(1).toLowerCase();
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    public LicenseEntity getLicense() {
-        return license;
-    }
-
-    public void setLicense(LicenseEntity license) {
-        this.license = license;
-    }
-
-    public ShootingPatentEntity getShootingPatent() {
-        return shootingPatent;
-    }
-
-    public void setShootingPatent(ShootingPatentEntity shootingPatent) {
-        this.shootingPatent = shootingPatent;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPesel() {
-        return pesel;
-    }
-
-    public void setPesel(String pesel) {
-        this.pesel = pesel;
-    }
-
-    public String getIDCard() {
-        return IDCard;
-    }
-
-    public void setIDCard(String IDCard) {
-        this.IDCard = IDCard;
-    }
-
-    public AddressEntity getAddress() {
-        return address;
-    }
-
-    public void setAddress(AddressEntity address) {
-        this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public WeaponPermissionEntity getWeaponPermission() {
-        return weaponPermission;
-    }
-
-    public void setWeaponPermission(WeaponPermissionEntity weaponPermission) {
-        this.weaponPermission = weaponPermission;
-    }
-
-    public ErasedEntity getErasedEntity() {
-        return erasedEntity;
-    }
-
-    public void setErasedEntity(ErasedEntity erasedEntity) {
-        this.erasedEntity = erasedEntity;
-    }
-
-    public List<BarCodeCardEntity> getBarCodeCardList() {
-        return barCodeCardList;
-    }
-
-    public void setBarCodeCardList(List<BarCodeCardEntity> barCodeCardList) {
-        this.barCodeCardList = barCodeCardList;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public void toggleActive() {
-        this.active = !this.active;
-    }
-
-    public boolean isAdult() {
-        return adult;
-    }
-
-    public boolean isErased() {
-        return erased;
-    }
-
-    public void toggleErase() {
-        this.erased = !this.erased;
-    }
-
-    public HistoryEntity getHistory() {
-        return history;
-    }
-
-    public void setHistory(HistoryEntity history) {
-        this.history = history;
-    }
-
-    public MemberPermissionsEntity getMemberPermissions() {
-        return memberPermissions;
-    }
-
-    public void setMemberPermissions(MemberPermissionsEntity memberPermissions) {
-        this.memberPermissions = memberPermissions;
-    }
-
-    public PersonalEvidenceEntity getPersonalEvidence() {
-        return personalEvidence;
-    }
-
-    public void setPersonalEvidence(PersonalEvidenceEntity personalEvidence) {
-        this.personalEvidence = personalEvidence;
-    }
-
-    public ClubEntity getClub() {
-        return club;
-    }
-
-    public void setClub(ClubEntity club) {
-        this.club = club;
-    }
-
-    public void setAdult(boolean adult) {
-        this.adult = adult;
-    }
-
-    public boolean isPZSS() {
-        return pzss;
-    }
-
-    public void setPzss(boolean pzss) {
-        this.pzss = pzss;
-    }
-
-    public String getSignBy() {
-        return signBy;
-    }
-
-
-    public void setSignBy(String signBy) {
-        this.signBy = signBy;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     /**
      * Return secondName plus firstName of Member
      */
@@ -317,13 +100,6 @@ public class MemberEntity extends Person {
                 this.getFirstName().replaceAll(" ", "");
     }
 
-    public boolean getDeclarationLOK() {
-        return declarationLOK;
-    }
-
-    public boolean toggleDeclaration(boolean isSigned) {
-        return this.declarationLOK = isSigned;
-    }
 
     /**
      * Return member Sex
@@ -332,10 +108,6 @@ public class MemberEntity extends Person {
      */
     public boolean getSex() {
         return Integer.parseInt(String.valueOf(this.pesel.toCharArray()[10])) % 2 == 0;
-    }
-
-    public boolean togglePzss(boolean isSignedTo) {
-        return this.pzss = isSignedTo;
     }
 
     public LocalDate getBirthDate() {
@@ -397,13 +169,5 @@ public class MemberEntity extends Person {
         day = 10 * PESEL[4];
         day += PESEL[5];
         return day;
-    }
-
-    public void setMemberEntityGroup(MemberGroupEntity group) {
-        this.memberGroupEntity = group;
-    }
-
-    public MemberGroupEntity getMemberEntityGroup() {
-        return this.memberGroupEntity;
     }
 }

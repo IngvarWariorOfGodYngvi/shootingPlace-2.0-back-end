@@ -16,4 +16,10 @@ public interface OtherPersonRepository extends JpaRepository<OtherPersonEntity, 
     Optional<OtherPersonEntity> findByLicenseNumberAndActiveTrue(String licenseNumber);
 
     boolean existsByLicenseNumber(String licenseNumber);
+
+    List<OtherPersonEntity> findAllByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    List<OtherPersonEntity> findAllByLicenseNumber(String s);
 }

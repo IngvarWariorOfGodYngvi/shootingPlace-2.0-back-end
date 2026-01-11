@@ -32,6 +32,10 @@ public class OtherPersonController {
     public ResponseEntity<?> getOtherByPhone(@PathVariable String phone) {
         return otherPersonService.getOtherByPhone(phone);
     }
+    @GetMapping("/getOtherByLicense/{license}")
+    public ResponseEntity<?> getOtherByLicense(@PathVariable String license) {
+        return otherPersonService.getOtherByLicense(license);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {

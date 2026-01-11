@@ -59,7 +59,7 @@ public class DziesiatkaMembershipPdfGenerator {
         Paragraph p = new Paragraph(club.getFullName() + "\n", font(14, 1));
         p.setAlignment(1);
 
-        String group = member.getMemberEntityGroup().getName();
+        String group = member.getMemberGroupEntity().getName();
 
         Paragraph p1 = new Paragraph("Karta Członkowska\n", font(13, 2));
         Phrase p2 = new Phrase(group, font(14, 1));
