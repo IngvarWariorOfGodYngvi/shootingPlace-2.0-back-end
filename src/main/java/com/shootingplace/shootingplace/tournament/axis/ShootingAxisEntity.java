@@ -30,10 +30,6 @@ public class ShootingAxisEntity {
     @Column(nullable = false)
     private String name;
 
-    /**
-     * Kierownik osi:
-     * - NULL = sędzia główny turnieju
-     */
     private String leaderUUID;
     private String leaderName;
 

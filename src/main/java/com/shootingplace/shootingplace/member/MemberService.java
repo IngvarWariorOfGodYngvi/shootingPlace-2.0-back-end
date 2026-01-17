@@ -9,7 +9,7 @@ import com.shootingplace.shootingplace.enums.ErasedType;
 import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.license.LicenseEntity;
 import com.shootingplace.shootingplace.license.LicenseRepository;
 import com.shootingplace.shootingplace.license.LicenseService;
@@ -172,14 +172,16 @@ public class MemberService {
     }
 
 
+    public void automateChangeAdult() {
+        List<MemberEntity> list = memberRepository.findAllByErasedFalseAndAdultFalse();
+        list.forEach(e -> changeAdult(e.getUuid()));
+    }
+
     @Transactional
     @RecordHistory(action = "Member.changeAdult", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
     public ResponseEntity<?> changeAdult(String memberUUID) {
 
-        MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
-        if (member == null) {
-            return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
-        }
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
 
         if (member.isAdult()) {
             return ResponseEntity.badRequest().body("Klubowicz należy już do grupy dorosłej");
@@ -196,10 +198,7 @@ public class MemberService {
     @RecordHistory(action = "Member.erase", entity = HistoryEntityType.MEMBER, entityArgIndex = 0)
     public ResponseEntity<?> eraseMember(String memberUUID, String erasedType, LocalDate erasedDate, String additionalDescription) {
 
-        MemberEntity member = memberRepository.findById(memberUUID).orElse(null);
-        if (member == null) {
-            return ResponseEntity.badRequest().body("Nie znaleziono Klubowicza");
-        }
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
 
         if (member.isErased()) {
             return ResponseEntity.badRequest().body("Klubowicz jest już skreślony");

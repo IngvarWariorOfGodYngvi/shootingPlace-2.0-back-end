@@ -2,11 +2,12 @@ package com.shootingplace.shootingplace.file.pdf.generator;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
+import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
+import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
-import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -16,7 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
-import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.dateFormat;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.font;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class CertificateOfClubMembershipDziesiatkaPdfGenerator {
 
     private final MemberRepository memberRepository;
     private final Environment environment;
-
+    private final ClubRepository clubRepository;
     public PdfGenerationResults generate(String memberUUID, String reason, String city, boolean enlargement) throws DocumentException, IOException {
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
         String fileName = reason + " " + member.getFullName() + ".pdf";
@@ -158,9 +160,9 @@ public class CertificateOfClubMembershipDziesiatkaPdfGenerator {
                 policeAddress = "\nKomendant Wojewódzki Policji " + policeCity + "\nWydział Postępowań Administracyjnych" + "\n" + policeZip + " " + city + ", " + policeStreet + " " + policeNr;
             }
         }
-
+        System.out.println(member.getClub().getCity());
         // ========== DATA I NAGŁÓWEK ==========
-        Paragraph date = new Paragraph("Panaszew, " + LocalDate.now().format(dateFormat()), font(12, 0));
+        Paragraph date = new Paragraph(member.getClub().getCity() + ", " + LocalDate.now().format(dateFormat()), font(12, 0));
         date.setAlignment(Element.ALIGN_RIGHT);
         document.add(date);
 
@@ -177,10 +179,10 @@ public class CertificateOfClubMembershipDziesiatkaPdfGenerator {
         // ========== TREŚĆ ==========
         String pesel = (!reason.equals(choice[0])) ? " PESEL: " + member.getPesel() : "";
 
-        String sexWord = member.getSex() ? "Pani" : "Pan";
+        String sexWord = member.getSex() ? "Pana" : "Pan";
         String verb = member.getSex() ? "wystąpiła" : "wystąpił";
 
-        Paragraph p1 = new Paragraph(sexWord + " " + member.getFullName() + pesel + " jest czynnym członkiem Klubu Strzeleckiego „Dziesiątka” LOK w Łodzi. " + "Numer legitymacji klubowej: " + member.getLegitimationNumber() + ". Uczestniczy w zawodach i treningach strzeleckich osiągając bardzo dobre wyniki. " + "Czynnie uczestniczy w życiu Klubu.", font(12, 0));
+        Paragraph p1 = new Paragraph(sexWord + " " + member.getFullName() + pesel + " jest czynnym członkiem Klubu." + " Numer legitymacji klubowej: " + member.getLegitimationNumber() + ". Uczestniczy w zawodach i treningach strzeleckich osiągając bardzo dobre wyniki. " + "Czynnie uczestniczy w życiu Klubu.", font(12, 0));
         p1.setFirstLineIndent(40);
         document.add(p1);
 
@@ -200,7 +202,7 @@ public class CertificateOfClubMembershipDziesiatkaPdfGenerator {
         }
 
         if (!reason.equals(choice[0])) {
-            Paragraph p4 = new Paragraph(member.getClub().getFullName() + " jest członkiem PZSS i posiada Licencję Klubową nr LK-" + member.getClub().getLicenseNumber() + ", jest członkiem ŁZSS (nr ewidencyjny 6).", font(12, 0));
+            Paragraph p4 = new Paragraph(member.getClub().getFullName() + " jest członkiem PZSS i posiada Licencję Klubową nr " + member.getClub().getLicenseNumber() + ".", font(12, 0));
             p4.setFirstLineIndent(40);
             document.add(p4);
 

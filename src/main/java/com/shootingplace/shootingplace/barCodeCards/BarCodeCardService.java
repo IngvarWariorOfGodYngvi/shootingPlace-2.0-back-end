@@ -2,7 +2,7 @@ package com.shootingplace.shootingplace.barCodeCards;
 
 import com.shootingplace.shootingplace.domain.Person;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.security.UserAuthContext;

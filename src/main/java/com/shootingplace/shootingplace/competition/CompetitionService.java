@@ -3,8 +3,9 @@ package com.shootingplace.shootingplace.competition;
 import com.shootingplace.shootingplace.enums.CompetitionType;
 import com.shootingplace.shootingplace.enums.CountingMethod;
 import com.shootingplace.shootingplace.enums.Discipline;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,16 +34,28 @@ public class CompetitionService {
     }
 
     public ResponseEntity<?> createNewCompetition(Competition competition) {
-        List<String> list = competitionRepository.findAll().stream().map(CompetitionEntity::getName).toList();
-        int size = competitionRepository.findAll().stream().max(Comparator.comparing(CompetitionEntity::getOrdering)).get().getOrdering() + 1;
+        List<CompetitionEntity> competitions = competitionRepository.findAll();
+        List<String> list = competitions.stream()
+                .map(CompetitionEntity::getName)
+                .toList();
+        int size = competitions.stream()
+                .map(CompetitionEntity::getOrdering)
+                .max(Integer::compareTo)
+                .orElse(0) + 1;
+
         LOG.info(competition.getName().replaceAll("\\s+", " ").trim().toLowerCase(Locale.ROOT));
         if (list.stream().anyMatch(a -> a.trim().toLowerCase(Locale.ROOT).equals(competition.getName().trim().toLowerCase(Locale.ROOT)))) {
             LOG.info("Taka konkurencja już istnieje");
             return ResponseEntity.badRequest().body("Taka konkurencja już istnieje");
         }
         List<String> disciplines = competition.getDisciplineList();
-        CompetitionEntity c = CompetitionEntity.builder().name(competition.getName().replaceAll("\\s+", " ").trim()).abbreviation(competition.getAbbreviation())
-                .ordering(size).type(competition.getType()).countingMethod(competition.getCountingMethod()).caliberUUID(!competition.getCaliberUUID().isEmpty() ? competition.getCaliberUUID() : null).numberOfShots(competition.getNumberOfShots()).numberOfManyShotsList(null).build();
+        CompetitionEntity c = CompetitionEntity.builder()
+                .name(competition.getName().replaceAll("\\s+", " ").trim())
+                .abbreviation(competition.getAbbreviation())
+                .ordering(size)
+                .type(competition.getType())
+                .countingMethod(competition.getCountingMethod())
+                .caliberUUID(competition.getCaliberUUID() == null || competition.getCaliberUUID().equals("Brak") ? null : competition.getCaliberUUID()).numberOfShots(competition.getNumberOfShots()).numberOfManyShotsList(null).build();
         c.setDisciplineList(disciplines);
         competitionRepository.save(c);
         return ResponseEntity.status(201).body("utworzono konkurencję " + c.getName());
@@ -51,7 +64,7 @@ public class CompetitionService {
     @RecordHistory(action = "Competition.update", entity = HistoryEntityType.COMPETITION, entityArgIndex = 0)
     public ResponseEntity<?> updateCompetition(String uuid, Competition competition) {
 
-        CompetitionEntity entity = competitionRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
+        CompetitionEntity entity = competitionRepository.findById(uuid).orElseThrow(() -> new DomainNotFoundException("Competition", uuid));
 
         if (competition.getName() != null && !competition.getName().isBlank()) {
             if (competitionRepository.existsByName(competition.getName()) && !entity.getName().equals(competition.getName())) {
@@ -67,7 +80,10 @@ public class CompetitionService {
             entity.setPracticeShots(competition.getPracticeShots());
         }
         if (competition.getCaliberUUID() != null) {
-            entity.setCaliberUUID(competition.getCaliberUUID());
+            if (competition.getCaliberUUID().equals("Brak")) {
+                entity.setCaliberUUID(null);
+            }
+                entity.setCaliberUUID(competition.getCaliberUUID());
         }
         if (competition.getNumberOfShots() != null) {
             entity.setNumberOfShots(competition.getNumberOfShots());

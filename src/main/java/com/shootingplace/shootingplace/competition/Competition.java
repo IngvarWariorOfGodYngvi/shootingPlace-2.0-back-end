@@ -1,8 +1,6 @@
 package com.shootingplace.shootingplace.competition;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class Competition {
 
     private String name;
@@ -48,69 +48,5 @@ public class Competition {
             }
             this.disciplineList = value;
         }
-    }
-
-    public Integer getPracticeShots() {
-        return practiceShots;
-    }
-
-    public void setPracticeShots(Integer practiceShots) {
-        this.practiceShots = practiceShots;
-    }
-
-    public String getCaliberUUID() {
-        return caliberUUID;
-    }
-
-    public void setCaliberUUID(String caliberUUID) {
-        this.caliberUUID = caliberUUID;
-    }
-
-    public String getCountingMethod() {
-        return countingMethod;
-    }
-
-    public void setCountingMethod(String countingMethod) {
-        this.countingMethod = countingMethod;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getNumberOfShots() {
-        return numberOfShots;
-    }
-
-    public void setNumberOfShots(Integer numberOfShots) {
-        this.numberOfShots = numberOfShots;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Integer getOrdering() {
-        return ordering;
-    }
-
-    public void setOrdering(Integer ordering) {
-        this.ordering = ordering;
-    }
-
-    public String getAbbreviation() {
-        return abbreviation;
-    }
-
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
     }
 }

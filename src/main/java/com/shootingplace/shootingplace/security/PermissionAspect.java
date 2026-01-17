@@ -29,9 +29,21 @@ public class PermissionAspect {
         RequirePermissions rp = method.getAnnotation(RequirePermissions.class);
 
         String pinCode = extractPinFromHeader();
-        if (pinCode == null || pinCode.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Brak nagłówka X-OPERATOR-PIN");
+
+        if (pinCode == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Brak nagłówka X-OPERATOR-PIN"
+            );
         }
+
+        if (pinCode.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "PIN nie może być pusty"
+            );
+        }
+
 
         UserEntity user = userAuthService.authenticate(pinCode);
         userAuthService.hasAnyPermission(user, rp.value(), rp.requireWork());

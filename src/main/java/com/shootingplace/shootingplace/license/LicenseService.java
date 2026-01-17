@@ -2,7 +2,7 @@ package com.shootingplace.shootingplace.license;
 
 import com.shootingplace.shootingplace.exceptions.license.LicenseProlongationTooEarlyException;
 import com.shootingplace.shootingplace.history.*;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.Member;
 import com.shootingplace.shootingplace.member.MemberDTO;
 import com.shootingplace.shootingplace.member.MemberEntity;

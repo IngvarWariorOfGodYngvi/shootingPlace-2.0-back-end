@@ -3,12 +3,12 @@ package com.shootingplace.shootingplace.score;
 import com.shootingplace.shootingplace.enums.CompetitionType;
 import com.shootingplace.shootingplace.enums.CountingMethod;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListRepository;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,11 +38,11 @@ public class ScoreService {
         String name = memberEntity != null ? memberEntity.getFullName() : otherPersonEntity.getFullName();
 
         CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new DomainNotFoundException("CompetitionMembersList", competitionMembersListEntityUUID));
 
         List<ScoreEntity> scoreEntityList = new ArrayList<>();
 
-        tournamentRepository.findById(competitionMembersListEntity.getAttachedToTournament()).orElseThrow(EntityNotFoundException::new).getCompetitionsList().forEach(e -> scoreEntityList.addAll(e.getScoreList()));
+        tournamentRepository.findById(competitionMembersListEntity.getAttachedToTournament()).orElseThrow(() -> new DomainNotFoundException("Tournament", competitionMembersListEntity.getAttachedToTournament())).getCompetitionsList().forEach(e -> scoreEntityList.addAll(e.getScoreList()));
 
         ScoreEntity scoreEntity = scoreEntityList.stream().max(Comparator.comparing(ScoreEntity::getMetricNumber)).orElse(null);
 
@@ -54,7 +54,7 @@ public class ScoreService {
 
         if (memberEntity != null) {
             if (match) {
-                number = scoreEntityList.stream().filter(f -> f.getMember() == (memberEntity)).findFirst().orElseThrow(EntityNotFoundException::new).getMetricNumber();
+                number = scoreEntityList.stream().filter(f -> f.getMember() == (memberEntity)).findFirst().orElseThrow(() -> new DomainNotFoundException("Member", "xx")).getMetricNumber();
             } else {
                 if (scoreEntity != null) {
                     number = scoreEntity.getMetricNumber() + 1;
@@ -63,7 +63,7 @@ public class ScoreService {
         }
         if (otherPersonEntity != null) {
             if (match1) {
-                number = scoreEntityList.stream().filter(f -> f.getOtherPersonEntity() == (otherPersonEntity)).findFirst().orElseThrow(EntityNotFoundException::new).getMetricNumber();
+                number = scoreEntityList.stream().filter(f -> f.getOtherPersonEntity() == (otherPersonEntity)).findFirst().orElseThrow(() -> new DomainNotFoundException("Other", "xx")).getMetricNumber();
             } else {
                 if (scoreEntity != null) {
                     number = scoreEntity.getMetricNumber() + 1;
@@ -113,11 +113,11 @@ public class ScoreService {
         if (!scoreRepository.existsById(scoreUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono wyniku. Sprawdź identyfikator rekordu");
         }
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
         scoreEntity.setName(scoreEntity.getOtherPersonEntity() != null ? scoreEntity.getOtherPersonEntity().getFullName() : scoreEntity.getMember().getFullName());
         scoreEntity.setEdited(true);
         String competitionMembersListEntityUUID = scoreEntity.getCompetitionMembersListEntityUUID();
-        CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID).orElseThrow(EntityNotFoundException::new);
+        CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
         // Metoda COMSTOCK
         if (competitionMembersListEntity.getCountingMethod() != null && competitionMembersListEntity.getCountingMethod().equals(CountingMethod.COMSTOCK.getName())) {
             if (innerTen == null) {
@@ -179,7 +179,7 @@ public class ScoreService {
                 if (scoreList.size() > 1) {
                     hf1 = scoreList.stream()
                             .max(Comparator.comparing(ScoreEntity::getHf))
-                            .orElseThrow(EntityNotFoundException::new)
+                            .orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID))
                             .getHf();
                 } else {
                     hf1 = hf;
@@ -202,7 +202,7 @@ public class ScoreService {
                 scoreRepository.save(scoreEntity);
                 float hf2 = scoreList.stream()
                         .max(Comparator.comparing(ScoreEntity::getHf))
-                        .orElseThrow(EntityNotFoundException::new)
+                        .orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID))
                         .getHf();
                 scoreList.forEach(e -> {
                     e.setScore((e.getHf() / hf2) * 100);
@@ -348,7 +348,7 @@ public class ScoreService {
             if (scoreList.size() > 1) {
                 hf1 = scoreList.stream()
                         .max(Comparator.comparing(ScoreEntity::getHf))
-                        .orElseThrow(EntityNotFoundException::new)
+                        .orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID))
                         .getHf();
             } else {
                 hf1 = hf;
@@ -374,7 +374,7 @@ public class ScoreService {
             scoreList.forEach(e -> {
                 float hf2 = scoreList.stream()
                         .max(Comparator.comparing(ScoreEntity::getHf))
-                        .orElseThrow(EntityNotFoundException::new).getHf();
+                        .orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID)).getHf();
                 e.setScore((e.getHf() / hf2) * 100);
                 scoreRepository.save(e);
             });
@@ -437,7 +437,7 @@ public class ScoreService {
             if (scoreList.size() > 1) {
                 hf1 = scoreList.stream()
                         .max(Comparator.comparing(ScoreEntity::getHf))
-                        .orElseThrow(EntityNotFoundException::new)
+                        .orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID))
                         .getHf();
             } else {
                 hf1 = hf;
@@ -463,7 +463,7 @@ public class ScoreService {
             scoreList.forEach(e -> {
                 float hf2 = scoreList.stream()
                         .max(Comparator.comparing(ScoreEntity::getHf))
-                        .orElseThrow(EntityNotFoundException::new).getHf();
+                        .orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID)).getHf();
                 e.setScore((e.getHf() / hf2) * 100);
                 scoreRepository.save(e);
             });
@@ -526,8 +526,8 @@ public class ScoreService {
         if (!scoreRepository.existsById(scoreUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono wyniku. Sprawdź identyfikator rekordu");
         }
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
-        scoreEntity.toggleAmmunition();
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
+        scoreEntity.setAmmunition(!scoreEntity.isAmmunition());
 
 
         scoreRepository.save(scoreEntity);
@@ -540,8 +540,8 @@ public class ScoreService {
         if (!scoreRepository.existsById(scoreUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono wyniku. Sprawdź identyfikator rekordu");
         }
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
-        scoreEntity.toggleGun();
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
+        scoreEntity.setGun(!scoreEntity.isGun());
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
         LOG.info("wydaję broń {}", scoreEntity.getName());
@@ -553,8 +553,10 @@ public class ScoreService {
         if (!scoreRepository.existsById(scoreUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono wyniku. Sprawdź identyfikator rekordu");
         }
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
-        scoreEntity.toggleDnf();
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
+        scoreEntity.setDnf(!scoreEntity.isDnf());
+        scoreEntity.setEdited(true);
+        
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
 
@@ -569,8 +571,10 @@ public class ScoreService {
         }
         String name;
 
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
-        scoreEntity.toggleDsq();
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
+        scoreEntity.setDsq(!scoreEntity.isDsq());
+        scoreEntity.setEdited(true);
+        
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
 
@@ -588,8 +592,9 @@ public class ScoreService {
         if (!scoreRepository.existsById(scoreUUID)) {
             return ResponseEntity.badRequest().body("Nie znaleziono wyniku. Sprawdź identyfikator rekordu");
         }
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
-        scoreEntity.togglePk();
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
+        scoreEntity.setPk(!scoreEntity.isPk());
+        scoreEntity.setEdited(true);
         scoreRepository.save(scoreEntity);
         reorganizeCompetitionMemberList(scoreUUID);
 
@@ -598,15 +603,15 @@ public class ScoreService {
     }
 
     public void reorganizeCompetitionMemberList(String scoreUUID) {
-        ScoreEntity one = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
+        ScoreEntity one = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
         setScore(scoreUUID, one.getScore(), null, null, null, null, null, null, null, null);
     }
 
     public ResponseEntity<?> forceSetScore(String scoreUUID, float score) {
-        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(EntityNotFoundException::new);
+        ScoreEntity scoreEntity = scoreRepository.findById(scoreUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
         scoreEntity.setEdited(true);
         String competitionMembersListEntityUUID = scoreEntity.getCompetitionMembersListEntityUUID();
-        CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID).orElseThrow(EntityNotFoundException::new);
+        CompetitionMembersListEntity competitionMembersListEntity = competitionMembersListRepository.findById(competitionMembersListEntityUUID).orElseThrow(() -> new DomainNotFoundException("Score", scoreUUID));
 
         scoreEntity.setScore(score);
         scoreEntity.setName(scoreEntity.getOtherPersonEntity() != null ? scoreEntity.getOtherPersonEntity().getFullName() : scoreEntity.getMember().getFullName());

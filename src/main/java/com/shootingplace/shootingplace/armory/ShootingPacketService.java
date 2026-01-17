@@ -2,7 +2,7 @@ package com.shootingplace.shootingplace.armory;
 
 import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

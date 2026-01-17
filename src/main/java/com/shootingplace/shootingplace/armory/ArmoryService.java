@@ -8,7 +8,7 @@ import com.shootingplace.shootingplace.armory.gunRepresentation.GunRepresentatio
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.file.FilesRepository;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.history.UsedHistoryEntity;
 import com.shootingplace.shootingplace.history.UsedHistoryRepository;
 import com.shootingplace.shootingplace.member.MemberEntity;
@@ -290,7 +290,12 @@ public class ArmoryService {
 
     public List<UsedHistoryEntity> getGunUsedHistory(String gunUUID) {
 
-        return usedHistoryRepository.findAll().stream().filter(f -> f.getGunUUID().equals(gunUUID)).sorted(Comparator.comparing(UsedHistoryEntity::getDateTime).reversed()).collect(Collectors.toList());
+        return usedHistoryRepository.findAll()
+                .stream()
+                .filter(f -> f.getGunUUID().equals(gunUUID))
+                .sorted(Comparator.comparing(UsedHistoryEntity::getDateTime)
+                        .reversed())
+                .collect(Collectors.toList());
 
     }
 

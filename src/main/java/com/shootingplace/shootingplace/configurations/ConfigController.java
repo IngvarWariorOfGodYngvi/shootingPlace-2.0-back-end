@@ -1,5 +1,7 @@
 package com.shootingplace.shootingplace.configurations;
 
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
+import com.shootingplace.shootingplace.settings.SystemConfigRepository;
 import com.shootingplace.shootingplace.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/conf")
@@ -21,10 +22,10 @@ public class ConfigController {
 
     private final Environment environment;
     private final UserService userService;
-
+    private final SystemConfigRepository systemConfigRepository;
     @GetMapping("/ping")
     public ResponseEntity<?> ping() {
-        return ResponseEntity.ok(Objects.requireNonNull(environment.getProperty("dateTime")));
+        return ResponseEntity.ok(systemConfigRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("SystemConfig", "1")).getBuildTime());
     }
 
     @GetMapping("/env")

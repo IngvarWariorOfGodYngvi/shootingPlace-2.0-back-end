@@ -62,7 +62,7 @@ public class SettingsController {
     }
     @PostMapping("/addCalendar")
     @RequirePermissions(value = {UserSubType.ADMIN, UserSubType.SUPER_USER, UserSubType.CEO, UserSubType.MANAGEMENT})
-    public ResponseEntity<?> addCalendar(@RequestParam String iframe) {
+    public ResponseEntity<?> addCalendar(@RequestBody String iframe) {
         SystemConfigEntity config = systemConfigRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Config", "1"));
         config.setIFrameGoogleCalendar(iframe);
         systemConfigRepository.save(config);

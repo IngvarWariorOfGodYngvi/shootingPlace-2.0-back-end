@@ -1,12 +1,13 @@
 package com.shootingplace.shootingplace.users;
 
 import com.google.common.hash.Hashing;
+import com.shootingplace.shootingplace.changeHistory.ChangeHistoryDTO;
+import com.shootingplace.shootingplace.changeHistory.ChangeHistoryRepository;
+import com.shootingplace.shootingplace.changeHistory.ChangeHistoryService;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.enums.UserSubType;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryDTO;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
-import com.shootingplace.shootingplace.history.changeHistory.ChangeHistoryService;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.security.UserAuthService;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +34,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ChangeHistoryService changeHistoryService;
+    private final ChangeHistoryRepository changeHistoryRepository;
     private final MemberRepository memberRepository;
     private final OtherPersonRepository otherPersonRepository;
     private final TournamentService tournamentService;
@@ -176,31 +177,14 @@ public class UserService {
     }
 
     public ResponseEntity<?> getUserActions(String userUUID) {
-        UserEntity one = userRepository.findById(userUUID).orElseThrow(EntityNotFoundException::new);
+        List<ChangeHistoryDTO> result =
+                changeHistoryRepository
+                        .findAllByUserEntity_UuidOrderByDayNowDescTimeNowDesc(userUUID)
+                        .stream()
+                        .map(Mapping::map)
+                        .toList();
 
-        List<ChangeHistoryDTO> all = one.getList().stream().filter(f -> !f.getUserEntity().getFirstName().equals("Admin")).map(Mapping::map).sorted(Comparator.comparing(ChangeHistoryDTO::getDayNow).thenComparing(ChangeHistoryDTO::getTimeNow).reversed()).collect(Collectors.toList());
-//        all.forEach(e -> {
-//                    if (e.getBelongsTo() != null) {
-//                        if (memberRepository.existsById(e.getBelongsTo())) {
-//                            MemberEntity member = memberRepository.findById(e.getBelongsTo()).orElseThrow(EntityNotFoundException::new);
-//                            e.setBelongsTo(member.getSecondName().concat(" " + member.getFirstName()));
-//                        }
-//                        if (contributionRepository.existsById(e.getBelongsTo())) {
-//                            MemberEntity member = memberRepository.findByHistoryUuid(contributionRepository.getOne(e.getBelongsTo()).getHistoryUUID());
-//                            e.setBelongsTo(member.getSecondName().concat(" " + member.getFirstName()));
-//                        }
-//                        if (licenseRepository.existsById(e.getBelongsTo())) {
-//                            MemberEntity member = memberRepository.findByLicenseUuid(e.getBelongsTo());
-//                            e.setBelongsTo(member.getSecondName().concat(" " + member.getFirstName()));
-//
-//                        }
-//                    } else {
-//                        e.setBelongsTo("operacja");
-//                    }
-//                }
-//        );
-        return ResponseEntity.ok(all);
-
+        return ResponseEntity.ok(result);
     }
 
     public ResponseEntity<?> checkArbiterByCode(String code) {

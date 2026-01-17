@@ -7,7 +7,7 @@ import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.permissions.MemberPermissionsEntity;
 import com.shootingplace.shootingplace.permissions.PermissionsRepository;
 import com.shootingplace.shootingplace.permissions.PermissionService;

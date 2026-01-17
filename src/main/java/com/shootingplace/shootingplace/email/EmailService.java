@@ -10,7 +10,6 @@ import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.strategies.EmailStrategy;
 import com.shootingplace.shootingplace.strategies.ProfileContext;
-import com.shootingplace.shootingplace.utils.CryptoUtil;
 import com.shootingplace.shootingplace.utils.Mapping;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -533,7 +532,7 @@ public class EmailService {
             oldConfig.setUsername(newConfig.getUsername());
         }
         if (newConfig.getPassword() != null && !newConfig.getPassword().isEmpty()) {
-            oldConfig.setPassword(CryptoUtil.encrypt(newConfig.getPassword()));
+            oldConfig.setPassword(newConfig.getPassword());
         }
 
         emailConfigRepository.save(oldConfig);

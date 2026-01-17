@@ -1,4 +1,4 @@
-package com.shootingplace.shootingplace.history.changeHistory;
+package com.shootingplace.shootingplace.changeHistory;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

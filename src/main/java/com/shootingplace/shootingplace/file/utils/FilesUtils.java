@@ -1,6 +1,5 @@
 package com.shootingplace.shootingplace.file.utils;
 
-import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.BaseFont;
 
@@ -98,7 +97,7 @@ public class FilesUtils {
         return DateTimeFormatter.ofPattern(europeanDatePattern);
     }
 
-    public static Font font(int size, int style) throws IOException, DocumentException {
+    public static Font font(int size, int style) throws IOException {
         BaseFont base = BaseFont.createFont("font/times.ttf", BaseFont.IDENTITY_H, BaseFont.CACHED);
         return new Font(base, size, style);
     }

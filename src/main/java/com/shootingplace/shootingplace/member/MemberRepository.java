@@ -30,6 +30,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     List<MemberEntity> findAllByErasedFalseAndActiveFalse();
 
+    List<MemberEntity> findAllByErasedFalseAndAdultFalse();
+
     List<MemberEntity> findAllByErasedFalseAndActiveTrue();
 
     Page<MemberEntity> findAllByErasedFalse(Pageable pageable);

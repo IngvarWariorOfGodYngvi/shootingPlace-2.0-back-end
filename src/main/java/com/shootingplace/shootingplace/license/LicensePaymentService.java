@@ -2,9 +2,10 @@ package com.shootingplace.shootingplace.license;
 
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.history.*;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +24,7 @@ public class LicensePaymentService {
     private final LicenseRepository licenseRepository;
     private final LicensePaymentHistoryRepository licensePaymentHistoryRepository;
     private final HistoryRepository historyRepository;
-
+    private final UserAuthContext userAuthContext;
     private final EmailService emailService;
 
     private final Logger LOG = LogManager.getLogger(getClass());
@@ -57,6 +58,7 @@ public class LicensePaymentService {
                 .date(LocalDate.now())
                 .validForYear(validForYear)
                 .memberUUID(memberUUID)
+                .acceptedBy(userAuthContext.get().getFullName())
                 .isPayInPZSSPortal(false)
                 .isNew(license.getNumber() == null)
                 .build();

@@ -4,11 +4,14 @@ import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.file.pageStamper.PageStampMode;
 import com.shootingplace.shootingplace.file.pageStamper.PageStamper;
 import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
+import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonEntity;
+import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,7 +22,8 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static com.shootingplace.shootingplace.file.utils.FilesUtils.*;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.dateFormat;
+import static com.shootingplace.shootingplace.file.utils.FilesUtils.font;
 
 @Component
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
     private final TournamentRepository tournamentRepository;
     private final ClubRepository clubRepository;
     private final Environment environment;
+    private final OtherPersonRepository otherPersonRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public PdfGenerationResults generate(String tournamentUUID) throws DocumentException, IOException {
@@ -86,7 +92,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         t.getTechnicalSupportList().forEach(a -> {
             try {
-                addArbiter(document, a);
+                document.add(new Paragraph(resolveArbiter(a, null), font(11, Font.NORMAL)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -94,7 +100,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         t.getOtherTechnicalSupportList().forEach(a -> {
             try {
-                addArbiter(document, a);
+                document.add(new Paragraph(resolveArbiter(null, a), font(11, Font.NORMAL)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -113,9 +119,19 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
         for (var axis : t.getShootingAxis()) {
 
             document.add(new Paragraph(axis.getName(), font(12, Font.BOLD)));
+            String axisLeader = null;
+            String leaderUUID = axis.getLeaderUUID();
+
+            if (leaderUUID != null) {
+                axisLeader = memberRepository.findById(leaderUUID)
+                        .map(member -> resolveArbiter(member, null))
+                        .orElseGet(() -> resolveArbiter(null, otherPersonRepository.findById(Integer.valueOf(leaderUUID))
+                                .orElseThrow(() -> new DomainNotFoundException("OtherPerson", leaderUUID))));
+            }
+
             document.add(new Paragraph(
                     "Kierownik osi: " +
-                            (axis.getLeaderName() != null ? axis.getLeaderName() : "Nie wskazano"),
+                            (axisLeader != null ? axisLeader : "Nie wskazano"),
                     font(11, Font.NORMAL)
             ));
 
@@ -125,7 +141,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
                 axis.getAxisArbiters().forEach(a -> {
                     try {
-                        addArbiter(document, a);
+                        document.add(new Paragraph(resolveArbiter(a, null), font(11, Font.NORMAL)));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -133,7 +149,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
                 axis.getOtherAxisArbiters().forEach(a -> {
                     try {
-                        addArbiter(document, a);
+                        document.add(new Paragraph(resolveArbiter(null, a), font(11, Font.NORMAL)));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -161,7 +177,7 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         t.getArbitersRTSList().forEach(a -> {
             try {
-                addArbiter(document, a);
+                document.add(new Paragraph(resolveArbiter(a, null), font(11, Font.NORMAL)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -169,30 +185,19 @@ public class TournamentJudgesPdfGenerator implements PdfGenerator<String> {
 
         t.getOtherArbitersRTSList().forEach(a -> {
             try {
-                addArbiter(document, a);
+                document.add(new Paragraph(resolveArbiter(null, a), font(11, Font.NORMAL)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-
-    private void addArbiter(Document document, MemberEntity m) throws IOException {
-        String cls = getArbiterClass(m.getMemberPermissions().getArbiterStaticClass());
-        document.add(new Paragraph(m.getFirstName() + " " + m.getSecondName() + " " + cls, font(12, Font.NORMAL)));
-    }
-
-    private void addArbiter(Document document, OtherPersonEntity p) throws IOException {
-        String cls = getArbiterClass(p.getPermissionsEntity().getArbiterStaticClass());
-        document.add(new Paragraph(p.getFirstName() + " " + p.getSecondName() + " " + cls, font(12, Font.NORMAL)));
-    }
-
     private String resolveArbiter(MemberEntity member, OtherPersonEntity other) {
         if (member != null) {
-            return member.getFirstName() + " " + member.getSecondName() + " " + getArbiterClass(member.getMemberPermissions().getArbiterStaticClass());
+            return member.getFirstName() + " " + member.getSecondName() + " " + member.getMemberPermissions().getArbiterStaticNumber() + (member.getMemberPermissions().getArbiterDynamicNumber() != null ? " | " + member.getMemberPermissions().getArbiterDynamicNumber() : "");
         }
         if (other != null) {
-            return other.getFirstName() + " " + other.getSecondName() + " " + getArbiterClass(other.getPermissionsEntity().getArbiterStaticClass());
+            return other.getFirstName() + " " + other.getSecondName() + " " + other.getPermissionsEntity().getArbiterStaticNumber() + (other.getPermissionsEntity().getArbiterDynamicNumber() != null ? " | " + other.getPermissionsEntity().getArbiterDynamicNumber() : "");
         }
         return "Nie Wskazano";
     }

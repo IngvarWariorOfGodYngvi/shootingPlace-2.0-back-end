@@ -297,6 +297,14 @@ public class FilesController {
 
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(filesEntity.getType())).header(HttpHeaders.CONTENT_DISPOSITION, "attachment:filename=\"" + filesEntity.getName().replaceAll(" ", "") + "\"").body(filesEntity.getData());
     }
+    // lista zawodników na zawodach
+    @GetMapping("/downloadCompetitors/{tournamentUUID}")
+    public ResponseEntity<byte[]> getCompetitors(@PathVariable String tournamentUUID) throws IOException, DocumentException {
+
+        FilesEntity filesEntity = filesService.getCompetitors(tournamentUUID);
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(filesEntity.getType())).header(HttpHeaders.CONTENT_DISPOSITION, "attachment:filename=\"" + filesEntity.getName().replaceAll(" ", "") + "\"").body(filesEntity.getData());
+    }
 
     @GetMapping("/membershipDeclarationLOK")
     public ResponseEntity<byte[]> getMembershipDeclarationLOK(@RequestParam String uuid) throws DocumentException, IOException {

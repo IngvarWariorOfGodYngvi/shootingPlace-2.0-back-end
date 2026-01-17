@@ -33,6 +33,12 @@ public class ScheduledTasks {
     }
 
     @Transactional
+    @Scheduled(cron = "0 0 12 * * *")
+    public void changeAdult() {
+        memberService.automateChangeAdult();
+    }
+
+    @Transactional
     @Scheduled(cron = "0 1 23 * * *")
     public void closeOpenedAmmoList() {
         ammoEvidenceService.automationCloseEvidence();

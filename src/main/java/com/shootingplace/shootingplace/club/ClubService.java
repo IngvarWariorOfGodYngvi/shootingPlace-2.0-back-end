@@ -1,10 +1,12 @@
 package com.shootingplace.shootingplace.club;
 
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +41,7 @@ public class ClubService {
 
     public ResponseEntity<String> updateClub(int id, Club club) {
         if (!clubRepository.existsById(id)) {
-            return ResponseEntity.badRequest().body("Nie znaleziono Klubu");
+            throw new DomainNotFoundException("Club", "1");
         }
         if (id == 2) {
             LOG.info("Forbidden");
@@ -50,7 +52,7 @@ public class ClubService {
             return ResponseEntity.badRequest().body("Taki Klub już istnieje");
         }
 
-        ClubEntity clubEntity = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
+        ClubEntity clubEntity = clubRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Club", "1"));
         if (club.getShortName() != null && !club.getShortName().isEmpty()) {
             clubEntity.setShortName(club.getShortName());
         }
@@ -105,7 +107,6 @@ public class ClubService {
     }
 
     public ResponseEntity<?> createNewClub(Club club) {
-
         Integer id = clubRepository.findAll().stream().max(Comparator.comparing(ClubEntity::getId)).orElseThrow(EntityNotFoundException::new).getId() + 1;
         club.setId(id);
         ClubEntity clubEntity = buildCLub(club);
@@ -115,39 +116,95 @@ public class ClubService {
 
     public List<ClubEntity> getAllClubsToMember() {
         List<ClubEntity> list = new ArrayList<>();
-        list.add(clubRepository.findById(1).orElseThrow(EntityNotFoundException::new));
+        list.add(clubRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Club", "1")));
         List<ClubEntity> collect = clubRepository.findAll().stream().filter(f -> f.getId() != 1).sorted(Comparator.comparing(ClubEntity::getShortName)).toList();
         list.addAll(collect);
         return list;
     }
 
     public boolean isMotherClubExists() {
-        return clubRepository.findById(1).orElseThrow(EntityNotFoundException::new).getShortName().equals("firstStart");
+        return clubRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Club", "1")).getShortName().equals("firstStart");
     }
 
+    @Transactional
     public ResponseEntity<?> importCLub(Club club) {
-        if (clubRepository.findById(1).orElseThrow(EntityNotFoundException::new).getShortName().equals("firstStart")) {
+        ClubEntity first = clubRepository.findById(1).orElse(null);
+
+        if (first != null && "firstStart".equals(first.getShortName())) {
             club.setId(1);
             ClubEntity clubEntity = buildCLub(club);
             clubRepository.save(clubEntity);
-            LOG.info("dodano Klub :{}", club.getShortName());
-            return ResponseEntity.ok("importowano Klub: " + club.getShortName());
-
+            LOG.info("Dodano klub: {}", club.getShortName());
+            return ResponseEntity.ok("Zaimportowano klub: " + club.getShortName());
         }
-        boolean b = clubRepository.findAll().stream().anyMatch(a -> a.getShortName().replaceAll(" ", "").equalsIgnoreCase(club.getShortName().replaceAll(" ", "")));
-        if (!b) {
-            ClubEntity clubEntity = buildCLub(club);
-            clubRepository.save(clubEntity);
-            LOG.info("dodano Klub :{}", club.getShortName());
-            return ResponseEntity.ok("importowano Klub: " + club.getShortName());
+        if (clubRepository.countByNormalizedShortName(club.getShortName()) > 0) {
+            return ResponseEntity.ok(
+                    "Klub " + club.getShortName() + " już istnieje w bazie"
+            );
         }
-        return ResponseEntity.ok("Klub " + club.getShortName() + " już istnieje w bazie");
-
-
+        int i = clubRepository.findMaxId() + 1;
+        ClubEntity clubEntity = buildCLub(club);
+        clubEntity.setId(i);
+        clubRepository.save(clubEntity);
+        LOG.info("dodano Klub :{}", club.getShortName());
+        return ResponseEntity.ok("importowano Klub: " + club.getShortName());
     }
+//    @Transactional
+//    public ResponseEntity<?> importCLub(Club club) {
+//
+//        // 1. Pierwszy start – świadomie rezerwujesz ID = 1
+//        ClubEntity first = clubRepository.findById(1).orElse(null);
+//
+//        if (first != null && "firstStart".equals(first.getShortName())) {
+//            club.setId(1);
+//            ClubEntity clubEntity = buildCLub(club);
+//            clubRepository.save(clubEntity);
+//            LOG.info("Dodano klub: {}", club.getShortName());
+//            return ResponseEntity.ok("Zaimportowano klub: " + club.getShortName());
+//        }
+//
+//        // 2. Sprawdzenie unikalności (bez findAll)
+//        boolean exists = clubRepository
+//                .existsByShortNameIgnoreCase(
+//                        club.getShortName().replaceAll(" ", "")
+//                );
+//
+//        if (exists) {
+//            return ResponseEntity.ok(
+//                    "Klub " + club.getShortName() + " już istnieje w bazie"
+//            );
+//        }
+//
+//        // 3. RĘCZNE ID – kontrolowane
+//        Integer nextId = clubRepository.findMaxId() + 1;
+//
+//        ClubEntity clubEntity = buildCLub(club);
+//        clubEntity.setId(nextId);
+//
+//        clubRepository.save(clubEntity);
+//
+//        LOG.info("Dodano klub: {}", club.getShortName());
+//
+//        return ResponseEntity.ok(
+//                "Zaimportowano klub: " + club.getShortName()
+//        );
+//    }
 
     private ClubEntity buildCLub(Club club) {
-        return ClubEntity.builder().city(club.getCity()).wzss(club.getWzss()).vovoidership(club.getVovoidership()).url(club.getUrl()).phoneNumber(club.getPhoneNumber()).appartmentNumber(club.getAppartmentNumber()).street(club.getStreet()).houseNumber(club.getHouseNumber()).licenseNumber(club.getLicenseNumber()).email(club.getEmail()).fullName(club.getFullName()).shortName(club.getShortName()).id(club.getId()).build();
+        return ClubEntity.builder()
+                .city(club.getCity())
+                .wzss(club.getWzss())
+                .vovoidership(club.getVovoidership())
+                .url(club.getUrl())
+                .phoneNumber(club.getPhoneNumber())
+                .appartmentNumber(club.getAppartmentNumber())
+                .street(club.getStreet())
+                .houseNumber(club.getHouseNumber())
+                .licenseNumber(club.getLicenseNumber())
+                .email(club.getEmail())
+                .fullName(club.getFullName())
+                .shortName(club.getShortName())
+                .id(club.getId()).build();
     }
 
     @RecordHistory(action = "Club.delete", entity = HistoryEntityType.CLUB)
@@ -155,8 +212,8 @@ public class ClubService {
         if (id == 1 || id == 2) {
             return ResponseEntity.badRequest().body("Nie można usunąć tego Klubu");
         }
-        ClubEntity clubToDelete = clubRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        ClubEntity fallbackClub = clubRepository.findById(2).orElseThrow(EntityNotFoundException::new);
+        ClubEntity clubToDelete = clubRepository.findById(id).orElseThrow(() -> new DomainNotFoundException("Club", id.toString()));
+        ClubEntity fallbackClub = clubRepository.findById(2).orElseThrow(() -> new DomainNotFoundException("Club", "2"));
         memberRepository.findAll().stream().filter(m -> m.getClub().getId().equals(id)).forEach(m -> {
             m.setClub(fallbackClub);
             memberRepository.save(m);

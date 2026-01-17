@@ -4,7 +4,7 @@ import com.shootingplace.shootingplace.competition.CompetitionEntity;
 import com.shootingplace.shootingplace.competition.CompetitionRepository;
 import com.shootingplace.shootingplace.enums.ArbiterWorkClass;
 import com.shootingplace.shootingplace.history.*;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberDTO;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
@@ -744,7 +744,7 @@ public class TournamentService {
             tournamentRepository.save(tournamentEntity);
             LOG.info("Zawody {} zostały otwarte", tournamentEntity.getName());
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body("Zawody " + tournamentEntity.getName() + " zostały otwarte");
 
         }
     }

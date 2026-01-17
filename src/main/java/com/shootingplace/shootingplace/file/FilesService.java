@@ -14,7 +14,6 @@ import com.shootingplace.shootingplace.file.pdf.model.PdfGenerationResults;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.otherPerson.OtherPersonRepository;
-import com.shootingplace.shootingplace.otherPerson.OtherPersonService;
 import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.users.UserEntity;
 import com.shootingplace.shootingplace.utils.Mapping;
@@ -51,7 +50,6 @@ public class FilesService {
     private final FilesRepository filesRepository;
     private final OtherPersonRepository otherPersonRepository;
     private final GunRepository gunRepository;
-    private final OtherPersonService otherPersonService;
     private final Environment environment;
     private final Logger LOG = LogManager.getLogger(getClass());
     private final UserAuthContext userAuthContext;
@@ -71,6 +69,7 @@ public class FilesService {
     private final MembersListByAdultPdfGenerator membersListByAdultPdfGenerator;
     private final AllMembersAttendancePdfGenerator allMembersAttendancePdfGenerator;
     private final TournamentJudgesPdfGenerator tournamentJudgesPdfGenerator;
+    private final TournamentCompetitorsPdfGenerator tournamentCompetitorsPdfGenerator;
     private final MembersToPoliceReportPdfGenerator membersToPoliceReportPdfGenerator;
     private final MembersToErasedListPdfGenerator membersToErasedListPdfGenerator;
     private final GunRegistryPdfGenerator gunRegistryPdfGenerator;
@@ -351,6 +350,11 @@ public class FilesService {
     // lista sędziów na zawodach
     public FilesEntity getJudge(String tournamentUUID) throws IOException, DocumentException {
         PdfGenerationResults pdf = tournamentJudgesPdfGenerator.generate(tournamentUUID);
+        return createFile(pdf.fileName(), pdf.data(), null);
+    }
+    // lista zawodników na zawodach
+    public FilesEntity getCompetitors(String tournamentUUID) throws IOException {
+        PdfGenerationResults pdf = tournamentCompetitorsPdfGenerator.generate(tournamentUUID);
         return createFile(pdf.fileName(), pdf.data(), null);
     }
 

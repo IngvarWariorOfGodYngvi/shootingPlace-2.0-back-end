@@ -1,13 +1,15 @@
 package com.shootingplace.shootingplace.contributions;
 
 
+import com.shootingplace.shootingplace.changeHistory.ChangeHistoryService;
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.history.changeHistory.RecordHistory;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
+import com.shootingplace.shootingplace.security.UserAuthContext;
 import com.shootingplace.shootingplace.strategies.ContributionStrategy;
 import com.shootingplace.shootingplace.strategies.ProfileContext;
 import com.shootingplace.shootingplace.users.UserEntity;
@@ -30,11 +32,11 @@ public class ContributionService {
     private final HistoryService historyService;
 
     private final EmailService emailService;
-
+    private final UserAuthContext userAuthContext;
     private final Logger LOG = LogManager.getLogger(getClass());
     private final ProfileContext profileContext;
+    private final ChangeHistoryService changeHistoryService;
 
-    @RecordHistory(action = "Cntribution.add", entity = HistoryEntityType.CONTRIBUTION)
     public ResponseEntity<?> addContribution(String memberUUID, LocalDate contributionPaymentDay, Integer contributionCount) {
 
         MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
@@ -47,10 +49,14 @@ public class ContributionService {
             List<ContributionEntity> existing = member.getHistory().getContributionList();
 
             ContributionEntity contribution = ContributionEntity.builder().paymentDay(contributionPaymentDay).validThru(strategy.calculateValidThru(contributionPaymentDay, existing)).build();
-
+            contribution.setAcceptedBy(userAuthContext.get().getFullName());
             contributionRepository.save(contribution);
             historyService.addContribution(memberUUID, contribution);
-
+            changeHistoryService.record(
+                    userAuthContext.get(),
+                    "Contribution.add",
+                    contribution.getUuid()
+            );
             member.setActive(contribution.getValidThru().isAfter(LocalDate.now()));
             memberRepository.save(member);
 
@@ -60,7 +66,6 @@ public class ContributionService {
         emailService.sendContributionConfirmation(memberUUID);
         return ResponseEntity.ok("Dodano składkę");
     }
-
 
     public ContributionEntity addFirstContribution(LocalDate contributionPaymentDay, UserEntity user) {
         ContributionEntity contributionEntity = getContributionEntity(contributionPaymentDay, user);

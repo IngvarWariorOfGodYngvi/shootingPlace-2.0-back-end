@@ -107,7 +107,7 @@ public class MemberEntity extends Person {
      * if true -> woman
      */
     public boolean getSex() {
-        return Integer.parseInt(String.valueOf(this.pesel.toCharArray()[10])) % 2 == 0;
+        return Integer.parseInt(String.valueOf(this.pesel.toCharArray()[9])) % 2 == 0;
     }
 
     public LocalDate getBirthDate() {
