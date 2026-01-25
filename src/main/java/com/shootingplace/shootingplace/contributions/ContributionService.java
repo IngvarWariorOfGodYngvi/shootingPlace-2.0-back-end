@@ -2,11 +2,11 @@ package com.shootingplace.shootingplace.contributions;
 
 
 import com.shootingplace.shootingplace.changeHistory.ChangeHistoryService;
+import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.email.EmailService;
 import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntityType;
 import com.shootingplace.shootingplace.history.HistoryService;
-import com.shootingplace.shootingplace.changeHistory.RecordHistory;
 import com.shootingplace.shootingplace.member.MemberEntity;
 import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.security.UserAuthContext;
@@ -77,7 +77,11 @@ public class ContributionService {
 
         ContributionStrategy strategy = profileContext.getContributionStrategy();
         LocalDate validThru = strategy.calculateFirstValidThru(contributionPaymentDay);
-        return ContributionEntity.builder().paymentDay(contributionPaymentDay).validThru(validThru).acceptedBy(user.getFullName()).build();
+        return ContributionEntity.builder()
+                .paymentDay(contributionPaymentDay)
+                .validThru(validThru)
+                .acceptedBy(user.getFullName())
+                .build();
     }
 
     @RecordHistory(action = "Contribution.remove", entity = HistoryEntityType.CONTRIBUTION, entityArgIndex = 1)

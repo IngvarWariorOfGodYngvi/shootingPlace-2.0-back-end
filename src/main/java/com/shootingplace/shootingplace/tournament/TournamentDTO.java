@@ -13,6 +13,7 @@ public class TournamentDTO {
 
     private String name;
     private LocalDate date;
+    private String location;
     private String tournamentUUID;
     private boolean open;
     private boolean wzss;

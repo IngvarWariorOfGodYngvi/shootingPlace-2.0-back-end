@@ -99,10 +99,10 @@ public class FilesController {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(filesEntity.getType())).header(HttpHeaders.CONTENT_DISPOSITION, "attachment:filename=\"" + filesEntity.getName().trim() + "\"").body(filesEntity.getData());
     }
 
-    // csv
-    @GetMapping("/downloadCSVFile/{memberUUID}")
+    // xlsx
+    @GetMapping("/downloadXLSXFile/{memberUUID}")
     public ResponseEntity<byte[]> getMemberCSVFile(@PathVariable String memberUUID) throws IOException {
-        FilesEntity filesEntity = filesService.getMemberCSVFile(memberUUID);
+        FilesEntity filesEntity = xlsxFiles.getMemberXLSXFile(memberUUID);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(filesEntity.getType())).header(HttpHeaders.CONTENT_TYPE, filesEntity.getName().replaceAll("ó", "o")).body(filesEntity.getData());
     }
 

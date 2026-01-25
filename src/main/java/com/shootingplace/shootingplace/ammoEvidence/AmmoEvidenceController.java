@@ -79,7 +79,7 @@ public class AmmoEvidenceController {
     @Transactional
     @PostMapping("/listOfAmmo")
     @RequireAnyoneAtWork
-    public ResponseEntity<?> createAmmoUsed(@RequestBody Map<String, String> caliberUUIDAmmoQuantityMap, @RequestParam Integer legitimationNumber, @RequestParam Integer otherID) throws NoPersonToAmmunitionException {
+    public ResponseEntity<?> createAmmoUsed(@RequestBody Map<String, String> caliberUUIDAmmoQuantityMap, @RequestParam Integer legitimationNumber, @RequestParam Integer otherID,@RequestParam(defaultValue = "false") boolean printReceipt) throws NoPersonToAmmunitionException {
         boolean[] caliberAmmoCheck = new boolean[caliberUUIDAmmoQuantityMap.size()];
         final int[] iterator = {0};
         caliberUUIDAmmoQuantityMap.forEach((key, value) -> {
@@ -97,7 +97,7 @@ public class AmmoEvidenceController {
             otherID = null;
         }
         if (check) {
-            return ammoUsedService.addListOfAmmoToEvidence(caliberUUIDAmmoQuantityMap, legitimationNumber, otherID);
+            return ammoUsedService.addListOfAmmoToEvidence(caliberUUIDAmmoQuantityMap, legitimationNumber, otherID, printReceipt);
         } else {
             return ResponseEntity.badRequest().build();
         }

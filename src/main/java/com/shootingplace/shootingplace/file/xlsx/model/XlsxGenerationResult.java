@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class XlsxGenerationResult {
 
-    private String fileName;
-    private byte[] data;
+    String fileName;
+    byte[] data;
 
 }

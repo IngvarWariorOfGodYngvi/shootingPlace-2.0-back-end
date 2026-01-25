@@ -53,7 +53,13 @@ public class TournamentService {
         if (tournamentRepository.findAll().stream().anyMatch(TournamentEntity::isOpen)) {
             return ResponseEntity.badRequest().body("Nie można otworzyć kolejnych zawodów bo inne są otwarte");
         }
-        TournamentEntity tournamentEntity = TournamentEntity.builder().name(tournament.getName()).date(tournament.getDate() != null ? tournament.getDate() : LocalDate.now()).open(tournament.isOpen()).WZSS(tournament.isWzss()).build();
+        TournamentEntity tournamentEntity = TournamentEntity.builder()
+                .name(tournament.getName())
+                .date(tournament.getDate() != null ? tournament.getDate() : LocalDate.now())
+                .open(tournament.isOpen())
+                .WZSS(tournament.isWzss())
+                .location(tournament.getLocation())
+                .build();
         tournamentRepository.save(tournamentEntity);
         if (tournament.getShootingAxis() != null && !tournament.getShootingAxis().isEmpty()) {
             int index = 1;

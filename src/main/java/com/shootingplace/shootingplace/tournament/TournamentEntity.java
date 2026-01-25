@@ -24,6 +24,7 @@ public class TournamentEntity {
 
     private String name;
     private LocalDate date;
+    private String location;
 
     @ManyToOne
     private MemberEntity mainArbiter;

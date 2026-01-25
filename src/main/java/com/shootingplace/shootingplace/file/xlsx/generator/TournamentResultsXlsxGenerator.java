@@ -3,13 +3,13 @@ package com.shootingplace.shootingplace.file.xlsx.generator;
 import com.shootingplace.shootingplace.club.ClubEntity;
 import com.shootingplace.shootingplace.club.ClubRepository;
 import com.shootingplace.shootingplace.enums.CountingMethod;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.file.utils.FilesUtils;
 import com.shootingplace.shootingplace.file.xlsx.model.XlsxGenerationResult;
 import com.shootingplace.shootingplace.score.ScoreEntity;
 import com.shootingplace.shootingplace.tournament.CompetitionMembersListEntity;
 import com.shootingplace.shootingplace.tournament.TournamentEntity;
 import com.shootingplace.shootingplace.tournament.TournamentRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -36,8 +36,8 @@ public class TournamentResultsXlsxGenerator {
 
     public XlsxGenerationResult generate(String tournamentUUID) throws IOException {
 
-        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(EntityNotFoundException::new);
-        ClubEntity c = clubRepository.findById(1).orElseThrow(EntityNotFoundException::new);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentUUID).orElseThrow(() -> new DomainNotFoundException("Tournament",  tournamentUUID));
+        ClubEntity c = clubRepository.findById(1).orElseThrow(() -> new DomainNotFoundException("Club", "1"));
         int rc = 0;
 
         String fileName = "rezultaty" + c.getShortName().toUpperCase() + ".xlsx";

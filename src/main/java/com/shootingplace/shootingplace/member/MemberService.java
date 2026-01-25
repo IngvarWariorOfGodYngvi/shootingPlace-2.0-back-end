@@ -24,6 +24,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,8 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
     private final MemberRepository memberRepository;
     private final LicenseService licenseService;
     private final LicenseRepository licenseRepository;
@@ -147,8 +149,13 @@ public class MemberService {
 
         saved.setSignBy(user.getFullName());
         saved.setMemberGroupEntity(group);
-        memberRepository.save(saved);
-        historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), user));
+        MemberEntity save = memberRepository.save(saved);
+        if ("prod".equalsIgnoreCase(activeProfile)) {
+            historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), user));
+            contributionService.addContribution(save.getUuid(),LocalDate.now(),1);
+        } else {
+            historyService.addContribution(saved.getUuid(), contributionService.addFirstContribution(LocalDate.now(), user));
+        }
 
         emailService.sendRegistrationConfirmation(saved.getUuid());
 

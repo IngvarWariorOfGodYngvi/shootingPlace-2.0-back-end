@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 
 @Component
 public class MemberCsvGenerator {
@@ -16,26 +15,16 @@ public class MemberCsvGenerator {
 
         String fileName = memberEntity.getFirstName().stripTrailing()
                 + memberEntity.getSecondName().toUpperCase().stripTrailing()
-                + ".csv";
+                + ".xlsx";
 
         String[] tab = new String[5];
 
-        LocalDate localDate = memberEntity.getBirthDate();
-        String monthValue = String.valueOf(localDate.getMonthValue());
-        if (Integer.parseInt(monthValue) < 10) {
-            monthValue = "0" + monthValue;
-        }
-        String dayOfMonth = String.valueOf(localDate.getDayOfMonth());
-        if (Integer.parseInt(dayOfMonth) < 10) {
-            dayOfMonth = "0" + dayOfMonth;
-        }
-        String date = localDate.getYear() + "-" + monthValue + "-" + dayOfMonth;
-
-        tab[0] = memberEntity.getPesel();
+        tab[0] = memberEntity.getSecondName().trim();
         tab[1] = memberEntity.getFirstName().trim();
-        tab[2] = memberEntity.getSecondName().trim();
-        tab[3] = date;
+        tab[2] = "";
+        tab[3] = memberEntity.getPesel();
         tab[4] = memberEntity.getEmail();
+        tab[5] = memberEntity.getPhoneNumber();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String coma = ";";

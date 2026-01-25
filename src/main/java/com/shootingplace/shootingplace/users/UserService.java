@@ -103,7 +103,6 @@ public class UserService {
     }
 
     public ResponseEntity<?> editUser(UserCreateDTO user, String superPinCode, String userUUID) {
-        System.out.println(userUUID);
         String superPin = Hashing.sha256().hashString(superPinCode, StandardCharsets.UTF_8).toString();
         if (userRepository.findAll().stream().filter(f -> f.getPinCode().equals(superPin)).noneMatch(a -> a.getUserPermissionsList().contains(UserSubType.SUPER_USER.getName()))) {
             return ResponseEntity.badRequest().body("Nie można utworzyć użytkownika. Brak użytkownika z uprawnieniami.");

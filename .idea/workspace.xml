@@ -4,59 +4,54 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="Add SystemConfig. version 2.0.13">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pageStamper/BrandingResolver.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentCompetitorsPdfGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/CompetitionExportDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/PortalController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/PortalExportDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/ResultExportDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/TournamentExportDto.java" afterDir="false" />
+    <list default="true" id="e14b97fa-2f9a-4961-8b72-a3a63e6ab38c" name="Changes" comment="Create export tournament to portal on smartstrzelnica.pl/rezultaty">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/portal/PortalExportException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/soz/SozExportException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/MemberXlsxGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/Mappers.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/PortalExportRequestDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/PortalExportService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/RestClientConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/posnet/AmmoPluFileMappingService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/posnet/AmmoPluMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/posnet/AmmoPluMappingProperties.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/posnet/NonFiscalPrintRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/posnet/NonFiscalReceiptListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/posnet/NonFiscalReceiptRequestedEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozConfigRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozLoadDataEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozSession.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/soz/SozUploadResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/b00d6c6d-665f-43c2-96fc-0ac7314ebd1b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/b00d6c6d-665f-43c2-96fc-0ac7314ebd1b.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/address/AddressService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/address/AddressService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ArmoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CaliberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/CaliberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ShootingPacketService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/ShootingPacketService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/gunRepresentation/GunRepresentationEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/barCodeCards/BarCodeCardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/club/ClubService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/competition/Competition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/competition/Competition.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/competition/CompetitionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/competition/CompetitionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/ConfigController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/ConfigController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/ScheduledTasks.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/configurations/ScheduledTasks.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/ammoEvidence/AmmoEvidenceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/AmmoUsedService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/armory/AmmoUsedService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/contributions/ContributionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/contributions/ContributionService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/email/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ApiErrorHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ApiErrorHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/exceptions/exceptionHandlers/ExceptionsHandler.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/FilesService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipDziesiatkaPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/CertificateOfClubMembershipDziesiatkaPdfGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentJudgesPdfGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/pdf/generator/TournamentJudgesPdfGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/utils/FilesUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/utils/FilesUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/changeHistory/ChangeHistoryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/changeHistory/ChangeHistoryDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/changeHistory/ChangeHistoryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/changeHistory/ChangeHistoryEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/changeHistory/ChangeHistoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/changeHistory/ChangeHistoryRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/changeHistory/ChangeHistoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/changeHistory/ChangeHistoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/changeHistory/RecordHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/changeHistory/RecordHistory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/history/changeHistory/RecordHistoryAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/changeHistory/RecordHistoryAspect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicensePaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicensePaymentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicenseService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/license/LicenseService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/XLSXFilesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/XLSXFilesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/csv/generator/MemberCsvGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/csv/generator/MemberCsvGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/TournamentResultsXlsxGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/generator/TournamentResultsXlsxGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/model/XlsxGenerationResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/file/xlsx/model/XlsxGenerationResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/member/MemberService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/otherPerson/OtherPersonService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/score/ScoreEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/score/ScoreEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/score/ScoreService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/score/ScoreService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/security/PermissionAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/security/PermissionAspect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/settings/SettingsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/settings/SettingsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/CompetitionExportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/CompetitionExportDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/PortalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/PortalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/ResultExportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/ResultExportDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/TournamentExportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/portal/TournamentExportDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentEntity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/TournamentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/tournament/axis/ShootingAxisEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserEntity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/users/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/shootingplace/shootingplace/utils/Mapping.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -190,7 +185,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Maven.shootingplace [spring-boot:run...]">
+  <component name="RunManager" selected="Maven.shootingplace [clean,package]">
     <configuration name="All in shootingplace2.0" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="shootingplace2.0" />
       <option name="PACKAGE_NAME" value="" />
@@ -503,7 +498,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768133930781</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Fix club Entity version 2.0.21, prepare to exporting tournaments to portal.">
+      <option name="closed" value="true" />
+      <created>1768665346996</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1768665346996</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -538,7 +541,8 @@
     <MESSAGE value="after first start, fix bugs, added permissions methods." />
     <MESSAGE value="Creating Aspect fo workingTime, added Domain Exceptions" />
     <MESSAGE value="Add SystemConfig. version 2.0.13" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add SystemConfig. version 2.0.13" />
+    <MESSAGE value="Fix club Entity version 2.0.21, prepare to exporting tournaments to portal." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix club Entity version 2.0.21, prepare to exporting tournaments to portal." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

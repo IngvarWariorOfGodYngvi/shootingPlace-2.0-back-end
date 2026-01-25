@@ -6,7 +6,7 @@ import com.shootingplace.shootingplace.ammoEvidence.AmmoEvidenceRepository;
 import com.shootingplace.shootingplace.armory.GunEntity;
 import com.shootingplace.shootingplace.armory.GunRepository;
 import com.shootingplace.shootingplace.enums.ProfilesEnum;
-import com.shootingplace.shootingplace.file.csv.generator.MemberCsvGenerator;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.file.csv.generator.MemberEmailCsvGenerator;
 import com.shootingplace.shootingplace.file.csv.model.CsvGenerationResults;
 import com.shootingplace.shootingplace.file.pdf.generator.*;
@@ -63,7 +63,6 @@ public class FilesService {
     private final CertificateOfClubMembershipPanaszewPdfGenerator certificateOfClubMembershipPanaszewPdfGenerator;
     private final CertificateOfClubMembershipDziesiatkaPdfGenerator certificateOfClubMembershipDziesiatkaPdfGenerator;
     private final ApplicationForFirearmsLicensePdfGenerator applicationForFirearmsLicensePdfGenerator;
-    private final MemberCsvGenerator memberCsvGenerator;
     private final MemberEmailCsvGenerator memberEmailCsvGenerator;
     private final StartsMetricPdfGenerator startsMetricPdfGenerator;
     private final MembersListByAdultPdfGenerator membersListByAdultPdfGenerator;
@@ -270,7 +269,7 @@ public class FilesService {
 
     // karta członkowska dziesiątka
     public FilesEntity getMembershipDeclaration(String memberUUID) throws DocumentException, IOException {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
         ProfilesEnum activeProfile = ProfilesEnum.fromName(environment.getActiveProfiles()[0]);
 
         PdfGenerationResults pdf = switch (activeProfile) {
@@ -291,21 +290,21 @@ public class FilesService {
 
     // wniosek o przedłużenie licencji zawodniczej
     public FilesEntity createApplicationForExtensionOfTheCompetitorsLicense(String memberUUID) throws IOException, DocumentException {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
         PdfGenerationResults pdf = competitorLicenseExtensionPdfGenerator.generate(member);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
 
     // zaświadczenie z Klubu RCS Panaszew
     public FilesEntity certificateOfClubMembershipPanaszew(String memberUUID, String reason) throws IOException, DocumentException {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
         PdfGenerationResults pdf = certificateOfClubMembershipPanaszewPdfGenerator.generate(member, reason);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
 
     // wniosek o pozwolenie na broń
     public FilesEntity ApplicationForFirearmsLicense(String memberUUID, String thirdName, String birthPlace, String fatherName, String motherName, String motherMaidenName, String issuingAuthority, LocalDate parseIDDate, LocalDate parselicenseDate, String city) throws DocumentException, IOException {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
         PdfGenerationResults pdf = applicationForFirearmsLicensePdfGenerator.generate(member, thirdName, birthPlace, fatherName, motherName, motherMaidenName, issuingAuthority, parseIDDate, parselicenseDate, city);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
@@ -314,13 +313,6 @@ public class FilesService {
     public FilesEntity CertificateOfClubMembership(String memberUUID, String reason, String city, boolean enlargement) throws IOException, DocumentException {
         PdfGenerationResults pdf = certificateOfClubMembershipDziesiatkaPdfGenerator.generate(memberUUID, reason, city, enlargement);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
-    }
-
-    // plik .csv klubowicza
-    public FilesEntity getMemberCSVFile(String memberUUID) throws IOException {
-        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
-        CsvGenerationResults csv = memberCsvGenerator.generate(memberEntity);
-        return createFile(csv.fileName(), csv.data(), memberUUID);
     }
 
     // plik .csv maile do klubowiczów
@@ -416,14 +408,14 @@ public class FilesService {
 
     // Deklaracja LOK
     public FilesEntity getMembershipDeclarationLOK(String memberUUID) throws DocumentException, IOException {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
         PdfGenerationResults pdf = lokMembershipPdfGenerator.generate(member);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }
 
     // Legitymacja klubowicza
     public FilesEntity getMemberLegitimationPdfGenerator(String memberUUID) throws DocumentException, IOException {
-        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(EntityNotFoundException::new);
+        MemberEntity member = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
         PdfGenerationResults pdf = memberLegitimationPdfGenerator.generate(member);
         return createFile(pdf.fileName(), pdf.data(), memberUUID);
     }

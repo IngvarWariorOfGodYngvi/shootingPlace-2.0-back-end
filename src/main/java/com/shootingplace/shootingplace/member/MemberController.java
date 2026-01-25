@@ -3,7 +3,9 @@ package com.shootingplace.shootingplace.member;
 
 import com.shootingplace.shootingplace.address.Address;
 import com.shootingplace.shootingplace.enums.UserSubType;
+import com.shootingplace.shootingplace.file.XLSXFilesService;
 import com.shootingplace.shootingplace.security.RequirePermissions;
+import com.shootingplace.shootingplace.soz.SozClient;
 import com.shootingplace.shootingplace.wrappers.MemberWithAddressWrapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,6 +26,8 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final XLSXFilesService xlsxFilesService;
+    private final SozClient sozClient;
 
     @GetMapping("/{number}")
     public ResponseEntity<?> getMember(@PathVariable int number) {
@@ -122,6 +127,20 @@ public class MemberController {
     }
 
     @Transactional
+    @PostMapping("/exportMemberToSOZ")
+    @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
+    public ResponseEntity<String> exportMemberToSOZ(
+            @RequestParam String memberUUID
+    ) throws IOException {
+        byte[] xlsx = xlsxFilesService.generateMemberXlsxForSoz(memberUUID);
+        sozClient.uploadAndLoad(xlsx);
+        return ResponseEntity.ok(
+                "Dane zawodnika zostały poprawnie przekazane do SOZ"
+        );
+    }
+
+
+    @Transactional
     @PostMapping("/")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> addMember(@RequestBody @Valid MemberWithAddressWrapper memberWithAddressWrapper, @RequestParam boolean returningToClub) {
@@ -170,7 +189,7 @@ public class MemberController {
     @PatchMapping("/adult/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> changeAdult(@PathVariable String uuid) {
-            return memberService.changeAdult(uuid);
+        return memberService.changeAdult(uuid);
     }
 
     @PatchMapping("/togglePzss/{uuid}")
@@ -181,20 +200,20 @@ public class MemberController {
     @PatchMapping("/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> activateOrDeactivateMember(@PathVariable String uuid) {
-            return memberService.activateOrDeactivateMember(uuid);
+        return memberService.activateOrDeactivateMember(uuid);
     }
 
     @PatchMapping("/erase/{uuid}")
     @RequirePermissions(value = {UserSubType.MANAGEMENT, UserSubType.WORKER})
     public ResponseEntity<?> eraseMember(@PathVariable String uuid, @RequestParam String additionalDescription, @RequestParam String erasedDate, @RequestParam String erasedType) {
-            if (additionalDescription.trim().isBlank() || additionalDescription.trim().equals("null")) {
-                additionalDescription = null;
-            }
-            if (erasedDate.trim().isBlank() || erasedDate.trim().equals("null")) {
-                erasedDate = String.valueOf(LocalDate.now());
-            }
-            LocalDate parsedDate = LocalDate.parse(erasedDate);
-            return memberService.eraseMember(uuid, erasedType, parsedDate, additionalDescription);
+        if (additionalDescription.trim().isBlank() || additionalDescription.trim().equals("null")) {
+            additionalDescription = null;
+        }
+        if (erasedDate.trim().isBlank() || erasedDate.trim().equals("null")) {
+            erasedDate = String.valueOf(LocalDate.now());
+        }
+        LocalDate parsedDate = LocalDate.parse(erasedDate);
+        return memberService.eraseMember(uuid, erasedType, parsedDate, additionalDescription);
     }
 
     @PatchMapping("/changeClub/{uuid}")

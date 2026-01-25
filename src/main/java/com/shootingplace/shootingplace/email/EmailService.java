@@ -3,6 +3,7 @@ package com.shootingplace.shootingplace.email;
 import com.shootingplace.shootingplace.contributions.ContributionEntity;
 import com.shootingplace.shootingplace.enums.MailToggleOptions;
 import com.shootingplace.shootingplace.enums.MailType;
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.history.HistoryEntity;
 import com.shootingplace.shootingplace.history.HistoryRepository;
 import com.shootingplace.shootingplace.history.LicensePaymentHistoryEntity;
@@ -517,7 +518,7 @@ public class EmailService {
 
     public ResponseEntity<?> editConnection(EmailConfig newConfig, String uuid) {
 
-        EmailConfig oldConfig = emailConfigRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
+        EmailConfig oldConfig = emailConfigRepository.findById(uuid).orElseThrow(() -> new DomainNotFoundException("oldConfig", uuid));
 
         if (newConfig.getConnectionName() != null && !newConfig.getConnectionName().isEmpty()) {
             oldConfig.setConnectionName(newConfig.getConnectionName());

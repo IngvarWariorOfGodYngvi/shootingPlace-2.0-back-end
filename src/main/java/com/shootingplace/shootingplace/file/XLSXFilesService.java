@@ -1,7 +1,10 @@
 package com.shootingplace.shootingplace.file;
 
+import com.shootingplace.shootingplace.exceptions.domain.DomainNotFoundException;
 import com.shootingplace.shootingplace.file.xlsx.generator.*;
 import com.shootingplace.shootingplace.file.xlsx.model.XlsxGenerationResult;
+import com.shootingplace.shootingplace.member.MemberEntity;
+import com.shootingplace.shootingplace.member.MemberRepository;
 import com.shootingplace.shootingplace.utils.Mapping;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +22,7 @@ import java.util.List;
 public class XLSXFilesService {
 
     private final FilesRepository filesRepository;
-
+    private final MemberRepository memberRepository;
     private final TournamentResultsXlsxGenerator tournamentResultsXlsxGenerator;
     private final ListOfContributionXlsxGenerator listOfContributionXlsxGenerator;
     private final ListOfSignUpsXlsxGenerator listOfSignUpsXlsxGenerator;
@@ -29,7 +32,7 @@ public class XLSXFilesService {
     private final ListOfGunXlsxGenerator listOfGunXlsxGenerator;
     private final ListOfErasedMembersXlsxGenerator listOfErasedMembersXlsxGenerator;
     private final ListOfMembersToEraseXlsxGenerator listOfMembersToEraseXlsxGenerator;
-
+    private final MemberXlsxGenerator memberXlsxGenerator;
     private final Logger LOG = LogManager.getLogger(getClass());
 
     // rezultaty z zawodów
@@ -86,6 +89,21 @@ public class XLSXFilesService {
         return createFile(xlsx.getFileName(), xlsx.getData());
     }
 
+    // plik .xlsx klubowicza
+    public FilesEntity getMemberXLSXFile(String memberUUID) throws IOException {
+        MemberEntity memberEntity = memberRepository.findById(memberUUID).orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
+        XlsxGenerationResult xlsx = memberXlsxGenerator.generate(memberEntity);
+        return createFile(xlsx.getFileName(), xlsx.getData());
+    }
+    // potrzebne do eksportu na SOZ
+    public byte[] generateMemberXlsxForSoz(String memberUUID) throws IOException {
+        MemberEntity memberEntity = memberRepository.findById(memberUUID)
+                .orElseThrow(() -> new DomainNotFoundException("Member", memberUUID));
+
+        XlsxGenerationResult xlsx = memberXlsxGenerator.generate(memberEntity);
+        createFile(xlsx.getFileName(), xlsx.getData());
+        return xlsx.getData();
+    }
     public FilesEntity createFile(String fileName, byte[] data) {
         FilesModel model = FilesModel.builder()
                 .name(fileName)
